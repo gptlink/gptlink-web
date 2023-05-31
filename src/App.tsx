@@ -2,7 +2,9 @@ import { Routes, Route, Outlet, Link } from "react-router-dom";
 
 const App = () =>  (
   <div>
-    <h1>GPT Link web</h1>
+    <h1 className="text-3xl font-bold underline">
+      GPT Link web
+    </h1>
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
@@ -31,7 +33,7 @@ const Layout = () =>  (
 
 function Home() {
   return (
-    <div>
+    <div className="p-10 bg-yellow-400">
       <h2>Home</h2>
     </div>
   );
@@ -40,17 +42,17 @@ function Home() {
 
 function Chat() {
   return (
-    <div>
-      <h2>Chat</h2>
+    <div className="p-10 bg-red-400">
+      <h2 >Chat</h2>
     </div>
   );
 }
 
 function NoMatch() {
   return (
-    <div>
+    <div className="p-10 bg-red-400">
       <h2>404</h2>
-      <p>
+      <p className="p-10 bg-green-400">
         <Link to="/">Go to the home page</Link>
       </p>
     </div>
