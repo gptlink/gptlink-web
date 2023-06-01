@@ -1,5 +1,10 @@
 {
   "change to en": "change to english",
   "change to zh": "change to chinese",
+  "home page": "Home",
+  "user page": "User",
+  "dark mode": "Dark Mode",
+  "light mode": "Light Mode",
+  "system mode": "System Mode",
   "welcome": "Welcome to use GPT Link Web"
 }
