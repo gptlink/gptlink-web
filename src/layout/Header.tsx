@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
+import Avatar from '../components/Avatar';
 import { ThemeMode } from '../constants';
 
 export default function Header() {
@@ -17,7 +18,7 @@ export default function Header() {
   };
 
   return (
-    <div className="px-10 py-5 flex justify-between gap-4">
+    <div className="py-3 flex justify-between items-center gap-4">
       <div className="flex gap-4">
         <Link to="/">{t('home page')}</Link>
         <Link to="/user">{t('user page')}</Link>
@@ -29,6 +30,7 @@ export default function Header() {
         <button onClick={() => switchDarkMode(ThemeMode.DARK)}>{t('dark mode')}</button>
         <button onClick={() => switchDarkMode(ThemeMode.LIGHT)}>{t('light mode')}</button>
         <button onClick={() => switchDarkMode(ThemeMode.AUTO)}>{t('system mode')}</button>
+        <Avatar></Avatar>
       </div>
     </div>
   );
