@@ -25,8 +25,8 @@ export default function Header() {
       </div>
 
       <div className="flex gap-4">
-        {i18n.language === 'zh' && <button onClick={() => i18n.changeLanguage('en')}>{t('change to en')}</button>}
-        {i18n.language === 'en' && <button onClick={() => i18n.changeLanguage('zh')}>{t('change to zh')}</button>}
+        {i18n.language === 'zh' && <button onClick={() => i18n.changeLanguage('en')}>{t('en')}</button>}
+        {i18n.language === 'en' && <button onClick={() => i18n.changeLanguage('zh')}>{t('zh')}</button>}
         <button onClick={() => switchDarkMode(ThemeMode.DARK)}>{t('dark mode')}</button>
         <button onClick={() => switchDarkMode(ThemeMode.LIGHT)}>{t('light mode')}</button>
         <button onClick={() => switchDarkMode(ThemeMode.AUTO)}>{t('system mode')}</button>

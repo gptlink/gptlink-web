@@ -1,6 +1,10 @@
-const Avatar = ({ time }: { time?: number }) => {
+import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
+
+const Avatar = ({ time, className }: { time?: number; className: string }) => {
+  const { t } = useTranslation();
   return (
-    <div className="flex items-center gap-2 text-base">
+    <div className={classNames('flex items-center gap-2 text-base', className)}>
       <img
         className="w-8 h-8 rounded-full"
         src="https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIm0q06mdqTumC0zFkOCRUAPRWSeId450ViaEAgvYKDHUvGFq33WZPdgGbRgY28PBAic8OOxpcHtOAg/132"
@@ -8,7 +12,11 @@ const Avatar = ({ time }: { time?: number }) => {
       />
       <div>
         PengYYY
-        {time && <div className="text-sm text-slate-500">有效次数: {time}</div>}
+        {time && (
+          <div className="text-sm text-slate-500">
+            {t('valid times')}: {time}
+          </div>
+        )}
       </div>
     </div>
   );

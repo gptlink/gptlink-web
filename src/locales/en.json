@@ -1,10 +1,12 @@
 {
-  "change to en": "change to english",
-  "change to zh": "change to chinese",
+  "en": "english",
+  "zh": "chinese",
   "home page": "Home",
   "user page": "User",
   "dark mode": "Dark Mode",
   "light mode": "Light Mode",
   "system mode": "System Mode",
-  "new conversation": "new conversation"
+  "new conversation": "new conversation",
+  "role": "role",
+  "valid times": "valid times"
 }
