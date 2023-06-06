@@ -4,7 +4,7 @@ import classNames from 'classnames';
 const Avatar = ({ time, className }: { time?: number; className: string }) => {
   const { t } = useTranslation();
   return (
-    <div className={classNames('flex items-center gap-2 text-base', className)}>
+    <div className={classNames('flex items-center gap-2 text-sm', className)}>
       <img
         className="w-8 h-8 rounded-full"
         src="https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIm0q06mdqTumC0zFkOCRUAPRWSeId450ViaEAgvYKDHUvGFq33WZPdgGbRgY28PBAic8OOxpcHtOAg/132"
