@@ -4,12 +4,12 @@ import Avatar from '../../components/Avatar';
 const ConversationList = () => {
   const { t } = useTranslation();
   return (
-    <div className="flex-1 flex flex-col">
-      <button className="border m-4 leading-8 rounded border-dashed hover:border-gray-950 text-sm">
+    <div className="flex-1 flex flex-col overflow-hidden">
+      <button className="shrink-0 border m-4 leading-8 rounded border-dashed hover:border-gray-950 text-sm">
         + {t('new conversation')}
       </button>
-      <div className="flex flex-1 flex-col gap-4 overflow-auto px-4">
-        {Array.from({ length: 2 }).map((_, index) => (
+      <div className="flex flex-1 flex-col overflow-auto gap-4 px-4">
+        {Array.from({ length: 10 }).map((_, index) => (
           <div className="w-full border p-3 rounded h-fit hover:bg-neutral-100 hover:cursor-pointer" key={index}>
             对话一
           </div>
@@ -40,7 +40,7 @@ const RoleList = () => {
 
 const Conversation = () => {
   return (
-    <aside className="w-64 border-r border-gary-600 dark:border-gray-950 flex flex-col gap-4 text-xs flex-shrink-0">
+    <aside className="w-64 border-r border-gary-600 dark:border-gray-950 flex flex-col gap-4 text-xs flex-shrink-0 overflow-hidden">
       <ConversationList />
       <RoleList />
       <Avatar className="p-4 border-t" time={100} />
