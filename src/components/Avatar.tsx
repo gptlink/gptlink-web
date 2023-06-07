@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
+import React from 'react';
 import classNames from 'classnames';
 
-const Avatar = ({ time, className }: { time?: number; className: string }) => {
+const Avatar = React.forwardRef(({ time, className }: { time?: number; className?: string }, ref) => {
   const { t } = useTranslation();
   return (
     <div className={classNames('flex items-center gap-2 text-sm', className)}>
@@ -20,6 +21,6 @@ const Avatar = ({ time, className }: { time?: number; className: string }) => {
       </div>
     </div>
   );
-};
+});
 
 export default Avatar;

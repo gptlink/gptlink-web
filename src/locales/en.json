@@ -1,11 +1,9 @@
 {
   "en": "English",
   "zh": "Chinese",
-  "home page": "Home",
-  "user page": "User",
-  "dark mode": "Dark Mode",
-  "light mode": "Light Mode",
-  "system mode": "System Mode",
+  "dark": "Dark",
+  "light": "Light",
+  "system": "System",
   "new conversation": "new conversation",
   "role": "role",
   "valid times": "valid times"

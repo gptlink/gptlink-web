@@ -1,5 +1,10 @@
-export enum ThemeMode {
+export enum ThemeModeType {
   DARK = 'dark',
   LIGHT = 'light',
-  AUTO = 'auto',
+  SYSTEM = 'system',
+}
+
+export enum LanguagesType {
+  EN = 'en',
+  ZH = 'zh',
 }

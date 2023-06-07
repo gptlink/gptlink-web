@@ -1,50 +1,92 @@
-import React from 'react';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '../../components/ui/alert-dialog';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../../components/ui/dialog';
 
 export function PrivacyProtocol({ children }: { children: React.ReactNode }) {
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>隐私协议</AlertDialogTitle>
-          <AlertDialogDescription>
-            <div dangerouslySetInnerHTML={{ __html: 'Hello' }}></div>
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>取消</AlertDialogCancel>
-          <AlertDialogAction>确认</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <Dialog>
+      <DialogTrigger>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>隐私协议</DialogTitle>
+          <DialogDescription className="max-h-96 overflow-auto">
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 export function UseProtocol({ children }: { children: React.ReactNode }) {
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>使用协议</AlertDialogTitle>
-          <AlertDialogDescription>111</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>取消</AlertDialogCancel>
-          <AlertDialogAction>确认</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <Dialog>
+      <DialogTrigger>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>使用协议</DialogTitle>
+          <DialogDescription className="max-h-96 overflow-auto">
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+            内容 <br />
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
   );
 }
