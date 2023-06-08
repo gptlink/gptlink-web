@@ -1,32 +1,31 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MoonIcon, Sun, Laptop, Languages } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-import Avatar from '../components/Avatar';
-import { ThemeModeType, LanguagesType } from '../constants';
+import { useAppStore, ThemeModeType, LanguagesType } from '@/store';
+import Avatar from '@/components/Avatar';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuItem,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
   DropdownMenuTrigger,
-} from '../components/ui/dropdown-menu';
-import { Button } from '../components/ui/button';
+} from '@/components/ui/dropdown-menu';
+import { useEffect } from 'react';
 
 const ThemeMode = () => {
   const { t } = useTranslation();
-  const [themeMode, setThemeMode] = useState(ThemeModeType.SYSTEM);
+  const [theme, setTheme] = useAppStore((state) => [state.theme, state.setTheme]);
 
-  const switchDarkMode = (mode: ThemeModeType) => {
+  const switchTheme = (mode: ThemeModeType) => {
     const systemMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (mode === ThemeModeType.DARK || (mode === ThemeModeType.SYSTEM && systemMode)) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-    localStorage.setItem('theme-mode', mode);
-    setThemeMode(mode);
+    setTheme(mode);
   };
 
   const getIcon = (item: ThemeModeType, size = 14) => {
@@ -39,18 +38,17 @@ const ThemeMode = () => {
   };
 
   useEffect(() => {
-    const mode = localStorage.getItem('theme-mode');
-    switchDarkMode((mode as ThemeModeType) || ThemeModeType.SYSTEM);
+    switchTheme(theme);
   }, []);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="w-8 h-8 p-0 hover:bg-accent hover:text-accent-foreground">{getIcon(themeMode, 18)}</Button>
+        <Button className="hover:bg-accent hover:text-accent-foreground h-8 w-8 p-0">{getIcon(theme, 18)}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={'end'} className="w-20 bg-white">
         {[ThemeModeType.LIGHT, ThemeModeType.DARK, ThemeModeType.SYSTEM].map((item) => (
-          <DropdownMenuItem className="flex items-center gap-2" key={item} onClick={() => switchDarkMode(item)}>
+          <DropdownMenuItem className="flex items-center gap-2" key={item} onClick={() => switchTheme(item)}>
             {getIcon(item)} {t(item)}
           </DropdownMenuItem>
         ))}
@@ -61,17 +59,16 @@ const ThemeMode = () => {
 
 const SystemLanguages = () => {
   const { t, i18n } = useTranslation();
-  const [languageMode, setLanguageMode] = useState(LanguagesType.ZH);
+  const [language, setLanguage] = useAppStore((state) => [state.language, state.setLanguage]);
 
-  const switchLanguageMode = (mode: LanguagesType) => {
+  const switchLanguage = (mode: LanguagesType) => {
     localStorage.setItem('language-mode', mode);
     i18n.changeLanguage(mode);
-    setLanguageMode(mode);
+    setLanguage(mode);
   };
 
   useEffect(() => {
-    const mode = localStorage.getItem('language-mode');
-    switchLanguageMode((mode as LanguagesType) || LanguagesType.ZH);
+    switchLanguage(language);
   }, []);
 
   return (
@@ -85,8 +82,8 @@ const SystemLanguages = () => {
         {[LanguagesType.ZH, LanguagesType.EN].map((item) => (
           <DropdownMenuCheckboxItem
             className="flex items-center gap-2"
-            checked={languageMode === item}
-            onClick={() => switchLanguageMode(item)}
+            checked={language === item}
+            onClick={() => switchLanguage(item)}
             key={item}
           >
             {t(item)}
@@ -133,13 +130,13 @@ export default function Header() {
     navigate('/chat');
   };
   return (
-    <div className="px-2 py-3 flex justify-between items-center gap-4">
-      <button className="flex gap-4 items-center text-lg font-semibold" onClick={() => handleNavToChat()}>
+    <div className="flex items-center justify-between gap-4 px-2 py-3">
+      <button className="flex items-center gap-4 text-lg font-semibold" onClick={() => handleNavToChat()}>
         <img src="https://cdn.cblink.net/aiyaaa/ai-yaaa-logo.png" className="w-8 rounded-full " />
         GPT Link Web
       </button>
 
-      <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-4">
         <SystemLanguages />
         <ThemeMode />
         <UserDropDown />

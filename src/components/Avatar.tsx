@@ -1,18 +1,16 @@
 import { useTranslation } from 'react-i18next';
-import React from 'react';
 import classNames from 'classnames';
+import { useUserStore } from '@/store';
 
-const Avatar = React.forwardRef(({ time, className }: { time?: number; className?: string }, ref) => {
+const Avatar = ({ time, className }: { time?: number; className?: string }) => {
   const { t } = useTranslation();
+  const [nickName, avatar] = useUserStore((state) => [state.nickName, state.avatar]);
+
   return (
     <div className={classNames('flex items-center gap-2 text-sm', className)}>
-      <img
-        className="w-8 h-8 rounded-full"
-        src="https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIm0q06mdqTumC0zFkOCRUAPRWSeId450ViaEAgvYKDHUvGFq33WZPdgGbRgY28PBAic8OOxpcHtOAg/132"
-        alt=""
-      />
+      <img className="h-8 w-8 rounded-full" src={avatar} alt="" />
       <div>
-        PengYYY
+        {nickName}
         {time && (
           <div className="text-sm text-slate-500">
             {t('valid times')}: {time}
@@ -21,6 +19,6 @@ const Avatar = React.forwardRef(({ time, className }: { time?: number; className
       </div>
     </div>
   );
-});
+};
 
 export default Avatar;

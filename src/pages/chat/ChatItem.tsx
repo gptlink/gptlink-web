@@ -35,8 +35,8 @@ export const ChatItem = ({ role }: { role: string }) => {
           >
             111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
           </div>
-          <div className="text-sm flex-shrink-0">
-            {role === 'assistant' && <RefreshCcwIcon className="hover:cursor-pointer mb-1" size={12} />}
+          <div className="shrink-0 text-sm">
+            {role === 'assistant' && <RefreshCcwIcon className="mb-1 hover:cursor-pointer" size={12} />}
             <CopyIcon className="hover:cursor-pointer" size={12} />
           </div>
         </div>

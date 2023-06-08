@@ -1,6 +1,6 @@
 export default function Pay() {
   return (
-    <div className="p-10 bg-red-400">
+    <div className="bg-red-400 p-10">
       <h2>Pay Page</h2>
     </div>
   );

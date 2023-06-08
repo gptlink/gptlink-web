@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../../components/ui/dialog';
+} from '@/components/ui/dialog';
 
 export function PrivacyProtocol({ children }: { children: React.ReactNode }) {
   return (

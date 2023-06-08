@@ -7,7 +7,7 @@
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "prettier:write": "prettier --write",
+    "prettier:write": "prettier --write \"**/*.{ts,tsx,html}\" --cache",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -18,7 +18,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^12.3.1",
-    "react-router-dom": "^6.11.2"
+    "react-router-dom": "^6.11.2",
+    "zustand": "^4.3.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.5",
@@ -65,6 +66,7 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "npm run prettier:write",
+      "npm run lint --fix",
       "git add ."
     ]
   }

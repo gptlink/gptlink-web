@@ -3,7 +3,7 @@ import Header from './Header';
 
 const App = () => {
   return (
-    <div className="bg-white dark:bg-gray-900 dark:text-slate-100 h-screen flex flex-col p-4 pt-0 text-sm">
+    <div className="flex h-screen flex-col bg-white p-4 pt-0 text-sm dark:bg-gray-900 dark:text-slate-100">
       <Header />
       <Outlet />
     </div>

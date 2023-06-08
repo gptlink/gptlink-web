@@ -1,10 +1,11 @@
 import { createBrowserRouter } from 'react-router-dom';
-import Login from '../pages/login';
-import Chat from '../pages/chat';
-import User from '../pages/user';
-import Pay from '../pages/pay';
-import Layout from '../layout/index';
-import ErrorPage from '../pages/error-page';
+
+import Login from '@/pages/login';
+import Chat from '@/pages/chat';
+import User from '@/pages/user';
+import Pay from '@/pages/pay';
+import Layout from '@/layout/index';
+import ErrorPage from '@/pages/error-page';
 
 const router = createBrowserRouter([
   {

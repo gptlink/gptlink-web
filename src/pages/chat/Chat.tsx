@@ -3,12 +3,12 @@ import { SendIcon, Trash2Icon } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="p-4 flex gap-4 items-center">
+    <footer className="flex items-center gap-4 p-4">
       <button>
         <Trash2Icon />
       </button>
       <input
-        className="flex-1 h-10 p-4 leading-8 border rounded"
+        className="h-10 flex-1 rounded border p-4 leading-8"
         type="text"
         placeholder="来说点什么...（Shift + Enter = 换行）"
       />
@@ -21,7 +21,7 @@ const Footer = () => {
 
 const ChatBody = () => {
   return (
-    <main className="flex-1 overflow-auto scrollbar-track-red-100 w-full max-w-screen-xl m-auto p-4 scroll-bar-none">
+    <main className="scrollbar-track-red-100 scroll-bar-none m-auto w-full max-w-screen-xl flex-1 overflow-auto p-4">
       {Array.from({ length: 10 }).map((_, index) => (
         <ChatItem key={index} role={index % 2 === 0 ? 'user' : 'assistant'} />
       ))}
@@ -31,7 +31,7 @@ const ChatBody = () => {
 
 const Chat = () => {
   return (
-    <div className="flex flex-col w-full h-full overflow-hidden">
+    <div className="flex h-full w-full flex-col overflow-hidden">
       <ChatBody />
       <Footer />
     </div>
