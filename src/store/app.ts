@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import { StoreKey } from '../constant';
+import { StoreKey } from '../constants';
 
 export enum ThemeModeType {
   DARK = 'dark',

@@ -1,27 +1,44 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { StoreKey } from '../constant';
+import { StoreKey } from '../constants';
 
-interface UserState {
+type UserInfo = {
   nickName: string;
   avatar: string;
+};
+
+interface UserState {
+  access_token: string;
+  userInfo: UserInfo;
+  setUserInfo: (val: UserInfo) => void;
+  setAccessToken: (val: string) => void;
 }
 
 const initialState = {
-  nickName: 'PengYYY',
-  avatar:
-    'https://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIm0q06mdqTumC0zFkOCRUAPRWSeId450ViaEAgvYKDHUvGFq33WZPdgGbRgY28PBAic8OOxpcHtOAg/132',
+  access_token: '',
+  userInfo: {
+    nickName: '',
+    avatar: '',
+  },
 };
 
 export const useUserStore = create<UserState>()(
   persist(
     (set) => ({
       ...initialState,
-
-      getUserInfo: () => set({}),
+      setUserInfo: (val: UserInfo) =>
+        set({
+          userInfo: val,
+        }),
+      setAccessToken: (val: string) => {
+        localStorage.setItem(StoreKey.ACCESS_TOKEN, val);
+        set({
+          access_token: val,
+        });
+      },
     }),
     {
-      name: StoreKey.Config,
+      name: StoreKey.User,
     },
   ),
 );

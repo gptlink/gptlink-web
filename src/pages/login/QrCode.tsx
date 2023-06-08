@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader } from '@/components/ui/dialog';
 
 type QrCodeProps = {
   open: boolean;
@@ -11,9 +11,12 @@ export function QrCode({ open, qrCode, handleOpenChange }: QrCodeProps) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>隐私协议</DialogTitle>
-          <DialogDescription className="h-3/4">
-            <iframe className="m-auto h-96 overflow-hidden" src={qrCode} />
+          <DialogDescription>
+            <iframe
+              className="m-auto	 h-[30rem] w-full overflow-hidden py-8"
+              src={qrCode}
+              sandbox="allow-scripts allow-top-navigation"
+            />
           </DialogDescription>
         </DialogHeader>
       </DialogContent>

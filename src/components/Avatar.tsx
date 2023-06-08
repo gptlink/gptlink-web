@@ -4,7 +4,7 @@ import { useUserStore } from '@/store';
 
 const Avatar = ({ time, className }: { time?: number; className?: string }) => {
   const { t } = useTranslation();
-  const [nickName, avatar] = useUserStore((state) => [state.nickName, state.avatar]);
+  const [{ nickName, avatar }] = useUserStore((state) => [state.userInfo]);
 
   return (
     <div className={classNames('flex items-center gap-2 text-sm', className)}>

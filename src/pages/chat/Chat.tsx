@@ -21,7 +21,7 @@ const Footer = () => {
 
 const ChatBody = () => {
   return (
-    <main className="scrollbar-track-red-100 scroll-bar-none m-auto w-full max-w-screen-xl flex-1 overflow-auto p-4">
+    <main className="scroll-bar-none m-auto w-full max-w-screen-xl flex-1 overflow-auto p-4">
       {Array.from({ length: 10 }).map((_, index) => (
         <ChatItem key={index} role={index % 2 === 0 ? 'user' : 'assistant'} />
       ))}

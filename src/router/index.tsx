@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
+import { authLoader } from '@/middleware/auth';
 
 import Login from '@/pages/login';
 import Chat from '@/pages/chat';
@@ -12,6 +13,7 @@ const router = createBrowserRouter([
     path: '/',
     element: <Layout />,
     errorElement: <ErrorPage />,
+    loader: () => authLoader(),
     children: [
       {
         path: 'chat',

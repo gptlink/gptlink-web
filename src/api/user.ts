@@ -1,5 +1,13 @@
 import request from '@/utils/request';
 
-export const getWxQrCode = (type: string, redirectUrl: string) => {
-  return request(`https://api.gpt-link.com/wechat/weixinweb/qrcode?type=${type}&redirect_url=${redirectUrl}`);
+export default {
+  getWxQrCode(type: string, redirectUrl: string) {
+    return request(`wechat/${type}/qrcode?type=${type}&redirect_url=${redirectUrl}`);
+  },
+  getUserInfoByCode(type: string, code: string) {
+    return request(`wechat/${type}/login`, { method: 'post', body: JSON.stringify({ code, type, share_openid: '' }) });
+  },
+  getUserProfile() {
+    return request(`user/profile`);
+  },
 };

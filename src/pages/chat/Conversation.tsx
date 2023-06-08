@@ -1,8 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { LogOutIcon, MessageSquare, Edit2Icon, Trash2 } from 'lucide-react';
+import { useChatStore, RoleType } from '@/store';
 
 import Avatar from '../../components/Avatar';
 import SvgIcon from '../../components/SvgIcon';
+import { useEffect } from 'react';
 
 const ConversationList = () => {
   const { t } = useTranslation();
@@ -29,20 +31,20 @@ const ConversationList = () => {
   );
 };
 
-const RoleList = () => {
+const RoleList = ({ data }: { data: RoleType[] }) => {
   const { t } = useTranslation();
   return (
     <div className="flex h-64 flex-col gap-4">
       <div className="text-center leading-8">—— {t('role')} ——</div>
       <div className="grid grid-cols-2 gap-4 px-4 last:overflow-auto">
-        {Array.from({ length: 10 }).map((_, index) => (
+        {data.map((item, index) => (
           <div
-            className="flex h-fit items-center gap-1 rounded border p-3 text-center text-sm hover:cursor-pointer hover:bg-neutral-100"
+            className="flex h-fit items-center gap-1 rounded border p-3 text-center hover:cursor-pointer hover:bg-neutral-100"
             key={index}
           >
-            <SvgIcon icon="mdi:book-account-outline" className="shrink-0 text-base" />
-            <span className="truncate" title="周报周报周报周报周报">
-              周报周报周报周报周报
+            <SvgIcon icon={item.icon} className="shrink-0" />
+            <span className="truncate" title={item.name}>
+              {item.name}
             </span>
           </div>
         ))}
@@ -52,10 +54,16 @@ const RoleList = () => {
 };
 
 const Conversation = () => {
+  const [roleList, getRoleList] = useChatStore((state) => [state.roleList, state.getRoleList]);
+
+  useEffect(() => {
+    getRoleList();
+  }, []);
+
   return (
     <aside className="flex w-64 shrink-0 flex-col gap-4 overflow-hidden border-r text-xs dark:border-gray-950">
       <ConversationList />
-      <RoleList />
+      <RoleList data={roleList} />
       <div className="flex items-center justify-between border-t p-4">
         <Avatar time={100} />
         <button>
