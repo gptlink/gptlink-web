@@ -10,4 +10,7 @@ export default {
   getUserProfile() {
     return request(`user/profile`);
   },
+  getUserBill() {
+    return request(`user/bill-package`);
+  },
 };

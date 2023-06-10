@@ -1,5 +1,14 @@
 import { create } from 'zustand';
-import chatService from '@/api/chat';
+import { persist } from 'zustand/middleware';
+
+import { StoreKey } from '../constants';
+
+export type ChatType = {
+  icon: string;
+  name: string;
+  prompt: string;
+  desc: string;
+};
 
 export type RoleType = {
   icon: string;
@@ -8,19 +17,24 @@ export type RoleType = {
   desc: string;
 };
 
-interface chatState {
-  roleList: RoleType[];
-  getRoleList: () => void;
+interface ChatState {
+  chatList: ChatType[];
 }
 
-const initDat = {
-  roleList: [],
+const initialState = {
+  chatList: [],
 };
 
-export const useChatStore = create<chatState>()((set) => ({
-  ...initDat,
-  getRoleList: async () => {
-    const res = await chatService.getRoleList();
-    set({ roleList: res });
-  },
-}));
+export const useChatStore = create<ChatState>()(
+  persist(
+    (set) => ({
+      ...initialState,
+      setChat(chatList: ChatType[]) {
+        set({ chatList });
+      },
+    }),
+    {
+      name: StoreKey.Config,
+    },
+  ),
+);

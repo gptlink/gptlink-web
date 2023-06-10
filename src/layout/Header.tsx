@@ -1,18 +1,19 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, Link } from 'react-router-dom';
 import { MoonIcon, Sun, Laptop, Languages } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
-import { useAppStore, ThemeModeType, LanguagesType } from '@/store';
+import { useAppStore, ThemeModeType, LanguagesType, useUserStore } from '@/store';
 import Avatar from '@/components/Avatar';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuItem,
   DropdownMenuContent,
-  DropdownMenuCheckboxItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useEffect } from 'react';
 
 const ThemeMode = () => {
   const { t } = useTranslation();
@@ -44,9 +45,11 @@ const ThemeMode = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="hover:bg-accent hover:text-accent-foreground h-8 w-8 p-0">{getIcon(theme, 18)}</Button>
+        <Button variant="ghost" className="h-9 w-9 p-0">
+          {getIcon(theme, 18)}
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={'end'} className="w-20 bg-white">
+      <DropdownMenuContent align={'end'} className="w-30">
         {[ThemeModeType.LIGHT, ThemeModeType.DARK, ThemeModeType.SYSTEM].map((item) => (
           <DropdownMenuItem className="flex items-center gap-2" key={item} onClick={() => switchTheme(item)}>
             {getIcon(item)} {t(item)}
@@ -74,21 +77,18 @@ const SystemLanguages = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size={'sm'}>
-          <Languages />
+        <Button variant="ghost" className="h-9 w-9 p-0">
+          <Languages size={18} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={'end'} className=" bg-white">
-        {[LanguagesType.ZH, LanguagesType.EN].map((item) => (
-          <DropdownMenuCheckboxItem
-            className="flex items-center gap-2"
-            checked={language === item}
-            onClick={() => switchLanguage(item)}
-            key={item}
-          >
-            {t(item)}
-          </DropdownMenuCheckboxItem>
-        ))}
+      <DropdownMenuContent align={'end'}>
+        <DropdownMenuRadioGroup value={language} onValueChange={(val) => switchLanguage(val as LanguagesType)}>
+          {[LanguagesType.ZH, LanguagesType.EN].map((item) => (
+            <DropdownMenuRadioItem className="flex items-center gap-2" value={item} key={item}>
+              {t(item)}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -96,26 +96,24 @@ const SystemLanguages = () => {
 
 const UserDropDown = () => {
   const navigate = useNavigate();
-  const signOut = () => {
+  const [{ nickname, avatar }, signOut] = useUserStore((state) => [state.userInfo, state.signOut]);
+  const handleSignOut = () => {
+    signOut();
     navigate('/login');
-  };
-
-  const navToUser = () => {
-    navigate('/user');
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <div>
-          <Avatar />
-        </div>
+        <Button variant="ghost" className="p-0 px-2">
+          <Avatar avatar={avatar} nickname={nickname} />
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={'end'} className="bg-white">
-        <DropdownMenuItem className="flex items-center gap-2" onClick={() => navToUser()}>
+      <DropdownMenuContent align={'end'}>
+        <DropdownMenuItem className="flex items-center gap-2" onClick={() => navigate('/user')}>
           个人中心
         </DropdownMenuItem>
-        <DropdownMenuItem className="flex items-center gap-2" onClick={() => signOut()}>
+        <DropdownMenuItem className="flex items-center gap-2" onClick={() => handleSignOut()}>
           退出登录
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -130,13 +128,22 @@ export default function Header() {
     navigate('/chat');
   };
   return (
-    <div className="flex items-center justify-between gap-4 px-2 py-3">
-      <button className="flex items-center gap-4 text-lg font-semibold" onClick={() => handleNavToChat()}>
-        <img src="https://cdn.cblink.net/aiyaaa/ai-yaaa-logo.png" className="w-8 rounded-full " />
-        GPT Link Web
-      </button>
+    <div className="flex items-center justify-between border-b px-4 py-3">
+      <div className="flex items-center">
+        <button className="flex items-center gap-4 text-lg font-semibold" onClick={() => handleNavToChat()}>
+          <img src="https://cdn.cblink.net/aiyaaa/ai-yaaa-logo.png" className="w-8 rounded-full" />
+          GPT Link Web
+        </button>
+        <div className="mx-4 h-6 w-[1px] bg-slate-300"></div>
+        <Button variant={'ghost'}>
+          <Link to={'user'}>个人中心</Link>
+        </Button>
+        <Button variant={'ghost'}>
+          <Link to={'billing'}>充值中心</Link>
+        </Button>
+      </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         <SystemLanguages />
         <ThemeMode />
         <UserDropDown />

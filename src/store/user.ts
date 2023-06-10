@@ -3,8 +3,9 @@ import { persist } from 'zustand/middleware';
 import { StoreKey } from '../constants';
 
 type UserInfo = {
-  nickName: string;
+  nickname: string;
   avatar: string;
+  identity: number[];
 };
 
 interface UserState {
@@ -12,13 +13,15 @@ interface UserState {
   userInfo: UserInfo;
   setUserInfo: (val: UserInfo) => void;
   setAccessToken: (val: string) => void;
+  signOut: () => void;
 }
 
 const initialState = {
   access_token: '',
   userInfo: {
-    nickName: '',
+    nickname: '',
     avatar: '',
+    identity: [],
   },
 };
 
@@ -26,15 +29,14 @@ export const useUserStore = create<UserState>()(
   persist(
     (set) => ({
       ...initialState,
-      setUserInfo: (val: UserInfo) =>
-        set({
-          userInfo: val,
-        }),
+      setUserInfo: (val: UserInfo) => set({ userInfo: val }),
       setAccessToken: (val: string) => {
-        localStorage.setItem(StoreKey.ACCESS_TOKEN, val);
-        set({
-          access_token: val,
-        });
+        localStorage.setItem(StoreKey.AccessToken, val);
+        set({ access_token: val });
+      },
+      signOut() {
+        set({ ...initialState });
+        localStorage.removeItem(StoreKey.AccessToken);
       },
     }),
     {

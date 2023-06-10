@@ -1,10 +1,12 @@
-import { createBrowserRouter } from 'react-router-dom';
-import { authLoader } from '@/middleware/auth';
+import { createBrowserRouter, redirect } from 'react-router-dom';
+
+import { StoreKey } from '@/constants';
 
 import Login from '@/pages/login';
 import Chat from '@/pages/chat';
 import User from '@/pages/user';
-import Pay from '@/pages/pay';
+import Billing from '@/pages/billing';
+import Developer from '@/pages/developer';
 import Layout from '@/layout/index';
 import ErrorPage from '@/pages/error-page';
 
@@ -13,19 +15,29 @@ const router = createBrowserRouter([
     path: '/',
     element: <Layout />,
     errorElement: <ErrorPage />,
-    loader: () => authLoader(),
+    loader: () => {
+      if (!localStorage.getItem(StoreKey.AccessToken)) {
+        return redirect('/login');
+      }
+      return null;
+    },
     children: [
       {
         path: 'chat',
         element: <Chat />,
+        index: true,
       },
       {
         path: 'user',
         element: <User />,
       },
       {
-        path: 'pay',
-        element: <Pay />,
+        path: 'billing',
+        element: <Billing />,
+      },
+      {
+        path: 'developer',
+        element: <Developer />,
       },
     ],
   },

@@ -1,10 +1,13 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LogOutIcon, MessageSquare, Edit2Icon, Trash2 } from 'lucide-react';
-import { useChatStore, RoleType } from '@/store';
 
-import Avatar from '../../components/Avatar';
-import SvgIcon from '../../components/SvgIcon';
-import { useEffect } from 'react';
+import { RoleType, useBillingStore, useUserStore } from '@/store';
+import chatService from '@/api/chat';
+
+import Avatar from '@/components/Avatar';
+import SvgIcon from '@/components/SvgIcon';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const ConversationList = () => {
   const { t } = useTranslation();
@@ -54,9 +57,15 @@ const RoleList = ({ data }: { data: RoleType[] }) => {
 };
 
 const Conversation = () => {
-  const [roleList, getRoleList] = useChatStore((state) => [state.roleList, state.getRoleList]);
+  const [roleList, setRoleList] = useState([]);
+  const [remaining] = useBillingStore((state) => [state.remaining()]);
+  const [{ nickname, avatar }] = useUserStore((state) => [state.userInfo]);
 
   useEffect(() => {
+    const getRoleList = async () => {
+      const res = await chatService.getRoleList();
+      setRoleList(res);
+    };
     getRoleList();
   }, []);
 
@@ -65,10 +74,19 @@ const Conversation = () => {
       <ConversationList />
       <RoleList data={roleList} />
       <div className="flex items-center justify-between border-t p-4">
-        <Avatar time={100} />
-        <button>
-          <LogOutIcon />
-        </button>
+        <Avatar showRemaining remaining={remaining} avatar={avatar} nickname={nickname} />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button>
+                <LogOutIcon />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent className="bg-black text-white">
+              <p>退出登录</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </aside>
   );
