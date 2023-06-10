@@ -8,9 +8,12 @@ export default {
     return request(`wechat/${type}/login`, { method: 'post', body: JSON.stringify({ code, type, share_openid: '' }) });
   },
   getUserProfile() {
-    return request(`user/profile`);
+    return request('user/profile');
   },
   getUserBill() {
-    return request(`user/bill-package`);
+    return request('user/bill-package');
+  },
+  getUserPackages() {
+    return request('user/package/record');
   },
 };

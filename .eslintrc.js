@@ -12,7 +12,6 @@ module.exports = {
   plugins: ['react-refresh', 'tailwindcss'],
   rules: {
     'react-refresh/only-export-components': 'warn',
-    'tailwindcss/no-custom-classname': 'off',
     'react-hooks/exhaustive-deps': 'off',
     '@typescript-eslint/no-var-requires': 'off',
   },

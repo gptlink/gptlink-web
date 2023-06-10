@@ -72,42 +72,40 @@ export default function User() {
 
   return (
     <div className="flex h-screen items-center justify-center">
-      <div className="mx-auto w-[32rem] rounded-xl border p-10 shadow-xl">
-        <div className="mx-auto flex max-w-5xl items-center gap-4">
+      <div className="w-[32rem] -translate-y-3 rounded-xl border p-10 shadow-xl">
+        <div className="flex max-w-5xl items-center gap-4 text-secondary-foreground">
           <img className="h-12 w-12 rounded-full" src={userInfo.avatar} />
-          <h1 className="truncate text-2xl font-bold text-gray-900">{userInfo.nickname}</h1>
+          <h1 className="truncate text-2xl font-bold">{userInfo.nickname}</h1>
         </div>
 
-        <div className="mt-4 flex items-center rounded-lg border border-slate-600 p-3">
+        <div className="mt-4 flex items-center rounded-lg border-2 p-3">
           <div className="flex-1 items-center text-base font-bold">
             {remaining > 0 ? `🎉 有效次数：${remaining}次` : '可用余额不足'}
           </div>
-          <Button variant={'outline'} size={'sm'} onClick={() => navigate('/billing')}>
+          <Button size={'sm'} onClick={() => navigate('/billing')}>
             去充值
           </Button>
         </div>
 
-        <div className="mt-4 flex items-center rounded-lg border border-slate-600 p-3">
+        <div className="mt-4 flex items-center rounded-lg border-2 p-3">
           <div className="flex-1 items-center text-sm font-bold">
             {!userInfo.identity.includes(2) ? '未申请开发者' : '🤖️ 开发者'}
           </div>
-          <Button variant={'outline'} size={'sm'}>
-            {!userInfo.identity.includes(2) ? '成为开发者' : '重置key'}
-          </Button>
+          <Button size={'sm'}>{!userInfo.identity.includes(2) ? '成为开发者' : '重置key'}</Button>
         </div>
 
         <div className="mt-4">
           <div className="text-base font-semibold">任务列表</div>
           <div className="mt-4 flex flex-col gap-2">
             {taskList.map((item, index) => (
-              <div key={index} className="rounded-lg bg-black p-3 text-white shadow">
+              <div key={index} className="rounded-lg bg-primary p-3 text-primary-foreground">
                 <div className="flex items-center gap-4">
                   {getTypeActionButton(item.type).icon}
                   <div className="flex-1">
                     <div className="flex-1 truncate text-base font-medium">{item.title}</div>
                     <p className="mt-1 truncate text-xs">{item.desc}</p>
                   </div>
-                  <Button className="rounded-full bg-white text-black" size={'sm'}>
+                  <Button variant={'secondary'} size={'sm'}>
                     {item.is_completed
                       ? getTypeActionButton(item.type).completed
                       : getTypeActionButton(item.type).button}

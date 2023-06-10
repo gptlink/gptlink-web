@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { MoonIcon, Sun, Laptop, Languages } from 'lucide-react';
 
 import { useAppStore, ThemeModeType, LanguagesType, useUserStore } from '@/store';
 import Avatar from '@/components/Avatar';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -49,7 +50,7 @@ const ThemeMode = () => {
           {getIcon(theme, 18)}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={'end'} className="w-30">
+      <DropdownMenuContent align={'end'} className="w-32">
         {[ThemeModeType.LIGHT, ThemeModeType.DARK, ThemeModeType.SYSTEM].map((item) => (
           <DropdownMenuItem className="flex items-center gap-2" key={item} onClick={() => switchTheme(item)}>
             {getIcon(item)} {t(item)}
@@ -104,7 +105,7 @@ const UserDropDown = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="p-0 px-2">
           <Avatar avatar={avatar} nickname={nickname} />
         </Button>
@@ -127,6 +128,20 @@ export default function Header() {
   const handleNavToChat = () => {
     navigate('/chat');
   };
+
+  const location = useLocation();
+
+  const navList = [
+    {
+      path: 'user',
+      name: '个人中心',
+    },
+    {
+      path: 'billing',
+      name: '充值中心',
+    },
+  ];
+
   return (
     <div className="flex items-center justify-between border-b px-4 py-3">
       <div className="flex items-center">
@@ -134,13 +149,12 @@ export default function Header() {
           <img src="https://cdn.cblink.net/aiyaaa/ai-yaaa-logo.png" className="w-8 rounded-full" />
           GPT Link Web
         </button>
-        <div className="mx-4 h-6 w-[1px] bg-slate-300"></div>
-        <Button variant={'ghost'}>
-          <Link to={'user'}>个人中心</Link>
-        </Button>
-        <Button variant={'ghost'}>
-          <Link to={'billing'}>充值中心</Link>
-        </Button>
+        <Separator className="mx-4 h-6" orientation="vertical" />
+        {navList.map((item, index) => (
+          <Button variant={location.pathname.includes(item.path) ? 'default' : 'ghost'} key={index}>
+            <Link to={item.path}>{item.name}</Link>
+          </Button>
+        ))}
       </div>
 
       <div className="flex items-center gap-2">
@@ -151,3 +165,21 @@ export default function Header() {
     </div>
   );
 }
+
+export const PlainHeader = () => {
+  return (
+    <div className="flex items-center justify-between border-b px-4 py-3">
+      <div className="flex items-center">
+        <button className="flex items-center gap-4 text-lg font-semibold">
+          <img src="https://cdn.cblink.net/aiyaaa/ai-yaaa-logo.png" className="w-8 rounded-full" />
+          GPT Link Web
+        </button>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <SystemLanguages />
+        <ThemeMode />
+      </div>
+    </div>
+  );
+};

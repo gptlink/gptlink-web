@@ -6,7 +6,6 @@ import Login from '@/pages/login';
 import Chat from '@/pages/chat';
 import User from '@/pages/user';
 import Billing from '@/pages/billing';
-import Developer from '@/pages/developer';
 import Layout from '@/layout/index';
 import ErrorPage from '@/pages/error-page';
 
@@ -34,10 +33,6 @@ const router = createBrowserRouter([
       {
         path: 'billing',
         element: <Billing />,
-      },
-      {
-        path: 'developer',
-        element: <Developer />,
       },
     ],
   },

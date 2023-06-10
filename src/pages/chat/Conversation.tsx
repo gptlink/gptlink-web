@@ -8,28 +8,32 @@ import chatService from '@/api/chat';
 import Avatar from '@/components/Avatar';
 import SvgIcon from '@/components/SvgIcon';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const ConversationList = () => {
   const { t } = useTranslation();
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <button className="m-4 shrink-0 rounded border border-dashed text-sm leading-8 hover:border-gray-950">
-        + {t('new conversation')}
-      </button>
-      <div className="flex flex-1 flex-col gap-4 overflow-auto px-4">
-        {Array.from({ length: 10 }).map((_, index) => (
-          <div
-            className="flex h-fit w-full items-center gap-2 rounded border p-3 hover:cursor-pointer hover:bg-neutral-100"
-            key={index}
-            title="对话一对话一对话一对话一对话一对话一对话一对话一对话一对话一"
-          >
-            <MessageSquare size={14}></MessageSquare>
-            <span className="flex-1 truncate">对话一对话一对话一对话一对话一对话一对话一对话一对话一对话一</span>
-            <Edit2Icon size={14}></Edit2Icon>
-            <Trash2 size={14}></Trash2>
-          </div>
-        ))}
-      </div>
+      <Button className="m-4 shrink-0 leading-8">+ {t('new conversation')}</Button>
+
+      <ScrollArea>
+        <div className="flex w-64 flex-1 flex-col gap-4 overflow-auto px-4">
+          {Array.from({ length: 10 }).map((_, index) => (
+            <Button
+              variant={'outline'}
+              className="flex gap-2"
+              key={index}
+              title="对话一对话一对话一对话一对话一对话一对话一对话一对话一对话一"
+            >
+              <MessageSquare size={14}></MessageSquare>
+              <span className="flex-1 truncate">对话一对话一对话一对话一对话一对话一对话一对话一对话一对话一</span>
+              <Edit2Icon size={14}></Edit2Icon>
+              <Trash2 size={14}></Trash2>
+            </Button>
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   );
 };
@@ -39,19 +43,18 @@ const RoleList = ({ data }: { data: RoleType[] }) => {
   return (
     <div className="flex h-64 flex-col gap-4">
       <div className="text-center leading-8">—— {t('role')} ——</div>
-      <div className="grid grid-cols-2 gap-4 px-4 last:overflow-auto">
-        {data.map((item, index) => (
-          <div
-            className="flex h-fit items-center gap-1 rounded border p-3 text-center hover:cursor-pointer hover:bg-neutral-100"
-            key={index}
-          >
-            <SvgIcon icon={item.icon} className="shrink-0" />
-            <span className="truncate" title={item.name}>
-              {item.name}
-            </span>
-          </div>
-        ))}
-      </div>
+      <ScrollArea>
+        <div className="grid grid-cols-2 gap-2 px-4 last:overflow-auto">
+          {data.map((item, index) => (
+            <Button variant={'outline'} className="flex	h-fit items-center justify-start gap-1 px-2" key={index}>
+              <SvgIcon icon={item.icon} className="shrink-0" />
+              <span className="truncate" title={item.name}>
+                {item.name}
+              </span>
+            </Button>
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   );
 };
@@ -82,7 +85,7 @@ const Conversation = () => {
                 <LogOutIcon />
               </button>
             </TooltipTrigger>
-            <TooltipContent className="bg-black text-white">
+            <TooltipContent className="bg-primary text-primary-foreground">
               <p>退出登录</p>
             </TooltipContent>
           </Tooltip>

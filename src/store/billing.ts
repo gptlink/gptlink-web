@@ -8,6 +8,7 @@ type BillType = {
 };
 
 export type PackageType = {
+  id: number;
   name: string;
   price: number;
   identity: number;
