@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LogOutIcon, MessageSquare, Edit2Icon, Trash2 } from 'lucide-react';
 
-import { RoleType, useBillingStore, useUserStore } from '@/store';
+import { RoleType, useBillingStore, useUserStore, useChatStore } from '@/store';
 import chatService from '@/api/chat';
 
 import Avatar from '@/components/Avatar';
@@ -13,23 +13,42 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 const ConversationList = () => {
   const { t } = useTranslation();
+  const [conversationList, currentConversation, addConversation, switchConversation, delConversation] = useChatStore(
+    (state) => [
+      state.conversationList,
+      state.currentConversation,
+      state.addConversation,
+      state.switchConversation,
+      state.delConversation,
+    ],
+  );
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <Button className="m-4 shrink-0 leading-8">+ {t('new conversation')}</Button>
+      <Button variant={'outline'} className="m-4 shrink-0 border-dashed leading-8" onClick={() => addConversation()}>
+        + {t('new conversation')}
+      </Button>
 
       <ScrollArea>
         <div className="flex w-64 flex-1 flex-col gap-4 overflow-auto px-4">
-          {Array.from({ length: 10 }).map((_, index) => (
+          {conversationList.map((item, index) => (
             <Button
-              variant={'outline'}
+              variant={currentConversation.uuid === item.uuid ? 'default' : 'outline'}
               className="flex gap-2"
               key={index}
-              title="对话一对话一对话一对话一对话一对话一对话一对话一对话一对话一"
+              title={item.title}
+              onClick={() => switchConversation(item.uuid)}
             >
-              <MessageSquare size={14}></MessageSquare>
-              <span className="flex-1 truncate">对话一对话一对话一对话一对话一对话一对话一对话一对话一对话一</span>
+              {item.icon ? <SvgIcon icon={item.icon} /> : <MessageSquare size={14}></MessageSquare>}
+              <p className="flex-1 truncate text-left">{item.title}</p>
               <Edit2Icon size={14}></Edit2Icon>
-              <Trash2 size={14}></Trash2>
+              <Trash2
+                size={14}
+                onClick={(e) => {
+                  delConversation(item.uuid);
+                  e.stopPropagation();
+                }}
+              ></Trash2>
             </Button>
           ))}
         </div>
@@ -40,13 +59,20 @@ const ConversationList = () => {
 
 const RoleList = ({ data }: { data: RoleType[] }) => {
   const { t } = useTranslation();
+  const [addConversation] = useChatStore((state) => [state.addConversation]);
+
   return (
     <div className="flex h-64 flex-col gap-4">
       <div className="text-center leading-8">—— {t('role')} ——</div>
       <ScrollArea>
-        <div className="grid grid-cols-2 gap-2 px-4 last:overflow-auto">
+        <div className="grid grid-cols-2 gap-2 px-4">
           {data.map((item, index) => (
-            <Button variant={'outline'} className="flex	h-fit items-center justify-start gap-1 px-2" key={index}>
+            <Button
+              variant={'outline'}
+              className="flex	h-fit items-center justify-start gap-1 px-2"
+              key={index}
+              onClick={() => addConversation(item.name, item.icon, item.prompt)}
+            >
               <SvgIcon icon={item.icon} className="shrink-0" />
               <span className="truncate" title={item.name}>
                 {item.name}

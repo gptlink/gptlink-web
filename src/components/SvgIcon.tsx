@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react';
 
-const SvgIcon = ({ icon, className }: { icon: string; className: string }) => {
+const SvgIcon = ({ icon = '', className = '' }) => {
   return <Icon icon={icon} className={className} />;
 };
 

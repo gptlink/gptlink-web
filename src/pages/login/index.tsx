@@ -49,7 +49,7 @@ export default function Login() {
     <div className="flex h-screen flex-col">
       <PlainHeader />
       <div className="flex h-screen flex-1 items-center justify-center">
-        <div className="flex w-[32rem] -translate-y-10 flex-col items-center rounded-xl border bg-white pb-20 pt-10 shadow">
+        <div className="flex w-[32rem] -translate-y-10 flex-col items-center rounded-xl border pb-20 pt-10 shadow">
           <img src="https://cdn.cblink.net/aiyaaa/ai-yaaa-logo.png" className="mb-4 w-36 rounded-full" />
           <div className="mt-4 text-xl font-bold"> 人 . 机 . 对话 </div>
           <Button className="mb-4 mt-12 w-[60%]" disabled={!protocolChecked} onClick={handleLogin}>

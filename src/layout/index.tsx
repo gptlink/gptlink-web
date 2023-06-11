@@ -20,7 +20,7 @@ const App = () => {
   useAuth();
 
   return (
-    <div className="flex h-screen flex-col bg-white text-sm dark:bg-gray-900 dark:text-slate-100">
+    <div className="flex h-screen flex-col ">
       <Header />
       <Outlet />
       <Toaster />

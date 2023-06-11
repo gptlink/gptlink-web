@@ -88,7 +88,7 @@ export default function User() {
         </div>
 
         <div className="mt-4 flex items-center rounded-lg border-2 p-3">
-          <div className="flex-1 items-center text-sm font-bold">
+          <div className="flex-1 items-center text-base font-bold">
             {!userInfo.identity.includes(2) ? '未申请开发者' : '🤖️ 开发者'}
           </div>
           <Button size={'sm'}>{!userInfo.identity.includes(2) ? '成为开发者' : '重置key'}</Button>
