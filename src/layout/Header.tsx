@@ -151,7 +151,7 @@ export default function Header() {
         </button>
         <Separator className="mx-4 h-6" orientation="vertical" />
         {navList.map((item, index) => (
-          <Button variant={location.pathname.includes(item.path) ? 'default' : 'ghost'} key={index}>
+          <Button className="mr-1" variant={location.pathname.includes(item.path) ? 'default' : 'ghost'} key={index}>
             <Link to={item.path}>{item.name}</Link>
           </Button>
         ))}

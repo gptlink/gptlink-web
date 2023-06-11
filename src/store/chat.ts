@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
 import { StoreKey } from '@/constants';
+import { streamAPI } from '../utils/stream-api';
 
 export type ConversationType = {
   icon: string;
@@ -106,14 +107,35 @@ export const useChatStore = create<ChatState>()(
           ...chatData,
           { text: message, role: RoleTypeEnum.USER, dateTime: new Date().toISOString() },
         ];
+
         const chatDataMap = get().chatDataMap;
-        chatDataMap[get().currentConversation.uuid] = newChatData;
+        const currentConversationId = get().currentConversation.uuid;
+        chatDataMap[currentConversationId] = newChatData;
+
         set({ chatDataMap, isStream: true });
+
+        streamAPI.send({
+          message: message,
+          onProgress: (data) => {
+            chatDataMap[currentConversationId] = [
+              ...newChatData,
+              { text: data, role: RoleTypeEnum.ASSISTANT, dateTime: new Date().toISOString() },
+            ];
+            set({ chatDataMap });
+          },
+          onFinish: () => {
+            set({ isStream: false });
+          },
+          onError: () => {
+            console.log(123);
+          },
+        });
       },
       currentChatData() {
         return get().chatDataMap[get().currentConversation.uuid] || [];
       },
       stopStream() {
+        streamAPI.abort();
         set({ isStream: false });
       },
     }),

@@ -26,8 +26,16 @@ const Footer = () => {
 
   return (
     <footer className="flex items-center gap-4 p-4">
-      <Button variant={'ghost'} className="h-9 w-9 shrink-0 rounded-full p-0" disabled={isStream}>
-        <Trash2Icon size={16} onClick={() => clearCurrentConversation()} />
+      <Button
+        variant={'ghost'}
+        className="h-9 w-9 shrink-0 rounded-full p-0"
+        disabled={isStream}
+        onClick={() => {
+          clearCurrentConversation();
+          setUserInput('');
+        }}
+      >
+        <Trash2Icon size={16} />
       </Button>
       <div className="relative flex-1">
         {isStream && (
@@ -46,17 +54,14 @@ const Footer = () => {
           onChange={(val) => setUserInput(val.target.value)}
         />
       </div>
-      <Button disabled={isStream || !userInput}>
-        {!isStream ? (
-          <SendIcon
-            onClick={() => {
-              sendUserMessage(userInput);
-              setUserInput('');
-            }}
-          />
-        ) : (
-          <Loader2 className="m-auto my-32 animate-spin" />
-        )}
+      <Button
+        disabled={isStream || !userInput}
+        onClick={() => {
+          sendUserMessage(userInput);
+          setUserInput('');
+        }}
+      >
+        {!isStream ? <SendIcon /> : <Loader2 className="m-auto my-32 animate-spin" />}
       </Button>
     </footer>
   );

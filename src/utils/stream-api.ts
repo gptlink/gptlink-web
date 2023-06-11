@@ -1,33 +1,30 @@
-import request from './request';
-export const statusEnum = {
-  pending: 'pending',
-  start: 'start',
-  work: 'work',
-  completed: 'completed',
-  abort: 'abort',
-};
+import { API_DOMAIN } from './request';
+import { StoreKey } from '@/constants';
+
+export enum statusEnum {
+  START = 'start',
+  PENDING = 'pending',
+  COMPLETED = 'completed',
+  ABORT = 'abort',
+}
 
 type SendMessageType = {
-  systemMessage: string;
-  prompt: string;
   message: string;
-  model_id: string;
-  request_id: string;
+  model_id?: string;
+  request_id?: string;
   onProgress: (_: string) => void;
   onFinish: (_: string) => void;
   onError: (_: string) => void;
 };
 
-export default class StreamOpenAi extends EventTarget {
+export default class StreamAPI {
   private _status: string;
   constructor() {
-    super();
-    this._status = statusEnum.pending;
+    this._status = statusEnum.ABORT;
   }
 
   set status(status) {
     this._status = status;
-    this.dispatchEvent(new CustomEvent('status', { detail: status }));
   }
 
   get status() {
@@ -35,14 +32,20 @@ export default class StreamOpenAi extends EventTarget {
   }
 
   abort() {
-    this.status = statusEnum.abort;
+    this.status = statusEnum.ABORT;
   }
 
   async send({ message, model_id, request_id, onProgress, onFinish, onError }: SendMessageType) {
-    this.status = statusEnum.start;
+    this.status = statusEnum.START;
 
-    const response = await request('/openai/chat-process', {
+    const access_token = localStorage.getItem(StoreKey.AccessToken);
+
+    const response = await fetch(`${API_DOMAIN}/openai/chat-process`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${access_token}`,
+      },
       body: JSON.stringify({
         message,
         model_id,
@@ -52,19 +55,19 @@ export default class StreamOpenAi extends EventTarget {
 
     if (!response.ok) {
       onError(`${response.status}:请求过于频繁，请稍等一分钟再试`);
-      this.status = statusEnum.pending;
+      this.status = statusEnum.ABORT;
       return;
     }
 
     const data = response.body;
     if (!data) {
       onError(`${response.status}:没有响应数据，请重试`);
-      this.status = statusEnum.pending;
+      this.status = statusEnum.ABORT;
       return;
     }
 
-    if (this.status === statusEnum.start) {
-      this.status = statusEnum.work;
+    if (this.status === statusEnum.START) {
+      this.status = statusEnum.PENDING;
     }
 
     const reader = data.getReader();
@@ -73,23 +76,27 @@ export default class StreamOpenAi extends EventTarget {
 
     let resChunkValue = '';
 
-    while (!done && this.status === statusEnum.work) {
+    while (!done && this.status === statusEnum.PENDING) {
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
 
       const chunkValue = decoder.decode(value);
 
+      resChunkValue = chunkValue;
+
       try {
-        resChunkValue += chunkValue;
-        onProgress(resChunkValue);
-      } catch {
-        console.log(123);
+        const res = JSON.parse(`[${chunkValue.substring(0, chunkValue.length - 1)}]`);
+        onProgress(res[0].messages);
+      } catch (e) {
+        console.log(e);
       }
     }
 
     if (done) {
-      this.status = statusEnum.completed;
+      this.status = statusEnum.COMPLETED;
       onFinish(resChunkValue);
     }
   }
 }
+
+export const streamAPI = new StreamAPI();
