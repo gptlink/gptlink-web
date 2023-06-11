@@ -1,9 +1,7 @@
-import { SendIcon, Trash2Icon } from 'lucide-react';
 import { useState } from 'react';
-import { Loader2, PauseOctagon } from 'lucide-react';
+import { Loader2, PauseOctagon, SendIcon, Trash2Icon } from 'lucide-react';
 
 import { useChatStore } from '@/store';
-
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';

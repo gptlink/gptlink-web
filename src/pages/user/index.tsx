@@ -2,28 +2,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Share2Icon, CheckCircleIcon, MessageSquare, UserPlus2 } from 'lucide-react';
 
-import TaskService from '@/api/task';
+import TaskService, { TaskType, TaskTypeEnums } from '@/api/task';
 import { useUserStore, useBillingStore } from '@/store';
 import { Button } from '@/components/ui/button';
+
 import { DeveloperApplyDialog } from './DeveloperApplyDialog';
-
-enum TaskTypeEnums {
-  REGISTER = 'register',
-  CHECK = 'check',
-  INVITE = 'invite',
-  SHARE = 'share',
-  GROUP = 'group',
-  FOLLOW = 'follow',
-}
-
-type TaskType = {
-  type: TaskTypeEnums;
-  title: string;
-  desc: string;
-  is_completed: boolean;
-  is_subscribe: boolean;
-  model_count: 0;
-};
 
 const TypeActionMap = {
   [TaskTypeEnums.INVITE]: {
@@ -62,7 +45,7 @@ export default function User() {
 
   useEffect(() => {
     const getTaskList = async () => {
-      const res = await TaskService.getTaskList<TaskType[]>(1);
+      const res = await TaskService.getTaskList(1);
       setTaskList(res.filter((val) => val.type !== TaskTypeEnums.REGISTER));
     };
     getTaskList();

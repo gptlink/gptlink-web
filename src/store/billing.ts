@@ -1,18 +1,5 @@
 import { create } from 'zustand';
-import userService from '@/api/user';
-
-type BillType = {
-  name: string;
-  num: number;
-  used: number;
-};
-
-export type PackageType = {
-  id: number;
-  name: string;
-  price: number;
-  identity: number;
-};
+import userService, { BillType } from '@/api/user';
 
 interface BillState {
   currentBill: BillType | null;

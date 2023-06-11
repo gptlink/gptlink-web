@@ -1,15 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
-
-import { StoreKey } from '../constants';
-
-export type RoleType = {
-  icon: string;
-  name: string;
-  prompt: string;
-  desc: string;
-};
+import { StoreKey } from '@/constants';
 
 export type ConversationType = {
   icon: string;

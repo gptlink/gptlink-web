@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LogOutIcon, MessageSquare, Edit2Icon, Trash2 } from 'lucide-react';
 
-import { RoleType, useBillingStore, useUserStore, useChatStore } from '@/store';
-import chatService from '@/api/chat';
-
+import chatService, { RoleType } from '@/api/chat';
+import { useBillingStore, useUserStore, useChatStore } from '@/store';
 import Avatar from '@/components/Avatar';
 import SvgIcon from '@/components/SvgIcon';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const ConversationList = () => {
   const { t } = useTranslation();
@@ -86,7 +85,7 @@ const RoleList = ({ data }: { data: RoleType[] }) => {
 };
 
 const Conversation = () => {
-  const [roleList, setRoleList] = useState([]);
+  const [roleList, setRoleList] = useState<RoleType[]>([]);
   const [remaining] = useBillingStore((state) => [state.remaining()]);
   const [{ nickname, avatar }] = useUserStore((state) => [state.userInfo]);
 

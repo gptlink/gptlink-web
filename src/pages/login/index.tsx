@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 
 import { LoginType } from '@/constants';
-import userServices from '@/api/user';
 import { useUserStore } from '@/store';
+import userServices from '@/api/user';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PlainHeader } from '@/layout/Header';

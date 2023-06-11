@@ -1,12 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { StoreKey } from '../constants';
-
-type UserInfo = {
-  nickname: string;
-  avatar: string;
-  identity: number[];
-};
+import { UserInfo } from '@/api/user';
 
 interface UserState {
   access_token: string;

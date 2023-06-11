@@ -1,8 +1,9 @@
 import classNames from 'classnames';
 import { RefreshCcwIcon, CopyIcon } from 'lucide-react';
+import dayjs from 'dayjs';
+
 import { useUserStore, RoleTypeEnum, ChatItemType } from '@/store';
 import { Markdown } from '@/components/Markdown';
-import dayjs from 'dayjs';
 
 export const ChatItem = ({ data }: { data: ChatItemType }) => {
   const [userInfo] = useUserStore((state) => [state.userInfo]);

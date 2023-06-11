@@ -1,24 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Loader2, CheckCircle2Icon } from 'lucide-react';
 
-import { PackageType, useBillingStore } from '@/store';
-import billingService from '@/api/billing';
+import { useBillingStore } from '@/store';
+import { useToast } from '@/hooks/use-toast';
+import billingService, { PackageType, PayInfoType, Channel, PayType } from '@/api/billing';
 import SvgIcon from '@/components/SvgIcon';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useToast } from '@/hooks/use-toast';
 
 import { BillingRecordsDialog } from './BillingRecords';
 import { PayDialog } from './PayDialog';
 
 let payStatusInterval = 0;
-
-export type PayInfoType = {
-  id: number;
-  code_url: string;
-  price: string;
-} | null;
 
 export default function Billing() {
   const [billingPackage, setBillingPackage] = useState<PackageType[]>([]);
@@ -26,7 +20,7 @@ export default function Billing() {
   const [payDialogShow, setPayDialogShow] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [redemptionCode, setRedemptionCode] = useState('');
-  const [payInfo, setPayInfo] = useState<PayInfoType>(null);
+  const [payInfo, setPayInfo] = useState<PayInfoType | null>(null);
   const [getCurrentBilling] = useBillingStore((state) => [state.getCurrentBilling]);
   const { toast } = useToast();
 
@@ -62,25 +56,17 @@ export default function Billing() {
   const handlePay = async (item: PackageType) => {
     const res = await billingService.orderBilling({
       package_id: item.id,
-      channel: 'wechat',
-      pay_type: 'NATIVE',
+      channel: Channel.WECHAT,
+      pay_type: PayType.NATIVE,
       platform: 1,
     });
     setPayDialogShow(true);
 
-    const {
-      id,
-      data: { code_url },
-      price,
-    } = await billingService.billingPayDetail(res.id);
-    setPayInfo({
-      id,
-      code_url,
-      price,
-    });
+    const payInfoRes = await billingService.billingPayDetail(res.id);
+    setPayInfo(payInfoRes);
 
     payStatusInterval = setInterval(async () => {
-      const { status } = await billingService.billingDetail(id);
+      const { status } = await billingService.billingDetail(payInfoRes.id);
       if (status == 2) {
         toast({
           title: '成功',

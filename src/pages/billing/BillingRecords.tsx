@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
-import userService from '@/api/user';
-
+import userService, { UserPackageType } from '@/api/user';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
@@ -11,15 +10,8 @@ type BillingRecordsDialogProps = {
   handleOpenChange: (val: boolean) => void;
 };
 
-type userPackageType = {
-  num: number;
-  package_name: string;
-  created_at: string;
-  type: number;
-};
-
 export function BillingRecordsDialog({ open, handleOpenChange }: BillingRecordsDialogProps) {
-  const [userPackages, setUserPackages] = useState<userPackageType[]>([]);
+  const [userPackages, setUserPackages] = useState<UserPackageType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

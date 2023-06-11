@@ -1,12 +1,12 @@
 import { Loader2 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 
+import { PayInfoType } from '@/api/billing';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { PayInfoType } from './index';
 
 type PayDialogProps = {
   open: boolean;
-  payInfo: PayInfoType;
+  payInfo: PayInfoType | null;
   handleOpenChange: (val: boolean) => void;
 };
 
@@ -26,7 +26,7 @@ export function PayDialog({ open, payInfo, handleOpenChange }: PayDialogProps) {
                     width: '16rem',
                     height: '16rem',
                   }}
-                  value={payInfo.code_url}
+                  value={payInfo.data.code_url}
                 />
               </div>
             ) : (
