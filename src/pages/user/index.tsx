@@ -5,6 +5,7 @@ import { Share2Icon, CheckCircleIcon, MessageSquare, UserPlus2 } from 'lucide-re
 import TaskService from '@/api/task';
 import { useUserStore, useBillingStore } from '@/store';
 import { Button } from '@/components/ui/button';
+import { DeveloperApplyDialog } from './DeveloperApplyDialog';
 
 enum TaskTypeEnums {
   REGISTER = 'register',
@@ -56,6 +57,7 @@ export default function User() {
   const [taskList, setTaskList] = useState<TaskType[]>([]);
   const [userInfo] = useUserStore((state) => [state.userInfo]);
   const [remaining] = useBillingStore((state) => [state.remaining()]);
+  const [developerApplyShow, setDeveloperApplyShow] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -91,7 +93,14 @@ export default function User() {
           <div className="flex-1 items-center text-base font-bold">
             {!userInfo.identity.includes(2) ? '未申请开发者' : '🤖️ 开发者'}
           </div>
-          <Button size={'sm'}>{!userInfo.identity.includes(2) ? '成为开发者' : '重置key'}</Button>
+          <Button
+            size={'sm'}
+            onClick={() => {
+              setDeveloperApplyShow(true);
+            }}
+          >
+            {!userInfo.identity.includes(2) ? '成为开发者' : '重置key'}
+          </Button>
         </div>
 
         <div className="mt-4">
@@ -116,6 +125,7 @@ export default function User() {
           </div>
         </div>
       </div>
+      <DeveloperApplyDialog open={developerApplyShow} handleOpenChange={(val) => setDeveloperApplyShow(val)} />
     </div>
   );
 }
