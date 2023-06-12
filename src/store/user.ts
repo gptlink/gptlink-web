@@ -1,12 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { StoreKey } from '../constants';
-import { UserInfo } from '@/api/user';
+import { UserInfoType } from '@/api/user';
 
 interface UserState {
   access_token: string;
-  userInfo: UserInfo;
-  setUserInfo: (val: UserInfo) => void;
+  userInfo: UserInfoType;
+  setUserInfo: (val: UserInfoType) => void;
   setAccessToken: (val: string) => void;
   signOut: () => void;
 }
@@ -24,7 +24,7 @@ export const useUserStore = create<UserState>()(
   persist(
     (set) => ({
       ...initialState,
-      setUserInfo: (val: UserInfo) => set({ userInfo: val }),
+      setUserInfo: (val: UserInfoType) => set({ userInfo: val }),
       setAccessToken: (val: string) => {
         localStorage.setItem(StoreKey.AccessToken, val);
         set({ access_token: val });
