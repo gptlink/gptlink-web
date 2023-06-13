@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Loader2, CheckCircle2Icon } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 import { useBillingStore } from '@/store';
-import { useToast } from '@/hooks/use-toast';
 import billingService, { PackageType, PayInfoType, Channel, PayType } from '@/api/billing';
 import SvgIcon from '@/components/SvgIcon';
 import { Input } from '@/components/ui/input';
@@ -22,7 +22,6 @@ export default function Billing() {
   const [redemptionCode, setRedemptionCode] = useState('');
   const [payInfo, setPayInfo] = useState<PayInfoType | null>(null);
   const [getCurrentBilling] = useBillingStore((state) => [state.getCurrentBilling]);
-  const { toast } = useToast();
 
   useEffect(() => {
     const getBillingPackage = async () => {
@@ -37,17 +36,10 @@ export default function Billing() {
   const handleExchangeRedemptionCode = async () => {
     try {
       await billingService.exchangeRedemptionCode(redemptionCode);
-      toast({
-        title: '成功',
-        description: '兑换成功',
-      });
+      toast.success('兑换成功');
       getCurrentBilling();
     } catch (e) {
-      toast({
-        variant: 'destructive',
-        title: '失败',
-        description: e as string,
-      });
+      toast.error(e as string);
     } finally {
       setRedemptionCode('');
     }
@@ -68,10 +60,7 @@ export default function Billing() {
     payStatusInterval = setInterval(async () => {
       const { status } = await billingService.billingDetail(payInfoRes.id);
       if (status == 2) {
-        toast({
-          title: '成功',
-          description: '支付成功',
-        });
+        toast.success('支付成功');
         setPayDialogShow(false);
         setPayInfo(null);
       }
@@ -87,7 +76,7 @@ export default function Billing() {
     <ScrollArea>
       <div className="mx-auto max-w-7xl flex-1 overflow-auto px-6 py-12">
         {isLoading ? (
-          <Loader2 className="m-auto my-32 animate-spin" />
+          <Loader2 className="m-auto my-16 animate-spin" />
         ) : (
           <div className="flex flex-wrap justify-between sm:grid sm:max-w-none sm:grid-cols-2 sm:gap-6 sm:space-y-0 lg:mx-auto lg:max-w-4xl xl:mx-0 xl:max-w-none xl:grid-cols-4">
             {billingPackage.map((item, index) => (

@@ -86,7 +86,9 @@ export default class StreamAPI {
 
       try {
         const res = JSON.parse(`[${chunkValue.substring(0, chunkValue.length - 1)}]`);
-        onProgress(res[0].messages);
+        if (res[0]) {
+          onProgress(res[0].messages);
+        }
       } catch (e) {
         console.log(e);
       }

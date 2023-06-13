@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { MoonIcon, Sun, Laptop, Languages } from 'lucide-react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { MoonIcon, Sun, Laptop, Languages, Github } from 'lucide-react';
 
 import { useAppStore, ThemeModeType, LanguagesType, useUserStore } from '@/store';
 import Avatar from '@/components/Avatar';
@@ -15,6 +15,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import IconSvg from '@/components/Icon';
 
 const ThemeMode = () => {
   const { t } = useTranslation();
@@ -122,8 +123,9 @@ const UserDropDown = () => {
   );
 };
 
-export default function Header() {
+export default function Header({ isPlain = false }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleNavToChat = () => {
     navigate('/chat');
@@ -134,52 +136,45 @@ export default function Header() {
   const navList = [
     {
       path: 'user',
-      name: '个人中心',
+      name: t('user center'),
     },
     {
       path: 'billing',
-      name: '充值中心',
+      name: t('billing center'),
     },
   ];
 
   return (
     <div className="flex items-center justify-between border-b px-4 py-3">
       <div className="flex items-center">
-        <button className="flex items-center gap-4 text-lg font-semibold" onClick={() => handleNavToChat()}>
-          <img src="https://cdn.cblink.net/aiyaaa/ai-yaaa-logo.png" className="w-8 rounded-full" />
-          GPT Link Web
+        <button className="flex items-center gap-2 text-lg font-semibold" onClick={() => handleNavToChat()}>
+          <IconSvg className="h-10 w-10 rounded-full" />
+          GPTLink Web
         </button>
-        <Separator className="mx-4 h-6" orientation="vertical" />
-        {navList.map((item, index) => (
-          <Button className="mr-1" variant={location.pathname.includes(item.path) ? 'default' : 'ghost'} key={index}>
-            <Link to={item.path}>{item.name}</Link>
-          </Button>
-        ))}
+        {!isPlain && (
+          <>
+            <Separator className="mx-4 h-6" orientation="vertical" />
+            {navList.map((item, index) => (
+              <Link to={item.path} key={index}>
+                <Button className="mr-1" variant={location.pathname.includes(item.path) ? 'default' : 'ghost'}>
+                  {item.name}
+                </Button>
+              </Link>
+            ))}
+          </>
+        )}
       </div>
 
       <div className="flex items-center gap-2">
+        <Link to="https://github.com/gptlink/gptlink-web" target="_blank">
+          <Button variant="ghost" className="p-0 px-2">
+            <Github size={18} />
+          </Button>
+        </Link>
         <SystemLanguages />
         <ThemeMode />
-        <UserDropDown />
+        {!isPlain && <UserDropDown />}
       </div>
     </div>
   );
 }
-
-export const PlainHeader = () => {
-  return (
-    <div className="flex items-center justify-between border-b px-4 py-3">
-      <div className="flex items-center">
-        <button className="flex items-center gap-4 text-lg font-semibold">
-          <img src="https://cdn.cblink.net/aiyaaa/ai-yaaa-logo.png" className="w-8 rounded-full" />
-          GPT Link Web
-        </button>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <SystemLanguages />
-        <ThemeMode />
-      </div>
-    </div>
-  );
-};

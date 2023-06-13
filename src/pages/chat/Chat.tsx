@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Loader2, PauseOctagon, SendIcon, Trash2Icon } from 'lucide-react';
 
 import { useChatStore } from '@/store';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import IconSvg from '@/components/Icon';
 
 import { ChatItem } from './ChatItem';
 
+let scrollIntoViewTimeId = -1;
 const Footer = () => {
   const [userInput, setUserInput] = useState('');
   const [sendUserMessage, isStream, clearCurrentConversation, stopStream] = useChatStore((state) => [
@@ -31,8 +33,10 @@ const Footer = () => {
         className="h-9 w-9 shrink-0 rounded-full p-0"
         disabled={isStream}
         onClick={() => {
-          clearCurrentConversation();
-          setUserInput('');
+          if (confirm('你确定要清除所有的消息吗？')) {
+            clearCurrentConversation();
+            setUserInput('');
+          }
         }}
       >
         <Trash2Icon size={16} />
@@ -68,12 +72,38 @@ const Footer = () => {
 };
 
 const ChatBody = () => {
-  const [currentChatData] = useChatStore((state) => [state.currentChatData()]);
+  const [isStream, currentChatData] = useChatStore((state) => [state.isStream, state.currentChatData()]);
+
+  const bottom = useRef<HTMLDivElement>(null);
+
+  const scrollLastMessageIntoView = (behavior: ScrollBehavior = 'smooth') => {
+    if (!bottom.current) return;
+    bottom.current.scrollIntoView({ behavior, block: 'end' });
+  };
+
+  useEffect(() => {
+    scrollLastMessageIntoView('auto');
+  }, []);
+
+  useEffect(() => {
+    if (isStream) {
+      scrollIntoViewTimeId = setInterval(() => {
+        scrollLastMessageIntoView();
+      }, 1000);
+    } else {
+      clearInterval(scrollIntoViewTimeId);
+    }
+  }, [isStream]);
 
   return (
     <ScrollArea className="flex-1">
-      <main className="m-auto w-full max-w-screen-xl overflow-auto p-4">
-        {currentChatData.length === 0 && <div className="mt-2 w-full text-center">开始提问吧～</div>}
+      <main className="m-auto w-full max-w-screen-xl overflow-auto p-4" ref={bottom}>
+        {currentChatData.length === 0 && (
+          <div className="m-auto mt-2 w-fit text-center text-secondary-foreground">
+            <IconSvg className="mr-1 inline-block w-10" />
+            开始提问吧～
+          </div>
+        )}
         {currentChatData.map((item, index) => (
           <ChatItem key={index} data={item} />
         ))}

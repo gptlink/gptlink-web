@@ -1,24 +1,32 @@
 import classNames from 'classnames';
 import { RefreshCcwIcon, CopyIcon } from 'lucide-react';
 import dayjs from 'dayjs';
+import toast from 'react-hot-toast';
 
 import { useUserStore, RoleTypeEnum, ChatItemType } from '@/store';
+import { copyToClipboard } from '@/utils';
 import { Markdown } from '@/components/Markdown';
+import IconSvg from '@/components/Icon';
 
 export const ChatItem = ({ data }: { data: ChatItemType }) => {
   const [userInfo] = useUserStore((state) => [state.userInfo]);
 
+  const handleCopy = () => {
+    copyToClipboard(data.text);
+    toast.success('已复制到剪贴板');
+  };
+
   return (
     <div
-      className={classNames('p-3 rounded h-fit flex gap-4 items-start w-full flex-1 mb-6', {
+      className={classNames('p-3 rounded h-fit flex gap-4 items-start w-full flex-1 mb-6 last-of-type:mb-0', {
         'flex-row-reverse': data.role === RoleTypeEnum.USER,
       })}
     >
-      <img
-        className="w-10 rounded-full"
-        src={data.role === 'user' ? userInfo.avatar : 'https://cdn.cblink.net/aiyaaa/ai-yaaa-logo.png'}
-      />
-
+      {data.role === RoleTypeEnum.USER ? (
+        <img className="h-10 w-10 rounded-full border" src={userInfo.avatar} />
+      ) : (
+        <IconSvg className="h-10 w-10 rounded-full border p-1.5" />
+      )}
       <div
         className={classNames('flex-1 items-start flex flex-col overflow-hidden', {
           'items-end': data.role === RoleTypeEnum.USER,
@@ -45,7 +53,7 @@ export const ChatItem = ({ data }: { data: ChatItemType }) => {
             {[RoleTypeEnum.ASSISTANT, RoleTypeEnum.SYSTEM].includes(data.role) && (
               <RefreshCcwIcon className="mb-1 hover:cursor-pointer" size={12} />
             )}
-            <CopyIcon className="hover:cursor-pointer" size={12} />
+            <CopyIcon className="hover:cursor-pointer" size={12} onClick={handleCopy} />
           </div>
         </div>
       </div>

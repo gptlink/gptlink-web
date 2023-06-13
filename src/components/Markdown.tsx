@@ -1,5 +1,6 @@
 import { useRef, ReactNode } from 'react';
 import { Copy } from 'lucide-react';
+import toast from 'react-hot-toast';
 import ReactMarkdown from 'react-markdown';
 import RehypeHighlight from 'rehype-highlight';
 import RehypeKatex from 'rehype-katex';
@@ -16,7 +17,7 @@ export function PreCode(props: { children: ReactNode }) {
   const ref = useRef<HTMLPreElement>(null);
 
   return (
-    <pre ref={ref} className="group relative mt-2 rounded bg-primary/90 py-2 text-primary-foreground">
+    <pre ref={ref} className="group relative mt-2 rounded bg-primary/90 p-2 text-primary-foreground">
       <Button
         title="复制"
         variant={'secondary'}
@@ -25,6 +26,7 @@ export function PreCode(props: { children: ReactNode }) {
           if (ref.current) {
             const code = ref.current.innerText;
             copyToClipboard(code);
+            toast.success('已复制到剪贴板');
           }
         }}
       >

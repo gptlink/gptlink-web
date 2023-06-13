@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
+
 import { useBillingStore } from '@/store';
 import useAuth from '@/hooks/use-auth';
-import { Toaster } from '@/components/ui/toaster';
 
 import Header from './Header';
 
@@ -23,7 +23,6 @@ const App = () => {
     <div className="flex h-screen flex-col ">
       <Header />
       <Outlet />
-      <Toaster />
     </div>
   );
 };

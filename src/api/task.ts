@@ -2,11 +2,8 @@ import request from '@/utils/request';
 
 export enum TaskTypeEnums {
   REGISTER = 'register',
-  CHECK = 'check',
   INVITE = 'invite',
   SHARE = 'share',
-  GROUP = 'group',
-  FOLLOW = 'follow',
 }
 
 export interface TaskType {

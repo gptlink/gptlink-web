@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Share2Icon, CheckCircleIcon, MessageSquare, UserPlus2 } from 'lucide-react';
+import { Share2Icon, UserPlus2 } from 'lucide-react';
 
 import TaskService, { TaskType, TaskTypeEnums } from '@/api/task';
 import { useUserStore, useBillingStore } from '@/store';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 import { DeveloperApplyDialog } from './DeveloperApplyDialog';
 
@@ -14,25 +15,10 @@ const TypeActionMap = {
     icon: <UserPlus2 />,
     completed: '已邀请',
   },
-  [TaskTypeEnums.CHECK]: {
-    button: '签到',
-    icon: <CheckCircleIcon />,
-    completed: '已签到',
-  },
   [TaskTypeEnums.SHARE]: {
     button: '立即分享',
     icon: <Share2Icon />,
     completed: '立即分享',
-  },
-  [TaskTypeEnums.GROUP]: {
-    button: '进群',
-    icon: <MessageSquare />,
-    completed: '已完成',
-  },
-  [TaskTypeEnums.FOLLOW]: {
-    button: '进群',
-    icon: <MessageSquare />,
-    completed: '已完成',
   },
 };
 
@@ -88,24 +74,26 @@ export default function User() {
 
         <div className="mt-4">
           <div className="text-base font-semibold">任务列表</div>
-          <div className="mt-4 flex flex-col gap-2">
-            {taskList.map((item, index) => (
-              <div key={index} className="rounded-lg bg-primary p-3 text-primary-foreground">
-                <div className="flex items-center gap-4">
-                  {getTypeActionButton(item.type).icon}
-                  <div className="flex-1">
-                    <div className="flex-1 truncate text-base font-medium">{item.title}</div>
-                    <p className="mt-1 truncate text-xs">{item.desc}</p>
+          <ScrollArea className="mt-4 max-h-[24rem] min-h-[20rem] overflow-auto">
+            <div className="flex flex-col gap-2">
+              {taskList.map((item, index) => (
+                <div key={index} className="rounded-lg bg-primary p-3 text-primary-foreground">
+                  <div className="flex items-center gap-4">
+                    {getTypeActionButton(item.type).icon}
+                    <div className="flex-1">
+                      <div className="flex-1 truncate text-base font-medium">{item.title}</div>
+                      <p className="mt-1 truncate text-xs">{item.desc}</p>
+                    </div>
+                    <Button variant={'secondary'} size={'sm'}>
+                      {item.is_completed
+                        ? getTypeActionButton(item.type).completed
+                        : getTypeActionButton(item.type).button}
+                    </Button>
                   </div>
-                  <Button variant={'secondary'} size={'sm'}>
-                    {item.is_completed
-                      ? getTypeActionButton(item.type).completed
-                      : getTypeActionButton(item.type).button}
-                  </Button>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollArea>
         </div>
       </div>
       <DeveloperApplyDialog open={developerApplyShow} handleOpenChange={(val) => setDeveloperApplyShow(val)} />

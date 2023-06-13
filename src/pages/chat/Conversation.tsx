@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LogOutIcon, MessageSquare, Edit2Icon, Trash2 } from 'lucide-react';
+import { LogOutIcon, MessageSquare, PlusCircle, Edit2Icon, Trash2, X, Check } from 'lucide-react';
 
 import chatService, { RoleType } from '@/api/chat';
 import { useBillingStore, useUserStore, useChatStore } from '@/store';
@@ -12,20 +12,36 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 const ConversationList = () => {
   const { t } = useTranslation();
-  const [conversationList, currentConversation, addConversation, switchConversation, delConversation] = useChatStore(
-    (state) => [
-      state.conversationList,
-      state.currentConversation,
-      state.addConversation,
-      state.switchConversation,
-      state.delConversation,
-    ],
-  );
+  const [
+    conversationList,
+    currentConversation,
+    addConversation,
+    switchConversation,
+    delConversation,
+    editConversation,
+  ] = useChatStore((state) => [
+    state.conversationList,
+    state.currentConversation,
+    state.addConversation,
+    state.switchConversation,
+    state.delConversation,
+    state.editConversation,
+  ]);
+
+  const [editTitle, setEditTitle] = useState('');
+  const [inEditId, setInEditId] = useState('');
+
+  const handleEditConversation = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+    setInEditId('');
+    setEditTitle('');
+    editConversation(inEditId, { title: editTitle });
+    e.stopPropagation();
+  };
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       <Button variant={'outline'} className="m-4 shrink-0 border-dashed leading-8" onClick={() => addConversation()}>
-        + {t('new conversation')}
+        <PlusCircle size={16} className="mr-2" /> {t('new conversation')}
       </Button>
 
       <ScrollArea>
@@ -33,21 +49,56 @@ const ConversationList = () => {
           {conversationList.map((item, index) => (
             <Button
               variant={currentConversation.uuid === item.uuid ? 'default' : 'outline'}
-              className="flex gap-2"
+              className="flex justify-start gap-2 px-3"
               key={index}
               title={item.title}
               onClick={() => switchConversation(item.uuid)}
             >
-              {item.icon ? <SvgIcon icon={item.icon} /> : <MessageSquare size={14}></MessageSquare>}
-              <p className="flex-1 truncate text-left">{item.title}</p>
-              <Edit2Icon size={14}></Edit2Icon>
-              <Trash2
-                size={14}
-                onClick={(e) => {
-                  delConversation(item.uuid);
-                  e.stopPropagation();
-                }}
-              ></Trash2>
+              {item.icon ? (
+                <SvgIcon className="shrink-0" icon={item.icon} />
+              ) : (
+                <MessageSquare className="shrink-0" size={14}></MessageSquare>
+              )}
+              {inEditId === item.uuid ? (
+                <>
+                  <input
+                    value={editTitle}
+                    autoFocus
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="flex-1 overflow-hidden rounded-sm px-2 text-secondary-foreground outline-none"
+                  />
+                  <X
+                    className="shrink-0"
+                    size={14}
+                    onClick={() => {
+                      setInEditId('');
+                      setEditTitle('');
+                    }}
+                  />
+                  <Check className="shrink-0" size={14} onClick={handleEditConversation} />
+                </>
+              ) : (
+                <>
+                  <p className="flex-1 truncate text-left">{item.title}</p>
+                  <Edit2Icon
+                    size={14}
+                    onClick={(e) => {
+                      setInEditId(item.uuid);
+                      setEditTitle(item.title);
+                      e.stopPropagation();
+                    }}
+                  />
+                  <Trash2
+                    size={14}
+                    onClick={(e) => {
+                      if (confirm('确定删除该对话吗？')) {
+                        delConversation(item.uuid);
+                        e.stopPropagation();
+                      }
+                    }}
+                  />
+                </>
+              )}
             </Button>
           ))}
         </div>
@@ -98,7 +149,7 @@ const Conversation = () => {
   }, []);
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col gap-4 overflow-hidden border-r text-xs dark:border-gray-950">
+    <aside className="flex w-64 shrink-0 flex-col gap-4 overflow-hidden border-r text-xs">
       <ConversationList />
       <RoleList data={roleList} />
       <div className="flex items-center justify-between border-t p-4">

@@ -31,6 +31,7 @@ interface ChatState {
   addConversation: (title?: string, icon?: string, system?: string) => void;
   switchConversation: (id: string) => void;
   clearCurrentConversation: () => void;
+  editConversation: (id: string, data: Partial<ConversationType>) => void;
   delConversation: (id: string) => void;
   sendUserMessage: (message: string) => void;
   currentChatData: () => ChatItemType[];
@@ -83,6 +84,22 @@ export const useChatStore = create<ChatState>()(
           },
         }));
       },
+      editConversation(id: string, data: Partial<ConversationType>) {
+        const newConversationList = get().conversationList.map((item) => {
+          if (item.uuid == id) {
+            return {
+              ...item,
+              ...data,
+            };
+          } else {
+            return item;
+          }
+        });
+
+        set(() => ({
+          conversationList: newConversationList,
+        }));
+      },
       delConversation(id: string) {
         let newConversationList = get().conversationList.filter((item) => item.uuid !== id);
         if (newConversationList.length === 0) {
@@ -90,10 +107,10 @@ export const useChatStore = create<ChatState>()(
         }
         const newChatDataMap = get().chatDataMap;
 
-        delete newChatDataMap.id;
+        newChatDataMap[id] = [];
 
         set(() => ({
-          newChatDataMap,
+          chatDataMap: newChatDataMap,
           conversationList: newConversationList,
         }));
 
