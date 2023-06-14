@@ -1,26 +1,32 @@
 import { API_DOMAIN } from './request';
 import { StoreKey } from '@/constants';
 
-export enum statusEnum {
+export enum StatusEnum {
   START = 'start',
   PENDING = 'pending',
-  COMPLETED = 'completed',
-  ABORT = 'abort',
+  SUCCESS = 'success',
+  ERROR = 'error',
+}
+
+interface StreamResponseType {
+  messages: string;
+  id: string;
 }
 
 type SendMessageType = {
   message: string;
-  model_id?: string;
-  request_id?: string;
-  onProgress: (_: string) => void;
-  onFinish: (_: string) => void;
+  modelId?: string;
+  requestId?: string;
+  lastId?: string;
+  onProgress: (_: StreamResponseType) => void;
+  onFinish: (_: StreamResponseType) => void;
   onError: (_: string) => void;
 };
 
 export default class StreamAPI {
   private _status: string;
   constructor() {
-    this._status = statusEnum.ABORT;
+    this._status = StatusEnum.START;
   }
 
   set status(status) {
@@ -32,11 +38,11 @@ export default class StreamAPI {
   }
 
   abort() {
-    this.status = statusEnum.ABORT;
+    this.status = StatusEnum.ERROR;
   }
 
-  async send({ message, model_id, request_id, onProgress, onFinish, onError }: SendMessageType) {
-    this.status = statusEnum.START;
+  async send({ message, modelId, requestId, lastId, onProgress, onFinish, onError }: SendMessageType) {
+    this.status = StatusEnum.START;
 
     const access_token = localStorage.getItem(StoreKey.AccessToken);
 
@@ -48,46 +54,46 @@ export default class StreamAPI {
       },
       body: JSON.stringify({
         message,
-        model_id,
-        request_id,
+        model_id: modelId,
+        request_id: requestId,
+        last_id: lastId,
       }),
     });
 
     if (!response.ok) {
-      onError(`${response.status}:请求过于频繁，请稍等一分钟再试`);
-      this.status = statusEnum.ABORT;
+      onError('连接失败，请重试');
+      this.status = StatusEnum.ERROR;
       return;
     }
 
     const data = response.body;
     if (!data) {
-      onError(`${response.status}:没有响应数据，请重试`);
-      this.status = statusEnum.ABORT;
+      onError('无响应数据，请重试');
+      this.status = StatusEnum.ERROR;
       return;
     }
 
-    if (this.status === statusEnum.START) {
-      this.status = statusEnum.PENDING;
+    if (this.status === StatusEnum.START) {
+      this.status = StatusEnum.PENDING;
     }
 
     const reader = data.getReader();
     const decoder = new TextDecoder('utf-8');
     let done = false;
 
-    let resChunkValue = '';
+    let resChunkValue;
 
-    while (!done && this.status === statusEnum.PENDING) {
+    while (!done && this.status === StatusEnum.PENDING) {
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
 
       const chunkValue = decoder.decode(value);
 
-      resChunkValue = chunkValue;
-
       try {
         const res = JSON.parse(`[${chunkValue.substring(0, chunkValue.length - 1)}]`);
         if (res[0]) {
-          onProgress(res[0].messages);
+          onProgress(res[0]);
+          resChunkValue = res[0];
         }
       } catch (e) {
         console.log(e);
@@ -95,7 +101,7 @@ export default class StreamAPI {
     }
 
     if (done) {
-      this.status = statusEnum.COMPLETED;
+      this.status = StatusEnum.SUCCESS;
       onFinish(resChunkValue);
     }
   }

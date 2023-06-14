@@ -1,6 +1,7 @@
 import request from '@/utils/request';
 
 export interface RoleType {
+  id: string;
   icon: string;
   name: string;
   prompt: string;

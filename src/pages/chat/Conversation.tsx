@@ -121,7 +121,7 @@ const RoleList = ({ data }: { data: RoleType[] }) => {
               variant={'outline'}
               className="flex	h-fit items-center justify-start gap-1 px-2"
               key={index}
-              onClick={() => addConversation(item.name, item.icon, item.prompt)}
+              onClick={() => addConversation(item.name, item.icon, item.prompt, item.id)}
             >
               <SvgIcon icon={item.icon} className="shrink-0" />
               <span className="truncate" title={item.name}>

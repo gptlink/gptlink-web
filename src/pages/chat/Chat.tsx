@@ -20,7 +20,7 @@ const Footer = () => {
   ]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.code === 'Enter' && !e.shiftKey) {
+    if (e.code === 'Enter' && !e.shiftKey && userInput) {
       sendUserMessage(userInput);
       setUserInput('');
     }
@@ -87,6 +87,7 @@ const ChatBody = () => {
 
   useEffect(() => {
     if (isStream) {
+      scrollLastMessageIntoView();
       scrollIntoViewTimeId = setInterval(() => {
         scrollLastMessageIntoView();
       }, 1000);
