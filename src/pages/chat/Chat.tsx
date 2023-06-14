@@ -2,12 +2,13 @@ import { useState, useRef, useEffect } from 'react';
 import { Loader2, PauseOctagon, SendIcon, Trash2Icon } from 'lucide-react';
 
 import { useChatStore } from '@/store';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import IconSvg from '@/components/Icon';
 
 import { ChatItem } from './ChatItem';
+import classNames from 'classnames';
 
 let scrollIntoViewTimeId = -1;
 const Footer = () => {
@@ -19,12 +20,22 @@ const Footer = () => {
     state.stopStream,
   ]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.code === 'Enter' && !e.shiftKey && userInput) {
       sendUserMessage(userInput);
       setUserInput('');
     }
   };
+
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = '0px';
+      const scrollHeight = textAreaRef.current.scrollHeight;
+      textAreaRef.current.style.height = scrollHeight + 'px';
+    }
+  }, [textAreaRef, userInput]);
 
   return (
     <footer className="flex items-center gap-4 p-4">
@@ -49,8 +60,11 @@ const Footer = () => {
             </Button>
           </div>
         )}
-        <Input
-          className={isStream ? 'blur-sm' : ''}
+        <Textarea
+          ref={textAreaRef}
+          className={classNames('h-10 max-h-64 min-h-[40px] w-full flex-1 resize-none', {
+            'blur-sm': isStream,
+          })}
           onKeyDown={handleKeyDown}
           disabled={isStream}
           value={userInput}

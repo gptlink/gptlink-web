@@ -17,6 +17,7 @@ export interface UserInfoType {
   nickname: string;
   avatar: string;
   identity: number[];
+  openid: string;
 }
 
 export interface UserInfoByCodeType {

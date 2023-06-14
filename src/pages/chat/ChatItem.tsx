@@ -6,12 +6,12 @@ import toast from 'react-hot-toast';
 import { useUserStore, useChatStore, RoleTypeEnum, ChatItemType } from '@/store';
 import { copyToClipboard } from '@/utils';
 import { StatusEnum } from '@/utils/stream-api';
-
 import { Markdown } from '@/components/Markdown';
 import IconSvg from '@/components/Icon';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export const ChatItem = ({ data }: { data: ChatItemType }) => {
-  const [userInfo] = useUserStore((state) => [state.userInfo]);
+  const [{ nickname, avatar }] = useUserStore((state) => [state.userInfo]);
   const [regenerateChat] = useChatStore((state) => [state.regenerateChat]);
 
   const handleCopy = () => {
@@ -36,7 +36,10 @@ export const ChatItem = ({ data }: { data: ChatItemType }) => {
       })}
     >
       {data.role === RoleTypeEnum.USER ? (
-        <img className="h-10 w-10 rounded-full border" src={userInfo.avatar} />
+        <Avatar className="h-10 w-10">
+          <AvatarImage src={avatar} alt={nickname} />
+          <AvatarFallback>{nickname.slice(0, 1)}</AvatarFallback>
+        </Avatar>
       ) : (
         <IconSvg className="h-10 w-10 rounded-full border p-1.5" />
       )}
@@ -62,7 +65,7 @@ export const ChatItem = ({ data }: { data: ChatItemType }) => {
             {renderContent()}
           </div>
           <div className="shrink-0 pb-1 text-sm">
-            {[RoleTypeEnum.ASSISTANT, RoleTypeEnum.SYSTEM].includes(data.role) && (
+            {[RoleTypeEnum.ASSISTANT].includes(data.role) && (
               <RefreshCcwIcon
                 className="mb-1 hover:cursor-pointer"
                 size={12}

@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LogOutIcon, MessageSquare, PlusCircle, Edit2Icon, Trash2, X, Check } from 'lucide-react';
+import { MessageSquare, PlusCircle, Edit2Icon, Trash2, X, Check } from 'lucide-react';
 
 import chatService, { RoleType } from '@/api/chat';
-import { useBillingStore, useUserStore, useChatStore } from '@/store';
-import Avatar from '@/components/Avatar';
+import { useChatStore } from '@/store';
 import SvgIcon from '@/components/SvgIcon';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const ConversationList = () => {
   const { t } = useTranslation();
@@ -137,8 +135,6 @@ const RoleList = ({ data }: { data: RoleType[] }) => {
 
 const Conversation = () => {
   const [roleList, setRoleList] = useState<RoleType[]>([]);
-  const [remaining] = useBillingStore((state) => [state.remaining()]);
-  const [{ nickname, avatar }] = useUserStore((state) => [state.userInfo]);
 
   useEffect(() => {
     const getRoleList = async () => {
@@ -152,21 +148,6 @@ const Conversation = () => {
     <aside className="flex w-64 shrink-0 flex-col gap-4 overflow-hidden border-r text-xs">
       <ConversationList />
       <RoleList data={roleList} />
-      <div className="flex items-center justify-between border-t p-4">
-        <Avatar showRemaining remaining={remaining} avatar={avatar} nickname={nickname} />
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button>
-                <LogOutIcon />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent className="bg-primary text-primary-foreground">
-              <p>退出登录</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
     </aside>
   );
 };

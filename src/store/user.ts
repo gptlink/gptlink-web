@@ -17,6 +17,7 @@ const initialState = {
     nickname: '',
     avatar: '',
     identity: [],
+    openid: '',
   },
 };
 

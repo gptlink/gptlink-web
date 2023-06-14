@@ -4,7 +4,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { MoonIcon, Sun, Laptop, Languages, Github } from 'lucide-react';
 
 import { useAppStore, ThemeModeType, LanguagesType, useUserStore } from '@/store';
-import Avatar from '@/components/Avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -108,7 +108,11 @@ const UserDropDown = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="p-0 px-2">
-          <Avatar avatar={avatar} nickname={nickname} />
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={avatar} alt={nickname} />
+            <AvatarFallback>{nickname.slice(0, 1)}</AvatarFallback>
+          </Avatar>
+          <p className="ml-2">{nickname}</p>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={'end'}>
