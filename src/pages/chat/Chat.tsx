@@ -48,7 +48,7 @@ const Footer = () => {
     <footer className="flex items-end gap-4 p-4">
       <Button
         variant={'ghost'}
-        className="h-9 w-9 shrink-0 rounded-full p-0"
+        className="mb-1 h-9 w-9 shrink-0 rounded-full p-0"
         disabled={isStream}
         onClick={() => {
           if (confirm('你确定要清除所有的消息吗？')) {
