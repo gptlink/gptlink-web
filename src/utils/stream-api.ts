@@ -38,7 +38,7 @@ export default class StreamAPI {
   }
 
   abort() {
-    this.status = StatusEnum.ERROR;
+    this.status = StatusEnum.SUCCESS;
   }
 
   async send({ message, modelId, requestId, lastId, onProgress, onFinish, onError }: SendMessageType) {
@@ -94,13 +94,19 @@ export default class StreamAPI {
         if (res[0]) {
           onProgress(res[0]);
           resChunkValue = res[0];
+        } else {
+          console.log(chunkValue);
         }
       } catch (e) {
-        console.log(e);
+        const res = JSON.parse(chunkValue);
+        if (res.err_code > 0) {
+          onError(res.err_msg);
+          return;
+        }
       }
     }
 
-    if (done) {
+    if (done || this.status === StatusEnum.SUCCESS) {
       this.status = StatusEnum.SUCCESS;
       onFinish(resChunkValue);
     }

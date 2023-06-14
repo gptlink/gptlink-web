@@ -19,4 +19,7 @@ export default {
   getTaskList(platform: number): Promise<TaskType[]> {
     return request(`task?platform=${platform}`);
   },
+  completionTask(type: TaskTypeEnums): Promise<void> {
+    return request('task/completion', { method: 'post', body: JSON.stringify({ type }) });
+  },
 };

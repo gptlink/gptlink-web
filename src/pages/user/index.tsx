@@ -5,12 +5,16 @@ import { Share2Icon, UserPlus2 } from 'lucide-react';
 import TaskService, { TaskType, TaskTypeEnums } from '@/api/task';
 import { useUserStore, useBillingStore } from '@/store';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
+import { ShareDialog } from './ShareDialog';
+import { toast } from 'react-hot-toast';
 
 const TypeActionMap = {
   [TaskTypeEnums.INVITE]: {
     button: '立即邀请',
     icon: <UserPlus2 />,
-    completed: '已邀请',
+    completed: '立即邀请',
   },
   [TaskTypeEnums.SHARE]: {
     button: '立即分享',
@@ -21,8 +25,9 @@ const TypeActionMap = {
 
 export default function User() {
   const [taskList, setTaskList] = useState<TaskType[]>([]);
-  const [userInfo] = useUserStore((state) => [state.userInfo]);
-  const [remaining] = useBillingStore((state) => [state.remaining()]);
+  const [shareDialogShow, setShareDialogShow] = useState(false);
+  const [{ avatar, nickname, openid }] = useUserStore((state) => [state.userInfo]);
+  const [remaining, getCurrentBilling] = useBillingStore((state) => [state.remaining(), state.getCurrentBilling]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,18 +36,33 @@ export default function User() {
       setTaskList(res.filter((val) => val.type !== TaskTypeEnums.REGISTER));
     };
     getTaskList();
+    getCurrentBilling();
   }, []);
 
   const getTypeActionButton = (type: TaskTypeEnums) => {
     return TypeActionMap[type as Exclude<TaskTypeEnums, TaskTypeEnums.REGISTER>];
   };
 
+  const handleClick = async (item: TaskType) => {
+    try {
+      await TaskService.completionTask(item.type);
+      toast.success('任务完成');
+    } catch (e) {
+      toast.error(e as string);
+    }
+
+    setShareDialogShow(true);
+  };
+
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="w-[32rem] -translate-y-3 rounded-xl border p-10 shadow-xl">
         <div className="flex max-w-5xl items-center gap-4 text-secondary-foreground">
-          <img className="h-12 w-12 rounded-full" src={userInfo.avatar} />
-          <h1 className="truncate text-2xl font-bold">{userInfo.nickname}</h1>
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={avatar} alt={nickname} />
+            <AvatarFallback>{nickname.slice(0, 1)}</AvatarFallback>
+          </Avatar>
+          <h1 className="truncate text-3xl font-bold">{nickname}</h1>
         </div>
 
         <div className="mt-4 flex items-center rounded-lg border-2 p-3">
@@ -65,7 +85,7 @@ export default function User() {
                     <div className="flex-1 truncate text-base font-medium">{item.title}</div>
                     <p className="mt-1 truncate text-xs">{item.desc}</p>
                   </div>
-                  <Button variant={'secondary'} size={'sm'}>
+                  <Button variant={'secondary'} size={'sm'} onClick={() => handleClick(item)}>
                     {item.is_completed
                       ? getTypeActionButton(item.type).completed
                       : getTypeActionButton(item.type).button}
@@ -76,6 +96,11 @@ export default function User() {
           </div>
         </div>
       </div>
+      <ShareDialog
+        open={shareDialogShow}
+        shareUrl={location.origin + `/chat?shareOpenId=${openid}`}
+        handleOpenChange={(val) => setShareDialogShow(val)}
+      />
     </div>
   );
 }

@@ -19,7 +19,7 @@ export const useBillingStore = create<BillState>()((set, get) => ({
   },
   remaining: () => {
     const currentBill = get().currentBill;
-    if (!currentBill) return 0;
+    if (!currentBill || !currentBill.num) return 0;
     return currentBill.num - currentBill.used;
   },
 }));

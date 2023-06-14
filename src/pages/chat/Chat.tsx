@@ -21,10 +21,17 @@ const Footer = () => {
   ]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.code === 'Enter' && !e.shiftKey && userInput) {
-      sendUserMessage(userInput);
-      setUserInput('');
+    if (e.code === 'Enter' && !e.shiftKey && userInput.replace(/\n/g, '')) {
+      handleSendUserMessage();
     }
+  };
+
+  const handleSendUserMessage = async () => {
+    sendUserMessage(userInput);
+    setUserInput('');
+    setTimeout(() => {
+      textAreaRef.current?.focus();
+    }, 1000);
   };
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -33,12 +40,12 @@ const Footer = () => {
     if (textAreaRef.current) {
       textAreaRef.current.style.height = '0px';
       const scrollHeight = textAreaRef.current.scrollHeight;
-      textAreaRef.current.style.height = scrollHeight + 'px';
+      textAreaRef.current.style.height = scrollHeight + 4 + 'px';
     }
   }, [textAreaRef, userInput]);
 
   return (
-    <footer className="flex items-center gap-4 p-4">
+    <footer className="flex items-end gap-4 p-4">
       <Button
         variant={'ghost'}
         className="h-9 w-9 shrink-0 rounded-full p-0"
@@ -62,7 +69,7 @@ const Footer = () => {
         )}
         <Textarea
           ref={textAreaRef}
-          className={classNames('h-10 max-h-64 min-h-[40px] w-full flex-1 resize-none', {
+          className={classNames('h-10 max-h-[7rem] min-h-[40px] w-full flex-1 resize-none scroll-bar-none', {
             'blur-sm': isStream,
           })}
           onKeyDown={handleKeyDown}
@@ -73,10 +80,9 @@ const Footer = () => {
         />
       </div>
       <Button
-        disabled={isStream || !userInput}
+        disabled={isStream || !userInput.replace(/\n/g, '')}
         onClick={() => {
-          sendUserMessage(userInput);
-          setUserInput('');
+          handleSendUserMessage();
         }}
       >
         {!isStream ? <SendIcon /> : <Loader2 className="m-auto my-32 animate-spin" />}

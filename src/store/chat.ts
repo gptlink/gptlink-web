@@ -24,7 +24,7 @@ export type ChatItemType = {
   role: RoleTypeEnum;
   dateTime: string;
   messageId?: string;
-  requestId?: string;
+  requestId: string;
   status?: StatusEnum;
 };
 
@@ -39,9 +39,10 @@ interface ChatState {
   editConversation: (id: string, data: Partial<ConversationType>) => void;
   delConversation: (id: string) => void;
   sendUserMessage: (message: string) => void;
-  regenerateChat: (requestId?: string) => void;
+  regenerateChat: (requestId: string) => void;
   currentChatData: () => ChatItemType[];
   stopStream: () => void;
+  chatProgress: (message: string, requestId: string, lastId: string, chatIndex: number) => void;
 }
 
 const DefaultConversation = {
@@ -72,7 +73,9 @@ export const useChatStore = create<ChatState>()(
           currentConversation: newConversation,
           conversationList: [newConversation, ...state.conversationList],
           chatDataMap: {
-            [uuid]: system ? [{ text: system, role: RoleTypeEnum.SYSTEM, dateTime: new Date().toISOString() }] : [],
+            [uuid]: system
+              ? [{ text: system, role: RoleTypeEnum.SYSTEM, dateTime: new Date().toISOString(), requestId: '' }]
+              : [],
             ...state.chatDataMap,
           },
         }));
@@ -125,6 +128,47 @@ export const useChatStore = create<ChatState>()(
           set({ currentConversation: newConversationList[0] });
         }
       },
+      chatProgress(message: string, requestId: string, lastId = '', chatIndex: number) {
+        const currentChatData = get().currentChatData();
+        const chatData = get().currentChatData();
+        const chatDataMap = get().chatDataMap;
+        const currentConversationId = get().currentConversation.uuid;
+        chatDataMap[currentConversationId] = chatData;
+
+        streamAPI.send({
+          message: message,
+          modelId: get().currentConversation.modelId,
+          requestId,
+          lastId,
+          onProgress: (data) => {
+            currentChatData[currentChatData.length - 1] = {
+              text: data.messages,
+              role: RoleTypeEnum.ASSISTANT,
+              status: StatusEnum.PENDING,
+              dateTime: new Date().toISOString(),
+              messageId: data.id,
+              requestId,
+            };
+            set({ chatDataMap });
+          },
+          onFinish: (data) => {
+            currentChatData[chatIndex] = {
+              ...currentChatData[chatIndex],
+              text: data.messages,
+              status: StatusEnum.SUCCESS,
+            };
+            set({ chatDataMap, isStream: false });
+          },
+          onError: (reason) => {
+            currentChatData[chatIndex] = {
+              ...currentChatData[chatIndex],
+              error: reason,
+              status: StatusEnum.ERROR,
+            };
+            set({ chatDataMap, isStream: false });
+          },
+        });
+      },
       sendUserMessage(message: string) {
         const chatData = get().currentChatData();
         const requestId = uuidv4();
@@ -140,46 +184,14 @@ export const useChatStore = create<ChatState>()(
             status: StatusEnum.START,
           },
         ];
-
         const chatDataMap = get().chatDataMap;
         const currentConversationId = get().currentConversation.uuid;
         chatDataMap[currentConversationId] = newChatData;
         set({ chatDataMap, isStream: true });
 
-        const lastId = chatData.filter((item) => item.role === RoleTypeEnum.ASSISTANT)?.pop()?.messageId;
+        const lastId = chatData.filter((item) => item.role === RoleTypeEnum.ASSISTANT)?.pop()?.messageId || '';
 
-        streamAPI.send({
-          message: message,
-          modelId: get().currentConversation.modelId,
-          requestId,
-          lastId,
-          onProgress: (data) => {
-            newChatData[newChatData.length - 1] = {
-              text: data.messages,
-              role: RoleTypeEnum.ASSISTANT,
-              status: StatusEnum.PENDING,
-              dateTime: new Date().toISOString(),
-              messageId: data.id,
-              requestId,
-            };
-            set({ chatDataMap });
-          },
-          onFinish: (data) => {
-            newChatData[newChatData.length - 1] = {
-              ...newChatData[newChatData.length - 1],
-              text: data.messages,
-              status: StatusEnum.SUCCESS,
-            };
-            set({ chatDataMap, isStream: false });
-          },
-          onError: (reason) => {
-            newChatData[newChatData.length - 1] = {
-              ...newChatData[newChatData.length - 1],
-              error: reason,
-              status: StatusEnum.ERROR,
-            };
-          },
-        });
+        get().chatProgress(message, requestId, lastId, newChatData.length - 1);
       },
       regenerateChat(requestId) {
         const chatData = get().currentChatData();
@@ -191,10 +203,11 @@ export const useChatStore = create<ChatState>()(
         );
         const userInputText = chatData[userInputIndex].text;
 
-        const lastId = chatData
-          .slice(0, userInputIndex)
-          .filter((item) => item.role === RoleTypeEnum.ASSISTANT)
-          ?.pop()?.messageId;
+        const lastId =
+          chatData
+            .slice(0, userInputIndex)
+            .filter((item) => item.role === RoleTypeEnum.ASSISTANT)
+            ?.pop()?.messageId || '';
 
         const assistantIndex = chatData.findIndex(
           (item) => item.role === RoleTypeEnum.ASSISTANT && item.requestId === requestId,
@@ -207,44 +220,7 @@ export const useChatStore = create<ChatState>()(
         chatDataMap[currentConversationId] = chatData;
         set({ chatDataMap });
 
-        streamAPI.send({
-          message: userInputText,
-          modelId: get().currentConversation.modelId,
-          requestId,
-          lastId,
-          onProgress: (data) => {
-            chatData[assistantIndex] = {
-              text: data.messages,
-              role: RoleTypeEnum.ASSISTANT,
-              dateTime: new Date().toISOString(),
-              messageId: data.id,
-              status: StatusEnum.PENDING,
-              requestId,
-            };
-            chatDataMap[currentConversationId] = chatData;
-            set({ chatDataMap });
-          },
-          onFinish: (data) => {
-            chatData[assistantIndex] = {
-              text: data.messages,
-              role: RoleTypeEnum.ASSISTANT,
-              dateTime: new Date().toISOString(),
-              messageId: data.id,
-              status: StatusEnum.SUCCESS,
-              requestId,
-            };
-            chatDataMap[currentConversationId] = chatData;
-            set({ chatDataMap, isStream: false });
-          },
-          onError: (reason) => {
-            chatData[chatData.length - 1] = {
-              ...chatData[chatData.length - 1],
-              error: reason,
-              status: StatusEnum.ERROR,
-            };
-            set({ chatDataMap, isStream: false });
-          },
-        });
+        get().chatProgress(userInputText, requestId, lastId, assistantIndex);
       },
       currentChatData() {
         return get().chatDataMap[get().currentConversation.uuid] || [];

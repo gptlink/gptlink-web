@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { StoreKey } from '../constants';
+
+import { StoreKey } from '@/constants';
 import { UserInfoType } from '@/api/user';
 
 interface UserState {
