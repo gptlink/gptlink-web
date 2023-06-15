@@ -26,11 +26,13 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      if (!posterRef.current) return;
-      drawImage(posterRef.current);
-    }, 1000);
-  }, []);
+    if (open) {
+      setTimeout(() => {
+        if (!posterRef.current) return;
+        drawImage(posterRef.current);
+      }, 300);
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>

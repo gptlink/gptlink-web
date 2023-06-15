@@ -67,7 +67,7 @@ export default function User() {
 
         <div className="mt-4 flex items-center rounded-lg border-2 p-3">
           <div className="flex-1 items-center text-base font-bold">
-            {remaining > 0 ? `🎉 有效次数：${remaining}次` : '可用余额不足'}
+            {remaining > 0 ? `🎉 有效次数：${remaining}次` : '☹️ 可用余额不足'}
           </div>
           <Button size={'sm'} onClick={() => navigate('/billing')}>
             去充值
