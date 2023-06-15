@@ -16,7 +16,6 @@ let payStatusInterval = 0;
 
 export default function Billing() {
   const [billingPackage, setBillingPackage] = useState<PackageType[]>([]);
-  const [billingRecordShow, setBillingRecordShow] = useState(false);
   const [payDialogShow, setPayDialogShow] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [redemptionCode, setRedemptionCode] = useState('');
@@ -120,16 +119,16 @@ export default function Billing() {
             <SvgIcon icon="material-symbols:book-outline-rounded" className="mr-2" />
             充值说明
           </div>
-          <Button className="shrink-0" onClick={() => setBillingRecordShow(true)}>
-            充值记录
-          </Button>
+          <BillingRecordsDialog>
+            <Button className="shrink-0">充值记录</Button>
+          </BillingRecordsDialog>
         </h3>
         <ul className="mt-6 space-y-4">
           <li className="flex space-x-3">1. 账户充值仅限微信在线支付方式，充值金额实时到账</li>
           <li className="flex space-x-3">2. 账户有效次数自充值日起至用完为止</li>
         </ul>
       </div>
-      <BillingRecordsDialog open={billingRecordShow} handleOpenChange={(val) => setBillingRecordShow(val)} />
+
       <PayDialog open={payDialogShow} payInfo={payInfo} handleOpenChange={handlePayDialogShow} />
     </ScrollArea>
   );

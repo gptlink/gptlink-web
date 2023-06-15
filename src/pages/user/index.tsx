@@ -60,7 +60,7 @@ export default function User() {
         <div className="flex max-w-5xl items-center gap-4 text-secondary-foreground">
           <Avatar className="h-10 w-10">
             <AvatarImage src={avatar} alt={nickname} />
-            <AvatarFallback>{nickname.slice(0, 1)}</AvatarFallback>
+            <AvatarFallback>{nickname.slice(0, 1)?.toUpperCase()}</AvatarFallback>
           </Avatar>
           <h1 className="truncate text-3xl font-bold">{nickname}</h1>
         </div>

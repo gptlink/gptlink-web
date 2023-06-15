@@ -46,4 +46,35 @@ export default {
   getUserPackages(): Promise<UserPackageType[]> {
     return request('user/package/record');
   },
+  register(data: { nickname: string; mobile: string; password: string }): Promise<{
+    user: UserInfoType;
+    access_token: string;
+  }> {
+    return request('auth/register', {
+      method: 'post',
+      body: JSON.stringify(data),
+    });
+  },
+  login(data: { nickname: string; password: string }): Promise<{
+    user: UserInfoType;
+    access_token: string;
+  }> {
+    return request('auth/login', {
+      method: 'post',
+      body: JSON.stringify(data),
+    });
+  },
+  resetPassword(data: {
+    nickname: string;
+    password: string;
+    mobile: string;
+    reenteredPassword: string;
+    verify: string;
+    verify_type: number;
+  }): Promise<UserInfoType> {
+    return request('auth/reset', {
+      method: 'post',
+      body: JSON.stringify(data),
+    });
+  },
 };

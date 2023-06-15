@@ -38,7 +38,7 @@ export const ChatItem = ({ data }: { data: ChatItemType }) => {
       {data.role === RoleTypeEnum.USER ? (
         <Avatar className="h-10 w-10">
           <AvatarImage src={avatar} alt={nickname} />
-          <AvatarFallback>{nickname.slice(0, 1)}</AvatarFallback>
+          <AvatarFallback>{nickname.slice(0, 1)?.toUpperCase()}</AvatarFallback>
         </Avatar>
       ) : (
         <IconSvg className="h-10 w-10 rounded-full border p-1.5" />
