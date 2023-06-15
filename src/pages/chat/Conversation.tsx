@@ -8,6 +8,8 @@ import SvgIcon from '@/components/SvgIcon';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
+import { RoleListDialog } from './RoleListDialog';
+
 const ConversationList = () => {
   const { t } = useTranslation();
   const [
@@ -110,25 +112,28 @@ const RoleList = ({ data }: { data: RoleType[] }) => {
   const [addConversation] = useChatStore((state) => [state.addConversation]);
 
   return (
-    <div className="flex h-64 flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <div className="text-center leading-8">—— {t('role')} ——</div>
-      <ScrollArea>
-        <div className="grid grid-cols-2 gap-2 px-4">
-          {data.map((item, index) => (
-            <Button
-              variant={'outline'}
-              className="flex	h-fit items-center justify-start gap-1 px-2"
-              key={index}
-              onClick={() => addConversation(item.name, item.icon, item.prompt, item.id)}
-            >
-              <SvgIcon icon={item.icon} className="shrink-0" />
-              <span className="truncate" title={item.name}>
-                {item.name}
-              </span>
-            </Button>
-          ))}
-        </div>
-      </ScrollArea>
+      <div className="grid h-44 grid-cols-2 gap-2 px-4">
+        {data.slice(0, 8).map((item, index) => (
+          <Button
+            variant={'outline'}
+            className="flex	h-fit items-center justify-start gap-1 px-2"
+            key={index}
+            onClick={() => addConversation(item.name, item.icon, item.prompt, item.id)}
+          >
+            <SvgIcon icon={item.icon} className="shrink-0" />
+            <span className="truncate" title={item.name}>
+              {item.name}
+            </span>
+          </Button>
+        ))}
+      </div>
+      <RoleListDialog data={data} roleSelect={(item) => addConversation(item.name, item.icon, item.prompt, item.id)}>
+        <Button variant={'secondary'} className="m-2">
+          全部角色
+        </Button>
+      </RoleListDialog>
     </div>
   );
 };
