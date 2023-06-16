@@ -11,9 +11,9 @@
 
 `GPTLink Web` 为 [gptlink](https://github.com/gptlink/gptlink) 项目用户端源码。可将此源码编译后后，替换 `gptlink/gptweb` 目录重新构建镜像，重新构建属于你的专属应用。
 
-- 接入 `gptlink` 接口, 内置丰富功能
+- 接入 [GPTLink](https://gpt-link.com/) 接口, 内置丰富功能
 - 采用 `vite` + `react`, 开箱即用的极速开发体验
-- 基于 [Tailwindcss](https://tailwindcss.com/) + [shadcn/ui](https://tailwindcss.com/) 生态，轻松定制 `UI`
+- 基于 [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) 生态，轻松定制 `UI`
 
 ## 📦 环境准备
 
