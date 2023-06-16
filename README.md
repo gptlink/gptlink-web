@@ -13,7 +13,7 @@
 
 - 接入 `gptlink` 接口, 内置丰富功能
 - 采用 `vite` + `react`, 开箱即用的极速开发体验
-- 基于 [Tailwind](https://tailwindcss.com/) + [shadcn/ui](https://tailwindcss.com/) 生态，轻松定制 `UI`
+- 基于 [Tailwindcss](https://tailwindcss.com/) + [shadcn/ui](https://tailwindcss.com/) 生态，轻松定制 `UI`
 
 ## 📦 环境准备
 
