@@ -19,7 +19,7 @@
 
 1. `node` 建议使用 `^16 || ^18 || ^19` 版本
 
-2. 安装 yarn 包管理工具
+2. 安装 pnpm 包管理工具
 
 ```shell
 npm install pnpm -g
