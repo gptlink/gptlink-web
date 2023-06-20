@@ -87,9 +87,7 @@ export default function Login() {
                 onCheckedChange={(val) => setProtocolChecked(val as boolean)}
               />
               我已阅读并同意
-              <PrivacyProtocol>
-                <span className="text-blue-600">《隐私协议》</span>
-              </PrivacyProtocol>
+              <PrivacyProtocol />
             </div>
           </Tabs>
           {loginType === LoginTypeEnum.PASSWORD && (

@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react';
+import AppServices, { ConfigAgreementType } from '@/api/app';
+
 import {
   Dialog,
   DialogContent,
@@ -7,14 +10,27 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-export function PrivacyProtocol({ children }: { children: React.ReactNode }) {
+export function PrivacyProtocol() {
+  const [protocol, setProtocol] = useState<ConfigAgreementType>({ title: '', agreement: '' });
+
+  useEffect(() => {
+    AppServices.getConfigAgreement().then((res) => {
+      setProtocol(res);
+    });
+  }, []);
+
   return (
     <Dialog>
-      <DialogTrigger>{children}</DialogTrigger>
+      <DialogTrigger>
+        <span className="text-blue-600">《{protocol.title}》</span>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>隐私协议</DialogTitle>
-          <DialogDescription className="h-96 overflow-auto">隐私协议</DialogDescription>
+          <DialogTitle>{protocol.title}</DialogTitle>
+          <DialogDescription
+            className="h-96 overflow-auto"
+            dangerouslySetInnerHTML={{ __html: protocol.agreement }}
+          ></DialogDescription>
         </DialogHeader>
       </DialogContent>
     </Dialog>

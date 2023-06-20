@@ -31,11 +31,17 @@ const ConversationList = () => {
   const [editTitle, setEditTitle] = useState('');
   const [inEditId, setInEditId] = useState('');
 
-  const handleEditConversation = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+  const handleEditConversation = (e?: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     setInEditId('');
     setEditTitle('');
     editConversation(inEditId, { title: editTitle });
-    e.stopPropagation();
+    e?.stopPropagation();
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.code == 'Enter') {
+      handleEditConversation();
+    }
   };
 
   return (
@@ -65,6 +71,7 @@ const ConversationList = () => {
                     value={editTitle}
                     autoFocus
                     onChange={(e) => setEditTitle(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     className="flex-1 overflow-hidden rounded-sm px-2 text-secondary-foreground outline-none"
                   />
                   <X
