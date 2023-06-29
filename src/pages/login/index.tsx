@@ -2,14 +2,15 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 
 import { LoginType } from '@/constants';
-import { useUserStore, LoginTypeEnum, useAppStore } from '@/store';
+import { useUserStore, useAppStore } from '@/store';
 import userServices from '@/api/user';
+import { LoginTypeEnum } from '@/api/app';
 import Header from '@/layout/Header';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import IconSvg from '@/components/Icon';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import useAuth from '@/hooks/use-auth';
+import useAppConfig from '@/hooks/use-app-config';
 
 import { PrivacyProtocol } from './Protocol';
 import { QrCodeDialog } from './QrCodeDialog';
@@ -51,6 +52,8 @@ export default function Login() {
   }, []);
 
   useAuth();
+  const appConfig = useAppConfig();
+
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <Header isPlain />
@@ -61,21 +64,29 @@ export default function Login() {
             className="flex w-full flex-col items-center"
             onValueChange={(val) => setLoginType(val as LoginTypeEnum)}
           >
-            <TabsList>
-              <TabsTrigger value={LoginTypeEnum.QRCODE}>微信扫码登陆</TabsTrigger>
-              <TabsTrigger value={LoginTypeEnum.PASSWORD}>账号密码登陆</TabsTrigger>
-            </TabsList>
+            {Array.isArray(appConfig.login_type) && (
+              <TabsList>
+                <TabsTrigger value={LoginTypeEnum.WECHAT}>微信扫码登陆</TabsTrigger>
+                <TabsTrigger value={LoginTypeEnum.PASSWORD}>账号密码登陆</TabsTrigger>
+              </TabsList>
+            )}
 
-            <IconSvg className="mb-4 w-40 rounded-full" />
-            <div className="text-3xl font-bold"> GPTLink Web </div>
+            <img src={appConfig.web_logo} className="mb-4 w-40 rounded-full" />
+            <div className="text-3xl font-bold"> {appConfig.name} </div>
 
-            <TabsContent value="qrcode" className="flex w-full flex-col items-center">
+            <TabsContent value={LoginTypeEnum.WECHAT} className="flex w-full flex-col items-center">
               <Button className="mb-4 mt-12 w-[70%]" disabled={!protocolChecked} onClick={handleLogin}>
                 微信扫码登录
               </Button>
             </TabsContent>
 
-            <TabsContent value="password" className="flex w-full flex-col items-center">
+            <TabsContent value={LoginTypeEnum.WECHAT_AND_PHONE} className="flex w-full flex-col items-center">
+              <Button className="mb-4 mt-12 w-[70%]" disabled={!protocolChecked} onClick={handleLogin}>
+                微信扫码登录
+              </Button>
+            </TabsContent>
+
+            <TabsContent value={LoginTypeEnum.PASSWORD} className="flex w-full flex-col items-center">
               <LoginForm protocolChecked={protocolChecked}></LoginForm>
             </TabsContent>
 
