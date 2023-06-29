@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
 import useAuth from '@/hooks/use-auth';
+import useAppConfig from '@/hooks/use-app-config';
 
 import Header from './Header';
 
@@ -15,6 +16,7 @@ const App = () => {
   }, []);
 
   useAuth();
+  useAppConfig();
 
   return (
     <div className="flex h-screen flex-col ">

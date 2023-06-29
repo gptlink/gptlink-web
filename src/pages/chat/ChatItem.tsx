@@ -3,7 +3,7 @@ import { RefreshCcwIcon, CopyIcon, Loader2 } from 'lucide-react';
 import dayjs from 'dayjs';
 import toast from 'react-hot-toast';
 
-import { useUserStore, useChatStore, RoleTypeEnum, ChatItemType } from '@/store';
+import { useUserStore, useChatStore, RoleTypeEnum, ChatItemType, useAppStore } from '@/store';
 import { copyToClipboard } from '@/utils';
 import { StatusEnum } from '@/utils/stream-api';
 import { Markdown } from '@/components/Markdown';
@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 export const ChatItem = ({ data }: { data: ChatItemType }) => {
   const [{ nickname, avatar }] = useUserStore((state) => [state.userInfo]);
   const [regenerateChat] = useChatStore((state) => [state.regenerateChat]);
+  const [appConfig] = useAppStore((state) => [state.appConfig]);
 
   const handleCopy = () => {
     copyToClipboard(data.text);
@@ -37,7 +38,7 @@ export const ChatItem = ({ data }: { data: ChatItemType }) => {
     >
       {data.role === RoleTypeEnum.USER ? (
         <Avatar className="h-10 w-10">
-          <AvatarImage src={avatar} alt={nickname} />
+          <AvatarImage src={avatar || appConfig.user_logo} alt={nickname} />
           <AvatarFallback>{nickname.slice(0, 1)?.toUpperCase()}</AvatarFallback>
         </Avatar>
       ) : (

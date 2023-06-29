@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Share2Icon, UserPlus2 } from 'lucide-react';
 
 import TaskService, { TaskType, TaskTypeEnums } from '@/api/task';
-import { useUserStore, useBillingStore } from '@/store';
+import { useUserStore, useBillingStore, useAppStore } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -28,6 +28,7 @@ export default function User() {
   const [shareDialogShow, setShareDialogShow] = useState(false);
   const [{ avatar, nickname, openid }] = useUserStore((state) => [state.userInfo]);
   const [remaining, getCurrentBilling] = useBillingStore((state) => [state.remaining(), state.getCurrentBilling]);
+  const [appConfig] = useAppStore((state) => [state.appConfig]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,7 +60,7 @@ export default function User() {
       <div className="w-[32rem] -translate-y-3 rounded-xl border p-10 shadow-xl">
         <div className="flex max-w-5xl items-center gap-4 text-secondary-foreground">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={avatar} alt={nickname} />
+            <AvatarImage src={avatar || appConfig.user_logo} alt={nickname} />
             <AvatarFallback>{nickname.slice(0, 1)?.toUpperCase()}</AvatarFallback>
           </Avatar>
           <h1 className="truncate text-3xl font-bold">{nickname}</h1>

@@ -15,7 +15,6 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import IconSvg from '@/components/Icon';
 
 const ThemeMode = () => {
   const { t } = useTranslation();
@@ -98,6 +97,7 @@ const SystemLanguages = () => {
 
 const UserDropDown = () => {
   const navigate = useNavigate();
+  const [appConfig] = useAppStore((state) => [state.appConfig]);
   const [{ nickname, avatar }, signOut] = useUserStore((state) => [state.userInfo, state.signOut]);
   const handleSignOut = () => {
     signOut();
@@ -109,7 +109,7 @@ const UserDropDown = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="p-0 px-2">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={avatar} alt={nickname} />
+            <AvatarImage src={avatar || appConfig.user_logo} alt={nickname} />
             <AvatarFallback>{nickname.slice(0, 1)}</AvatarFallback>
           </Avatar>
           <p className="ml-2">{nickname}</p>
@@ -130,6 +130,7 @@ const UserDropDown = () => {
 export default function Header({ isPlain = false }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [appConfig] = useAppStore((state) => [state.appConfig]);
 
   const handleNavToChat = () => {
     navigate('/chat');
@@ -152,8 +153,8 @@ export default function Header({ isPlain = false }) {
     <div className="flex items-center justify-between border-b px-4 py-3">
       <div className="flex items-center">
         <button className="flex items-center gap-2 text-lg font-semibold" onClick={() => handleNavToChat()}>
-          <IconSvg className="h-10 w-10 rounded-full" />
-          GPTLink Web
+          <img src={appConfig.web_logo} className="h-10 w-10 rounded-full" />
+          {appConfig.name}
         </button>
         {!isPlain && (
           <>
