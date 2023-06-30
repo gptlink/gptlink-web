@@ -4,6 +4,7 @@ export interface BillType {
   name: string;
   num: number;
   used: number;
+  expired_at?: string;
 }
 
 export interface UserPackageType {

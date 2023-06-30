@@ -1,24 +1,39 @@
-import { useState, useRef, useEffect } from 'react';
-import { Loader2, PauseOctagon, SendIcon, Trash2Icon } from 'lucide-react';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { Loader2, PauseOctagon, SendIcon, Trash2Icon, DownloadIcon } from 'lucide-react';
 
-import { useChatStore } from '@/store';
+import { useChatStore, useUserStore } from '@/store';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import IconSvg from '@/components/Icon';
+import { Checkbox } from '@/components/ui/checkbox';
+import MessageExporter from './MessageExporter';
 
 import { ChatItem } from './ChatItem';
 import classNames from 'classnames';
 
 let scrollIntoViewTimeId = -1;
-const Footer = () => {
+
+const Footer = ({
+  isDownload = false,
+  selectedMessagesIDs,
+  onIsDownloadChange,
+  onSelectMessagesIds,
+}: {
+  isDownload: boolean;
+  selectedMessagesIDs: string[];
+  onIsDownloadChange: (val: boolean) => void;
+  onSelectMessagesIds: (ids: string[]) => void;
+}) => {
   const [userInput, setUserInput] = useState('');
-  const [sendUserMessage, isStream, clearCurrentConversation, stopStream] = useChatStore((state) => [
+  const [sendUserMessage, isStream, clearCurrentConversation, stopStream, currentChatData] = useChatStore((state) => [
     state.sendUserMessage,
     state.isStream,
     state.clearCurrentConversation,
     state.stopStream,
+    state.currentChatData(),
   ]);
+  const [{ openid }] = useUserStore((state) => [state.userInfo]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.code === 'Enter' && !e.shiftKey && userInput.replace(/\n/g, '')) {
@@ -36,6 +51,16 @@ const Footer = () => {
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
+  const exportMessages = useMemo(() => {
+    return currentChatData.filter((item) => {
+      return selectedMessagesIDs.includes(item.id);
+    });
+  }, [onSelectMessagesIds]);
+
+  const allMessagesIds = useMemo(() => {
+    return currentChatData.map((item) => item.id);
+  }, [currentChatData]);
+
   useEffect(() => {
     if (textAreaRef.current) {
       textAreaRef.current.style.height = '0px';
@@ -45,53 +70,108 @@ const Footer = () => {
   }, [textAreaRef, userInput]);
 
   return (
-    <footer className="flex items-end gap-4 p-4">
-      <Button
-        variant={'ghost'}
-        className="mb-1 h-9 w-9 shrink-0 rounded-full p-0"
-        disabled={isStream}
-        onClick={() => {
-          if (confirm('你确定要清除所有的消息吗？')) {
-            clearCurrentConversation();
-            setUserInput('');
-          }
-        }}
-      >
-        <Trash2Icon size={16} />
-      </Button>
-      <div className="relative flex-1">
-        {isStream && (
-          <div className="absolute left-0 z-10 flex w-full justify-center">
-            <Button variant="destructive" onClick={() => stopStream()}>
-              <PauseOctagon></PauseOctagon>
+    <footer
+      className={classNames('flex items-end gap-4 p-4', {
+        'border-t items-center justify-between': isDownload,
+      })}
+    >
+      {!isDownload ? (
+        <>
+          <div className="flex gap-1">
+            <Button
+              variant={'ghost'}
+              className="mb-1 h-9 w-9 shrink-0 rounded-full p-0"
+              disabled={isStream}
+              onClick={() => {
+                if (confirm('你确定要清除所有的消息吗？')) {
+                  clearCurrentConversation();
+                  setUserInput('');
+                }
+              }}
+            >
+              <Trash2Icon size={16} />
+            </Button>
+            <Button
+              variant={'ghost'}
+              className="mb-1 h-9 w-9 shrink-0 rounded-full p-0"
+              disabled={isStream}
+              onClick={() => {
+                onIsDownloadChange(true);
+              }}
+            >
+              <DownloadIcon size={16} />
             </Button>
           </div>
-        )}
-        <Textarea
-          ref={textAreaRef}
-          className={classNames('h-10 max-h-[7rem] min-h-[40px] w-full flex-1 resize-none scroll-bar-none', {
-            'blur-sm': isStream,
-          })}
-          onKeyDown={handleKeyDown}
-          disabled={isStream}
-          value={userInput}
-          placeholder="来说点什么...（Shift + Enter = 换行）"
-          onChange={(val) => setUserInput(val.target.value)}
-        />
-      </div>
-      <Button
-        disabled={isStream || !userInput.replace(/\n/g, '')}
-        onClick={() => {
-          handleSendUserMessage();
-        }}
-      >
-        {!isStream ? <SendIcon /> : <Loader2 className="m-auto my-32 animate-spin" />}
-      </Button>
+          <div className="relative flex-1">
+            {isStream && (
+              <div className="absolute left-0 z-10 flex w-full justify-center">
+                <Button variant="destructive" onClick={() => stopStream()}>
+                  <PauseOctagon />
+                </Button>
+              </div>
+            )}
+            <Textarea
+              ref={textAreaRef}
+              className={classNames('h-10 max-h-[7rem] min-h-[40px] w-full flex-1 resize-none scroll-bar-none', {
+                'blur-sm': isStream,
+              })}
+              onKeyDown={handleKeyDown}
+              disabled={isStream}
+              value={userInput}
+              placeholder="来说点什么...（Shift + Enter = 换行）"
+              onChange={(val) => setUserInput(val.target.value)}
+            />
+          </div>
+          <Button
+            disabled={isStream || !userInput.replace(/\n/g, '')}
+            onClick={() => {
+              handleSendUserMessage();
+            }}
+          >
+            {!isStream ? <SendIcon /> : <Loader2 className="m-auto my-32 animate-spin" />}
+          </Button>
+        </>
+      ) : (
+        <>
+          <div className="flex items-center">
+            <Checkbox
+              checked={selectedMessagesIDs.length === allMessagesIds.length}
+              className="mr-2"
+              onCheckedChange={(val) => {
+                if (val) {
+                  console.log(allMessagesIds);
+                  onSelectMessagesIds(allMessagesIds);
+                } else {
+                  onSelectMessagesIds([]);
+                }
+              }}
+            />
+            全选
+          </div>
+          <MessageExporter messages={exportMessages} shareUrl={location.origin + `/chat?shareOpenId=${openid}`} />
+          <Button
+            variant={'destructive'}
+            onClick={() => {
+              onIsDownloadChange(false);
+            }}
+          >
+            取消
+          </Button>
+        </>
+      )}
     </footer>
   );
 };
 
-const ChatBody = () => {
+const ChatBody = ({
+  isDownload,
+  selectedMessagesIDs,
+  onSelectMessagesIds,
+}: {
+  isDownload: boolean;
+  selectedMessagesIDs: string[];
+  onSelectMessagesIds: (ids: string[]) => void;
+}) => {
   const [isStream, currentChatData] = useChatStore((state) => [state.isStream, state.currentChatData()]);
 
   const bottom = useRef<HTMLDivElement>(null);
@@ -126,7 +206,19 @@ const ChatBody = () => {
           </div>
         )}
         {currentChatData.map((item, index) => (
-          <ChatItem key={index} data={item} />
+          <ChatItem
+            key={index}
+            data={item}
+            isCheckedMode={isDownload}
+            isChecked={selectedMessagesIDs.includes(item.id || '')}
+            onCheckedChange={(val) => {
+              if (val) {
+                onSelectMessagesIds(selectedMessagesIDs.concat(item.id));
+              } else {
+                onSelectMessagesIds(selectedMessagesIDs.filter((id) => id !== item.id));
+              }
+            }}
+          />
         ))}
       </main>
     </ScrollArea>
@@ -134,10 +226,27 @@ const ChatBody = () => {
 };
 
 const Chat = () => {
+  const [isDownload, setIsDownload] = useState(false);
+  const [selectedMessagesIDs, setSelectedMessagesIDs] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!isDownload) {
+      setSelectedMessagesIDs([]);
+    }
+  }, [isDownload]);
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      <ChatBody />
-      <Footer />
+      <ChatBody
+        isDownload={isDownload}
+        selectedMessagesIDs={selectedMessagesIDs}
+        onSelectMessagesIds={(ids: string[]) => setSelectedMessagesIDs(ids)}
+      />
+      <Footer
+        selectedMessagesIDs={selectedMessagesIDs}
+        isDownload={isDownload}
+        onIsDownloadChange={(val) => setIsDownload(val)}
+        onSelectMessagesIds={(ids: string[]) => setSelectedMessagesIDs(ids)}
+      />
     </div>
   );
 };

@@ -27,7 +27,11 @@ export default function User() {
   const [taskList, setTaskList] = useState<TaskType[]>([]);
   const [shareDialogShow, setShareDialogShow] = useState(false);
   const [{ avatar, nickname, openid }] = useUserStore((state) => [state.userInfo]);
-  const [remaining, getCurrentBilling] = useBillingStore((state) => [state.remaining(), state.getCurrentBilling]);
+  const [currentBill, remaining, getCurrentBilling] = useBillingStore((state) => [
+    state.currentBill,
+    state.remaining(),
+    state.getCurrentBilling,
+  ]);
   const [appConfig] = useAppStore((state) => [state.appConfig]);
   const navigate = useNavigate();
 
@@ -68,7 +72,13 @@ export default function User() {
 
         <div className="mt-4 flex items-center rounded-lg border-2 p-3">
           <div className="flex-1 items-center text-base font-bold">
-            {remaining > 0 ? `🎉 有效次数：${remaining}次` : '☹️ 可用余额不足'}
+            {remaining > 0 || currentBill?.num === -1
+              ? `🎉 有效次数：${currentBill?.num === -1 ? '无限' : remaining}次`
+              : '☹️ 可用余额不足'}
+            {/* 时长类型的，num 为 -1 */}
+            {currentBill?.expired_at && currentBill.num === -1 && (
+              <div className="mt-1">{`⏰ 有效期至：${currentBill.expired_at}`}</div>
+            )}
           </div>
           <Button size={'sm'} onClick={() => navigate('/billing')}>
             去充值

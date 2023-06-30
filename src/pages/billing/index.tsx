@@ -62,6 +62,7 @@ export default function Billing() {
         toast.success('支付成功');
         setPayDialogShow(false);
         setPayInfo(null);
+        clearInterval(payStatusInterval);
       }
     }, 1500);
   };

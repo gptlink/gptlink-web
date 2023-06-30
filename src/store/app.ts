@@ -26,7 +26,6 @@ interface AppState {
   setLoginType: (loginType: LoginTypeEnum) => void;
 }
 
-// TODO: 分离 appConfig 配置，实时拉取数据
 const initialState = {
   theme: ThemeModeType.SYSTEM,
   language: LanguagesType.ZH,

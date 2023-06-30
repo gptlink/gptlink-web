@@ -1,13 +1,13 @@
 import { useRef, useEffect } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
-import poster from '@/assets/poster.png';
+import { toast } from 'react-hot-toast';
+import { toJpeg } from 'html-to-image';
 
+import poster from '@/assets/poster.png';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { copyToClipboard } from '@/utils';
-import { toast } from 'react-hot-toast';
-import { toJpeg } from 'html-to-image';
 
 type ShareDialogProps = {
   open: boolean;

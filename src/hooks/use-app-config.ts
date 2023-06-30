@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { isEmpty } from 'lodash-es';
 
 import appService from '@/api/app';
 import { useAppStore } from '@/store';
@@ -9,7 +8,6 @@ const useAppConfig = () => {
 
   useEffect(() => {
     const getAppConfig = async () => {
-      if (!isEmpty(appConfig)) return;
       const res = await appService.getAppConfig();
       setAppConfig(res);
     };
