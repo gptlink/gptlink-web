@@ -19,7 +19,7 @@ const App = () => {
   useAppConfig();
 
   return (
-    <div className="flex h-screen flex-col ">
+    <div id="layout" className="flex h-screen flex-col overflow-hidden">
       <Header />
       <Outlet />
     </div>
