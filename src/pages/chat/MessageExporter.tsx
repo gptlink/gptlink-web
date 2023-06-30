@@ -2,19 +2,19 @@ import { useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { toJpeg } from 'html-to-image';
 import { DownloadIcon } from 'lucide-react';
+import { QRCodeCanvas } from 'qrcode.react';
 
 import { ChatItemType } from '@/store';
 import { Button } from '@/components/ui/button';
 import { saveAs } from 'file-saver';
 import { ChatItem } from './ChatItem';
 
-const MessageExporter = ({ messages }: { messages: ChatItemType[] }) => {
+const MessageExporter = ({ messages, shareUrl }: { messages: ChatItemType[]; shareUrl: string }) => {
   const canvasRef = useRef<HTMLImageElement>(null);
   const messagesRef = useRef<HTMLImageElement>(null);
   const drawImage = async () => {
     if (!messagesRef.current) return;
     const dataUrl = await toJpeg(messagesRef.current, { style: { opacity: '1' } });
-    console.log(dataUrl);
     saveAs(dataUrl, '聊天记录');
     if (!canvasRef.current) return;
     canvasRef.current.src = dataUrl;
@@ -23,21 +23,32 @@ const MessageExporter = ({ messages }: { messages: ChatItemType[] }) => {
   return (
     <>
       {createPortal(
-        <div ref={messagesRef} className="opacity-0">
+        <div ref={messagesRef} className="p-8">
           {messages.map((item, index) => (
-            <ChatItem key={index} data={item} />
+            <ChatItem key={index} data={item} isDownload />
           ))}
+          <div className="m-auto mt-10 flex flex-col items-center gap-2">
+            <QRCodeCanvas
+              style={{
+                width: '8rem',
+                height: '8rem',
+              }}
+              value={shareUrl}
+            />
+            <div>扫一扫，马上体验</div>
+          </div>
         </div>,
         document.body,
       )}
       <Button
+        disabled={messages.length === 0}
         variant={'ghost'}
-        className="flex w-28 gap-2"
+        className="flex w-32 gap-2"
         onClick={() => {
           drawImage();
         }}
       >
-        <DownloadIcon size={16} /> 生成图片
+        <DownloadIcon size={20} /> 生成图片
       </Button>
     </>
   );

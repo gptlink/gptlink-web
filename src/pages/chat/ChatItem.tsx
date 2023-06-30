@@ -8,9 +8,22 @@ import { copyToClipboard } from '@/utils';
 import { StatusEnum } from '@/utils/stream-api';
 import { Markdown } from '@/components/Markdown';
 import IconSvg from '@/components/Icon';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-export const ChatItem = ({ data }: { data: ChatItemType }) => {
+export const ChatItem = ({
+  data,
+  isCheckedMode = false,
+  isChecked = false,
+  isDownload = false,
+  onCheckedChange,
+}: {
+  data: ChatItemType;
+  isCheckedMode?: boolean;
+  isChecked?: boolean;
+  isDownload?: boolean;
+  onCheckedChange?: (val: boolean) => void;
+}) => {
   const [{ nickname, avatar }] = useUserStore((state) => [state.userInfo]);
   const [regenerateChat] = useChatStore((state) => [state.regenerateChat]);
   const [appConfig] = useAppStore((state) => [state.appConfig]);
@@ -31,49 +44,56 @@ export const ChatItem = ({ data }: { data: ChatItemType }) => {
   };
 
   return (
-    <div
-      className={classNames('p-3 rounded h-fit flex gap-4 items-start w-full flex-1 mb-6 last-of-type:mb-0', {
-        'flex-row-reverse': data.role === RoleTypeEnum.USER,
-      })}
-    >
-      {data.role === RoleTypeEnum.USER ? (
-        <Avatar className="h-10 w-10">
-          <AvatarImage src={avatar || appConfig.user_logo} alt={nickname} />
-          <AvatarFallback>{nickname.slice(0, 1)?.toUpperCase()}</AvatarFallback>
-        </Avatar>
-      ) : (
-        <IconSvg className="h-10 w-10 rounded-full border p-1.5" />
-      )}
+    <div className="flex">
+      {isCheckedMode && <Checkbox checked={isChecked} className="mt-4" onCheckedChange={onCheckedChange}></Checkbox>}
       <div
-        className={classNames('flex-1 items-start flex flex-col overflow-hidden', {
-          'items-end': data.role === RoleTypeEnum.USER,
+        className={classNames('p-3 rounded h-fit flex gap-4 items-start w-full flex-1 mb-6 last-of-type:mb-0', {
+          'flex-row-reverse': data.role === RoleTypeEnum.USER,
         })}
       >
-        <p className="text-xs text-neutral-400">{dayjs(data.dateTime).format('YYYY-MM-DD HH:MM:ss')}</p>
+        {data.role === RoleTypeEnum.USER ? (
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={avatar || appConfig.user_logo} alt={nickname} />
+            <AvatarFallback>{nickname.slice(0, 1)?.toUpperCase()}</AvatarFallback>
+          </Avatar>
+        ) : (
+          <IconSvg className="h-10 w-10 rounded-full border p-1.5" />
+        )}
         <div
-          className={classNames('max-w-full flex mt-2 items-end gap-2', {
-            'flex-row-reverse': data.role === RoleTypeEnum.USER,
+          className={classNames('flex-1 items-start flex flex-col overflow-hidden', {
+            'items-end': data.role === RoleTypeEnum.USER,
           })}
         >
+          <p className="text-xs text-neutral-400">{dayjs(data.dateTime).format('YYYY-MM-DD HH:MM:ss')}</p>
           <div
-            className={classNames('flex-1 p-3 rounded-md break-words overflow-hidden border', {
-              'bg-primary text-primary-foreground hover:bg-primary/90': data.role === RoleTypeEnum.USER,
-              'bg-secondary text-secondary-foreground hover:bg-secondary/80':
-                [RoleTypeEnum.ASSISTANT, RoleTypeEnum.SYSTEM].includes(data.role) && data.status !== StatusEnum.ERROR,
-              'bg-destructive text-destructive-foreground': data.status === StatusEnum.ERROR,
+            className={classNames('max-w-full flex mt-2 items-end gap-2', {
+              'flex-row-reverse': data.role === RoleTypeEnum.USER,
             })}
           >
-            {renderContent()}
-          </div>
-          <div className="shrink-0 pb-1 text-sm">
-            {[RoleTypeEnum.ASSISTANT].includes(data.role) && (
-              <RefreshCcwIcon
-                className="mb-1 hover:cursor-pointer"
-                size={12}
-                onClick={() => regenerateChat(data.requestId)}
-              />
-            )}
-            <CopyIcon className="hover:cursor-pointer" size={12} onClick={handleCopy} />
+            <div
+              className={classNames('flex-1 p-3 rounded-md break-words overflow-hidden border', {
+                'bg-primary text-primary-foreground hover:bg-primary/90': data.role === RoleTypeEnum.USER,
+                'bg-secondary text-secondary-foreground hover:bg-secondary/80':
+                  [RoleTypeEnum.ASSISTANT, RoleTypeEnum.SYSTEM].includes(data.role) && data.status !== StatusEnum.ERROR,
+                'bg-destructive text-destructive-foreground': data.status === StatusEnum.ERROR,
+              })}
+            >
+              {renderContent()}
+            </div>
+            <div className="shrink-0 pb-1 text-sm">
+              {!isDownload && (
+                <>
+                  {[RoleTypeEnum.ASSISTANT].includes(data.role) && (
+                    <RefreshCcwIcon
+                      className="mb-1 hover:cursor-pointer"
+                      size={12}
+                      onClick={() => regenerateChat(data.requestId)}
+                    />
+                  )}
+                  <CopyIcon className="hover:cursor-pointer" size={12} onClick={handleCopy} />
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
