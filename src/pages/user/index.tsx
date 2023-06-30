@@ -72,10 +72,11 @@ export default function User() {
 
         <div className="mt-4 flex items-center rounded-lg border-2 p-3">
           <div className="flex-1 items-center text-base font-bold">
-            {remaining > 0 || remaining === -1
-              ? `🎉 有效次数：${remaining === -1 ? '无限' : remaining}次`
+            {remaining > 0 || currentBill?.num === -1
+              ? `🎉 有效次数：${currentBill?.num === -1 ? '无限' : remaining}次`
               : '☹️ 可用余额不足'}
-            {currentBill?.expired_at && remaining === -1 && (
+            {/* 时长类型的，num 为 -1 */}
+            {currentBill?.expired_at && currentBill.num === -1 && (
               <div className="mt-1">{`⏰ 有效期至：${currentBill.expired_at}`}</div>
             )}
           </div>

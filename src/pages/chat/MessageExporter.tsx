@@ -23,7 +23,7 @@ const MessageExporter = ({ messages, shareUrl }: { messages: ChatItemType[]; sha
   return (
     <>
       {createPortal(
-        <div ref={messagesRef} className="p-8">
+        <div ref={messagesRef} className="bg-background p-8">
           {messages.map((item, index) => (
             <ChatItem key={index} data={item} isDownload />
           ))}
