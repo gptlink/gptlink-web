@@ -75,7 +75,9 @@ export default function User() {
             {remaining > 0 || remaining === -1
               ? `🎉 有效次数：${remaining === -1 ? '无限' : remaining}次`
               : '☹️ 可用余额不足'}
-            {currentBill?.expired_at && <div className="mt-1">{`⏰ 有效期至：${currentBill.expired_at}`}</div>}
+            {currentBill?.expired_at && remaining === -1 && (
+              <div className="mt-1">{`⏰ 有效期至：${currentBill.expired_at}`}</div>
+            )}
           </div>
           <Button size={'sm'} onClick={() => navigate('/billing')}>
             去充值
