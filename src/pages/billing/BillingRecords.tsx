@@ -2,7 +2,15 @@ import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
 import userService, { UserPackageType } from '@/api/user';
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  AlertDialogHeader,
+  AlertDialogAction,
+  AlertDialogFooter,
+} from '@/components/ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export function BillingRecordsDialog({ children }: { children: React.ReactNode }) {
@@ -23,10 +31,12 @@ export function BillingRecordsDialog({ children }: { children: React.ReactNode }
   }, [open]);
 
   return (
-    <Dialog open={open} onOpenChange={(val) => setOpen(val)}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
-        <DialogTitle>充值记录</DialogTitle>
+    <AlertDialog open={open} onOpenChange={(val) => setOpen(val)}>
+      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>充值记录</AlertDialogTitle>
+        </AlertDialogHeader>
         {isLoading ? (
           <Loader2 className="m-auto my-32 animate-spin" />
         ) : (
@@ -50,7 +60,10 @@ export function BillingRecordsDialog({ children }: { children: React.ReactNode }
             </TableBody>
           </Table>
         )}
-      </DialogContent>
-    </Dialog>
+        <AlertDialogFooter>
+          <AlertDialogAction>确认</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

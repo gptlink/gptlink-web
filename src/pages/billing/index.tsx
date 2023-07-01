@@ -8,6 +8,8 @@ import SvgIcon from '@/components/SvgIcon';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import useWechat from '@/hooks/use-wechat';
+import { useMobileScreen } from '@/hooks/use-mobile-screen';
 
 import { BillingRecordsDialog } from './BillingRecords';
 import { PayDialog } from './PayDialog';
@@ -21,6 +23,8 @@ export default function Billing() {
   const [redemptionCode, setRedemptionCode] = useState('');
   const [payInfo, setPayInfo] = useState<PayInfoType | null>(null);
   const [getCurrentBilling] = useBillingStore((state) => [state.getCurrentBilling]);
+  const { isWeixinBrowser, weChatPay } = useWechat();
+  const isMobileScreen = useMobileScreen();
 
   useEffect(() => {
     const getBillingPackage = async () => {
@@ -48,23 +52,32 @@ export default function Billing() {
     const res = await billingService.orderBilling({
       package_id: item.id,
       channel: Channel.WECHAT,
-      pay_type: PayType.NATIVE,
+      pay_type: isWeixinBrowser ? PayType.JSAPI : PayType.NATIVE,
       platform: 1,
     });
-    setPayDialogShow(true);
 
     const payInfoRes = await billingService.billingPayDetail(res.id);
     setPayInfo(payInfoRes);
 
-    payStatusInterval = setInterval(async () => {
-      const { status } = await billingService.billingDetail(payInfoRes.id);
-      if (status == 2) {
+    if (isWeixinBrowser && isMobileScreen) {
+      weChatPay(payInfoRes, () => {
         toast.success('支付成功');
-        setPayDialogShow(false);
         setPayInfo(null);
-        clearInterval(payStatusInterval);
-      }
-    }, 1500);
+        getCurrentBilling();
+      });
+    } else {
+      setPayDialogShow(true);
+      payStatusInterval = setInterval(async () => {
+        const { status } = await billingService.billingDetail(payInfoRes.id);
+        if (status == 2) {
+          toast.success('支付成功');
+          setPayDialogShow(false);
+          setPayInfo(null);
+          clearInterval(payStatusInterval);
+          getCurrentBilling();
+        }
+      }, 1500);
+    }
   };
 
   const handlePayDialogShow = (val: boolean) => {
@@ -78,7 +91,7 @@ export default function Billing() {
         {isLoading ? (
           <Loader2 className="m-auto my-16 animate-spin" />
         ) : (
-          <div className="flex flex-wrap justify-between sm:grid sm:max-w-none sm:grid-cols-2 sm:gap-6 sm:space-y-0 lg:mx-auto lg:max-w-4xl xl:mx-0 xl:max-w-none xl:grid-cols-4">
+          <div className="grid grid-cols-4 gap-6 max-lg:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
             {billingPackage.map((item, index) => (
               <div key={index} className="rounded-lg border p-4 shadow">
                 <p className="mb-4 border-b pb-4">

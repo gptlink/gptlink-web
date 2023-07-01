@@ -6,9 +6,9 @@ import TaskService, { TaskType, TaskTypeEnums } from '@/api/task';
 import { useUserStore, useBillingStore, useAppStore } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useMobileScreen } from '@/hooks/use-mobile-screen';
 
 import { ShareDialog } from './ShareDialog';
-import { toast } from 'react-hot-toast';
 
 const TypeActionMap = {
   [TaskTypeEnums.INVITE]: {
@@ -26,7 +26,7 @@ const TypeActionMap = {
 export default function User() {
   const [taskList, setTaskList] = useState<TaskType[]>([]);
   const [shareDialogShow, setShareDialogShow] = useState(false);
-  const [{ avatar, nickname, openid }] = useUserStore((state) => [state.userInfo]);
+  const [{ avatar, nickname, openid }, signOut] = useUserStore((state) => [state.userInfo, state.signOut]);
   const [currentBill, remaining, getCurrentBilling] = useBillingStore((state) => [
     state.currentBill,
     state.remaining(),
@@ -34,6 +34,12 @@ export default function User() {
   ]);
   const [appConfig] = useAppStore((state) => [state.appConfig]);
   const navigate = useNavigate();
+  const isMobileScreen = useMobileScreen();
+
+  const handleSignOut = () => {
+    signOut();
+    navigate('/login');
+  };
 
   useEffect(() => {
     const getTaskList = async () => {
@@ -48,20 +54,13 @@ export default function User() {
     return TypeActionMap[type as Exclude<TaskTypeEnums, TaskTypeEnums.REGISTER>];
   };
 
-  const handleClick = async (item: TaskType) => {
-    try {
-      await TaskService.completionTask(item.type);
-      toast.success('任务完成');
-    } catch (e) {
-      toast.error(e as string);
-    }
-
+  const handleClick = async () => {
     setShareDialogShow(true);
   };
 
   return (
     <div className="flex h-screen items-center justify-center">
-      <div className="w-[32rem] -translate-y-3 rounded-xl border p-10 shadow-xl">
+      <div className="w-[32rem] -translate-y-3 rounded-xl border p-10 shadow-xl max-sm:w-[22rem] max-sm:p-5">
         <div className="flex max-w-5xl items-center gap-4 text-secondary-foreground">
           <Avatar className="h-10 w-10">
             <AvatarImage src={avatar || appConfig.user_logo} alt={nickname} />
@@ -96,7 +95,7 @@ export default function User() {
                     <div className="flex-1 truncate text-base font-medium">{item.title}</div>
                     <p className="mt-1 truncate text-xs">{item.desc}</p>
                   </div>
-                  <Button variant={'secondary'} size={'sm'} onClick={() => handleClick(item)}>
+                  <Button variant={'secondary'} size={'sm'} onClick={() => handleClick()}>
                     {item.is_completed
                       ? getTypeActionButton(item.type).completed
                       : getTypeActionButton(item.type).button}
@@ -106,6 +105,11 @@ export default function User() {
             ))}
           </div>
         </div>
+        {isMobileScreen && (
+          <Button variant={'destructive'} className="mt-10 w-full" onClick={() => handleSignOut()}>
+            退出登陆
+          </Button>
+        )}
       </div>
       <ShareDialog
         open={shareDialogShow}

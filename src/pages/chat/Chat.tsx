@@ -1,14 +1,23 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Loader2, PauseOctagon, SendIcon, Trash2Icon, DownloadIcon } from 'lucide-react';
+import { Loader2, PauseOctagon, SendIcon, Trash2Icon, DownloadIcon, MoreHorizontal } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
+import { StoreKey } from '@/constants';
 import { useChatStore, useUserStore } from '@/store';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import IconSvg from '@/components/Icon';
 import { Checkbox } from '@/components/ui/checkbox';
-import MessageExporter from './MessageExporter';
+import { useMobileScreen } from '@/hooks/use-mobile-screen';
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
+import MessageExporter from './MessageExporter';
 import { ChatItem } from './ChatItem';
 import classNames from 'classnames';
 
@@ -34,14 +43,19 @@ const Footer = ({
     state.currentChatData(),
   ]);
   const [{ openid }] = useUserStore((state) => [state.userInfo]);
-
+  const isMobileScreen = useMobileScreen();
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.code === 'Enter' && !e.shiftKey && userInput.replace(/\n/g, '')) {
       handleSendUserMessage();
     }
   };
+  const navigator = useNavigate();
 
   const handleSendUserMessage = async () => {
+    if (!localStorage.getItem(StoreKey.AccessToken)) {
+      toast.error('请登录');
+      return navigator('/login');
+    }
     sendUserMessage(userInput);
     setUserInput('');
     setTimeout(() => {
@@ -77,31 +91,35 @@ const Footer = ({
     >
       {!isDownload ? (
         <>
-          <div className="flex gap-1">
-            <Button
-              variant={'ghost'}
-              className="mb-1 h-9 w-9 shrink-0 rounded-full p-0"
-              disabled={isStream}
-              onClick={() => {
-                if (confirm('你确定要清除所有的消息吗？')) {
-                  clearCurrentConversation();
-                  setUserInput('');
-                }
-              }}
-            >
-              <Trash2Icon size={16} />
-            </Button>
-            <Button
-              variant={'ghost'}
-              className="mb-1 h-9 w-9 shrink-0 rounded-full p-0"
-              disabled={isStream}
-              onClick={() => {
-                onIsDownloadChange(true);
-              }}
-            >
-              <DownloadIcon size={16} />
-            </Button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-9 w-9 p-0">
+                <MoreHorizontal size={18} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="top" align={'end'}>
+              <DropdownMenuItem
+                className="flex items-center gap-2"
+                onClick={() => {
+                  if (confirm('你确定要清除所有的消息吗？')) {
+                    clearCurrentConversation();
+                    setUserInput('');
+                  }
+                }}
+              >
+                <Trash2Icon size={16} /> 清空消息
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="flex items-center gap-2"
+                onClick={() => {
+                  onIsDownloadChange(true);
+                }}
+              >
+                <DownloadIcon size={16} />
+                对话海报
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <div className="relative flex-1">
             {isStream && (
               <div className="absolute left-0 z-10 flex w-full justify-center">
@@ -112,13 +130,13 @@ const Footer = ({
             )}
             <Textarea
               ref={textAreaRef}
-              className={classNames('h-10 max-h-[7rem] min-h-[40px] w-full flex-1 resize-none scroll-bar-none', {
+              className={classNames('h-10 max-h-[7rem] min-h-[20px] w-full flex-1 resize-none scroll-bar-none', {
                 'blur-sm': isStream,
               })}
               onKeyDown={handleKeyDown}
               disabled={isStream}
               value={userInput}
-              placeholder="来说点什么...（Shift + Enter = 换行）"
+              placeholder={isMobileScreen ? '来说点什么...' : '来说点什么...（Shift + Enter = 换行）'}
               onChange={(val) => setUserInput(val.target.value)}
             />
           </div>
@@ -139,7 +157,6 @@ const Footer = ({
               className="mr-2"
               onCheckedChange={(val) => {
                 if (val) {
-                  console.log(allMessagesIds);
                   onSelectMessagesIds(allMessagesIds);
                 } else {
                   onSelectMessagesIds([]);
@@ -197,31 +214,29 @@ const ChatBody = ({
   }, [isStream]);
 
   return (
-    <ScrollArea className="flex-1">
-      <main className="m-auto w-full max-w-screen-xl overflow-auto p-4" ref={bottom}>
-        {currentChatData.length === 0 && (
-          <div className="m-auto mt-2 w-fit text-center text-secondary-foreground">
-            <IconSvg className="mr-1 inline-block w-10" />
-            开始提问吧～
-          </div>
-        )}
-        {currentChatData.map((item, index) => (
-          <ChatItem
-            key={index}
-            data={item}
-            isCheckedMode={isDownload}
-            isChecked={selectedMessagesIDs.includes(item.id || '')}
-            onCheckedChange={(val) => {
-              if (val) {
-                onSelectMessagesIds(selectedMessagesIDs.concat(item.id));
-              } else {
-                onSelectMessagesIds(selectedMessagesIDs.filter((id) => id !== item.id));
-              }
-            }}
-          />
-        ))}
-      </main>
-    </ScrollArea>
+    <main className="scroll-bar-none m-auto w-full max-w-screen-xl overflow-auto p-4 max-sm:p-0" ref={bottom}>
+      {currentChatData.length === 0 && (
+        <div className="m-auto mt-2 w-fit text-center text-secondary-foreground">
+          <IconSvg className="mr-1 inline-block w-10" />
+          开始提问吧～
+        </div>
+      )}
+      {currentChatData.map((item, index) => (
+        <ChatItem
+          key={index}
+          data={item}
+          isCheckedMode={isDownload}
+          isChecked={selectedMessagesIDs.includes(item.id || '')}
+          onCheckedChange={(val) => {
+            if (val) {
+              onSelectMessagesIds(selectedMessagesIDs.concat(item.id));
+            } else {
+              onSelectMessagesIds(selectedMessagesIDs.filter((id) => id !== item.id));
+            }
+          }}
+        />
+      ))}
+    </main>
   );
 };
 

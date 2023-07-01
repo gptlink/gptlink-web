@@ -1,10 +1,13 @@
 import Chat from './Chat';
 import Conversation from './Conversation';
+import { useMobileScreen } from '@/hooks/use-mobile-screen';
 
 export default function Home() {
+  const isMobileScreen = useMobileScreen();
+
   return (
-    <div className="m-4 flex flex-1 overflow-hidden rounded-xl border ">
-      <Conversation />
+    <div className="flex flex-1 overflow-hidden">
+      {!isMobileScreen && <Conversation />}
       <Chat />
     </div>
   );

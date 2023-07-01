@@ -10,7 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 import { RoleListDialog } from './RoleListDialog';
 
-const ConversationList = () => {
+const ConversationList = ({ onChange }: { onChange?: () => void }) => {
   const { t } = useTranslation();
   const [
     conversationList,
@@ -36,6 +36,7 @@ const ConversationList = () => {
     setEditTitle('');
     editConversation(inEditId, { title: editTitle });
     e?.stopPropagation();
+    onChange?.();
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -46,7 +47,14 @@ const ConversationList = () => {
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      <Button variant={'outline'} className="m-4 shrink-0 border-dashed leading-8" onClick={() => addConversation()}>
+      <Button
+        variant={'outline'}
+        className="m-4 shrink-0 border-dashed leading-8"
+        onClick={() => {
+          addConversation();
+          onChange?.();
+        }}
+      >
         <PlusCircle size={16} className="mr-2" /> {t('new conversation')}
       </Button>
 
@@ -58,7 +66,10 @@ const ConversationList = () => {
               className="flex justify-start gap-2 px-3"
               key={index}
               title={item.title}
-              onClick={() => switchConversation(item.uuid)}
+              onClick={() => {
+                switchConversation(item.uuid);
+                onChange?.();
+              }}
             >
               {item.icon ? (
                 <SvgIcon className="shrink-0" icon={item.icon} />
@@ -72,7 +83,7 @@ const ConversationList = () => {
                     autoFocus
                     onChange={(e) => setEditTitle(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className="flex-1 overflow-hidden rounded-sm px-2 text-secondary-foreground outline-none"
+                    className="flex-1 overflow-hidden rounded-sm px-2 text-secondary-foreground outline-none dark:text-secondary"
                   />
                   <X
                     className="shrink-0"
@@ -114,7 +125,7 @@ const ConversationList = () => {
   );
 };
 
-const RoleList = ({ data }: { data: RoleType[] }) => {
+const RoleList = ({ data, onChange }: { data: RoleType[]; onChange?: () => void }) => {
   const { t } = useTranslation();
   const [addConversation] = useChatStore((state) => [state.addConversation]);
 
@@ -127,7 +138,10 @@ const RoleList = ({ data }: { data: RoleType[] }) => {
             variant={'outline'}
             className="flex	h-fit items-center justify-start gap-1 px-2"
             key={index}
-            onClick={() => addConversation(item.name, item.icon, item.prompt, item.id)}
+            onClick={() => {
+              addConversation(item.name, item.icon, item.prompt, item.id);
+              onChange?.();
+            }}
           >
             <SvgIcon icon={item.icon} className="shrink-0" />
             <span className="truncate" title={item.name}>
@@ -137,7 +151,7 @@ const RoleList = ({ data }: { data: RoleType[] }) => {
         ))}
       </div>
       <RoleListDialog data={data} roleSelect={(item) => addConversation(item.name, item.icon, item.prompt, item.id)}>
-        <Button variant={'secondary'} className="m-2">
+        <Button variant={'secondary'} className="mx-4 mb-4">
           全部角色
         </Button>
       </RoleListDialog>
@@ -145,7 +159,7 @@ const RoleList = ({ data }: { data: RoleType[] }) => {
   );
 };
 
-const Conversation = () => {
+const Conversation = ({ onChange }: { onChange?: () => void }) => {
   const [roleList, setRoleList] = useState<RoleType[]>([]);
 
   useEffect(() => {
@@ -157,9 +171,9 @@ const Conversation = () => {
   }, []);
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col gap-4 overflow-hidden border-r text-xs">
-      <ConversationList />
-      <RoleList data={roleList} />
+    <aside className="flex h-full w-64 shrink-0 flex-col gap-4 overflow-hidden border-r text-xs">
+      <ConversationList onChange={onChange} />
+      <RoleList data={roleList} onChange={onChange} />
     </aside>
   );
 };

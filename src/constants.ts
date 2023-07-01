@@ -7,4 +7,5 @@ export enum StoreKey {
 
 export enum LoginType {
   WEIXIN_WEB = 'weixinweb',
+  WEIXIN = 'weixin',
 }

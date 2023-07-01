@@ -37,7 +37,15 @@ export interface PayInfoType {
   channel: Channel;
   pay_type: PayType;
   package_name: string;
-  data: { code_url: string };
+  data: {
+    code_url: string;
+    appId: string;
+    timeStamp: string;
+    nonceStr: string;
+    signType: string;
+    paySign: string;
+    package: string;
+  };
 }
 
 export interface OrderBillingType {
