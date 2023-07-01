@@ -71,6 +71,13 @@ const MessageExporter = ({ messages, shareUrl }: { messages: ChatItemType[]; sha
             </AlertDialogDescription>
           </ScrollArea>
           {isMobileScreen && <AlertDialogDescription className="text-center">长按图片保存</AlertDialogDescription>}
+          <QRCodeCanvas
+            style={{
+              width: '8rem',
+              height: '8rem',
+            }}
+            value={shareUrl}
+          />
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
             {!isMobileScreen && (
