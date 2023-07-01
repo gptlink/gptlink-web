@@ -45,7 +45,9 @@ export const ChatItem = ({
 
   return (
     <div className="flex">
-      {isCheckedMode && <Checkbox checked={isChecked} className="mt-4" onCheckedChange={onCheckedChange}></Checkbox>}
+      {isCheckedMode && (
+        <Checkbox checked={isChecked} className="ml-2 mt-4" onCheckedChange={onCheckedChange}></Checkbox>
+      )}
       <div
         className={classNames('p-3 rounded h-fit flex gap-4 items-start w-full flex-1 mb-6 last-of-type:mb-0', {
           'flex-row-reverse': data.role === RoleTypeEnum.USER,

@@ -4,7 +4,6 @@ import { Loader2, PauseOctagon, SendIcon, Trash2Icon, DownloadIcon, MoreHorizont
 import { useChatStore, useUserStore } from '@/store';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import IconSvg from '@/components/Icon';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useMobileScreen } from '@/hooks/use-mobile-screen';
@@ -150,7 +149,6 @@ const Footer = ({
               className="mr-2"
               onCheckedChange={(val) => {
                 if (val) {
-                  console.log(allMessagesIds);
                   onSelectMessagesIds(allMessagesIds);
                 } else {
                   onSelectMessagesIds([]);
@@ -208,31 +206,29 @@ const ChatBody = ({
   }, [isStream]);
 
   return (
-    <ScrollArea className="flex-1">
-      <main className="m-auto w-full max-w-screen-xl overflow-auto p-4 max-sm:p-0" ref={bottom}>
-        {currentChatData.length === 0 && (
-          <div className="m-auto mt-2 w-fit text-center text-secondary-foreground">
-            <IconSvg className="mr-1 inline-block w-10" />
-            开始提问吧～
-          </div>
-        )}
-        {currentChatData.map((item, index) => (
-          <ChatItem
-            key={index}
-            data={item}
-            isCheckedMode={isDownload}
-            isChecked={selectedMessagesIDs.includes(item.id || '')}
-            onCheckedChange={(val) => {
-              if (val) {
-                onSelectMessagesIds(selectedMessagesIDs.concat(item.id));
-              } else {
-                onSelectMessagesIds(selectedMessagesIDs.filter((id) => id !== item.id));
-              }
-            }}
-          />
-        ))}
-      </main>
-    </ScrollArea>
+    <main className="scroll-bar-none m-auto w-full max-w-screen-xl overflow-auto p-4 max-sm:p-0" ref={bottom}>
+      {currentChatData.length === 0 && (
+        <div className="m-auto mt-2 w-fit text-center text-secondary-foreground">
+          <IconSvg className="mr-1 inline-block w-10" />
+          开始提问吧～
+        </div>
+      )}
+      {currentChatData.map((item, index) => (
+        <ChatItem
+          key={index}
+          data={item}
+          isCheckedMode={isDownload}
+          isChecked={selectedMessagesIDs.includes(item.id || '')}
+          onCheckedChange={(val) => {
+            if (val) {
+              onSelectMessagesIds(selectedMessagesIDs.concat(item.id));
+            } else {
+              onSelectMessagesIds(selectedMessagesIDs.filter((id) => id !== item.id));
+            }
+          }}
+        />
+      ))}
+    </main>
   );
 };
 

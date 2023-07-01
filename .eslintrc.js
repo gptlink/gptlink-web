@@ -14,5 +14,6 @@ module.exports = {
     'react-refresh/only-export-components': 'warn',
     'react-hooks/exhaustive-deps': 'off',
     '@typescript-eslint/no-var-requires': 'off',
+    'tailwindcss/no-custom-classname': 'off',
   },
 };
