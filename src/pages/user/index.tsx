@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Share2Icon, UserPlus2 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 import TaskService, { TaskType, TaskTypeEnums } from '@/api/task';
 import { useUserStore, useBillingStore, useAppStore } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useMobileScreen } from '@/hooks/use-mobile-screen';
 
 import { ShareDialog } from './ShareDialog';
-import { toast } from 'react-hot-toast';
 
 const TypeActionMap = {
   [TaskTypeEnums.INVITE]: {
@@ -26,7 +27,7 @@ const TypeActionMap = {
 export default function User() {
   const [taskList, setTaskList] = useState<TaskType[]>([]);
   const [shareDialogShow, setShareDialogShow] = useState(false);
-  const [{ avatar, nickname, openid }] = useUserStore((state) => [state.userInfo]);
+  const [{ avatar, nickname, openid }, signOut] = useUserStore((state) => [state.userInfo, state.signOut]);
   const [currentBill, remaining, getCurrentBilling] = useBillingStore((state) => [
     state.currentBill,
     state.remaining(),
@@ -34,6 +35,7 @@ export default function User() {
   ]);
   const [appConfig] = useAppStore((state) => [state.appConfig]);
   const navigate = useNavigate();
+  const isMobileScreen = useMobileScreen();
 
   useEffect(() => {
     const getTaskList = async () => {
@@ -106,6 +108,11 @@ export default function User() {
             ))}
           </div>
         </div>
+        {isMobileScreen && (
+          <Button variant={'destructive'} className="mt-10 w-full" onClick={() => signOut()}>
+            退出登陆
+          </Button>
+        )}
       </div>
       <ShareDialog
         open={shareDialogShow}
