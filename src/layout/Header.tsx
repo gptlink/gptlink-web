@@ -33,6 +33,10 @@ export const ThemeMode = () => {
     return iconMap[item];
   };
 
+  useEffect(() => {
+    switchTheme(theme);
+  }, []);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

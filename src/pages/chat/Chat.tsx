@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { Loader2, PauseOctagon, SendIcon, Trash2Icon, DownloadIcon, MoreHorizontal } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
+import { StoreKey } from '@/constants';
 import { useChatStore, useUserStore } from '@/store';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -46,8 +49,13 @@ const Footer = ({
       handleSendUserMessage();
     }
   };
+  const navigator = useNavigate();
 
   const handleSendUserMessage = async () => {
+    if (!localStorage.getItem(StoreKey.AccessToken)) {
+      toast.error('请登录');
+      return navigator('/login');
+    }
     sendUserMessage(userInput);
     setUserInput('');
     setTimeout(() => {
