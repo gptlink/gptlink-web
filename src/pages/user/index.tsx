@@ -37,6 +37,11 @@ export default function User() {
   const navigate = useNavigate();
   const isMobileScreen = useMobileScreen();
 
+  const handleSignOut = () => {
+    signOut();
+    navigate('/login');
+  };
+
   useEffect(() => {
     const getTaskList = async () => {
       const res = await TaskService.getTaskList(1);
@@ -109,7 +114,7 @@ export default function User() {
           </div>
         </div>
         {isMobileScreen && (
-          <Button variant={'destructive'} className="mt-10 w-full" onClick={() => signOut()}>
+          <Button variant={'destructive'} className="mt-10 w-full" onClick={() => handleSignOut()}>
             退出登陆
           </Button>
         )}
