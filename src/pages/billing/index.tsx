@@ -55,7 +55,6 @@ export default function Billing() {
       pay_type: isWeixinBrowser ? PayType.JSAPI : PayType.NATIVE,
       platform: 1,
     });
-    setPayDialogShow(true);
 
     const payInfoRes = await billingService.billingPayDetail(res.id);
     setPayInfo(payInfoRes);
@@ -66,6 +65,7 @@ export default function Billing() {
         setPayInfo(null);
       });
     } else {
+      setPayDialogShow(true);
       payStatusInterval = setInterval(async () => {
         const { status } = await billingService.billingDetail(payInfoRes.id);
         if (status == 2) {
