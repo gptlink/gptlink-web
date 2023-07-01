@@ -38,7 +38,15 @@ export const useAppStore = create<AppState>()(
     (set) => ({
       ...initialState,
 
-      setTheme: (theme: ThemeModeType) => set({ theme }),
+      setTheme: (theme: ThemeModeType) => {
+        const systemMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (theme === ThemeModeType.DARK || (theme === ThemeModeType.SYSTEM && systemMode)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+        set({ theme });
+      },
       setLanguage: (language: LanguagesType) => set({ language }),
       setLoginType: (loginType: LoginTypeEnum) => set({ loginType }),
       setAppConfig: (appConfig: AppConfigType) => set({ appConfig, loginType: appConfig.login_type }),

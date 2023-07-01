@@ -63,6 +63,7 @@ export default function Billing() {
       weChatPay(payInfoRes, () => {
         toast.success('支付成功');
         setPayInfo(null);
+        getCurrentBilling();
       });
     } else {
       setPayDialogShow(true);
@@ -73,6 +74,7 @@ export default function Billing() {
           setPayDialogShow(false);
           setPayInfo(null);
           clearInterval(payStatusInterval);
+          getCurrentBilling();
         }
       }, 1500);
     }

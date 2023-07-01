@@ -21,12 +21,6 @@ export const ThemeMode = () => {
   const [theme, setTheme] = useAppStore((state) => [state.theme, state.setTheme]);
 
   const switchTheme = (mode: ThemeModeType) => {
-    const systemMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (mode === ThemeModeType.DARK || (mode === ThemeModeType.SYSTEM && systemMode)) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
     setTheme(mode);
   };
 
@@ -38,10 +32,6 @@ export const ThemeMode = () => {
     };
     return iconMap[item];
   };
-
-  useEffect(() => {
-    switchTheme(theme);
-  }, []);
 
   return (
     <DropdownMenu>
