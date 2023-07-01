@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 const useWechat = () => {
   const redirectUrl = window.location.origin + window.location.pathname;
-  const { VITE_APP_API_BASE_URL } = import.meta.env;
+  const { VITE_API_DOMAIN } = import.meta.env;
 
   const isWeixinBrowser = useMemo(() => {
     const ua = navigator.userAgent.toLowerCase();
@@ -9,7 +9,7 @@ const useWechat = () => {
   }, [navigator]);
 
   const weChatLogin = () => {
-    const wxUrl = `${VITE_APP_API_BASE_URL}wechat/weixin/redirect?redirect_url=${redirectUrl}`;
+    const wxUrl = `${VITE_API_DOMAIN}/wechat/weixin/redirect?redirect_url=${redirectUrl}`;
     window.location.href = wxUrl;
   };
 
