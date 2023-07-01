@@ -23,7 +23,7 @@ const useWechat = () => {
     window.location.href = wxUrl;
   };
 
-  const onBridgeReady = (payInfo: PayInfoType, callback: () => void): unknown => {
+  const handleWeChatPay = (payInfo: PayInfoType, callback: () => void): unknown => {
     const data = payInfo.data;
     if (!window.WeixinJSBridge) return;
     if (data) {
@@ -52,9 +52,9 @@ const useWechat = () => {
 
   const weChatPay = (payInfo: PayInfoType, callback: () => void) => {
     if (typeof window.WeixinJSBridge === 'undefined') {
-      document.addEventListener('WeixinJSBridgeReady', onBridgeReady(payInfo, callback) as EventListener);
+      document.addEventListener('WeixinJSBridgeReady', handleWeChatPay(payInfo, callback) as EventListener);
     } else {
-      onBridgeReady(payInfo, callback);
+      handleWeChatPay(payInfo, callback);
     }
   };
 
