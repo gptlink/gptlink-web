@@ -78,7 +78,7 @@ export default function Billing() {
         {isLoading ? (
           <Loader2 className="m-auto my-16 animate-spin" />
         ) : (
-          <div className="flex flex-wrap justify-between sm:grid sm:max-w-none sm:grid-cols-2 sm:gap-6 sm:space-y-0 lg:mx-auto lg:max-w-4xl xl:mx-0 xl:max-w-none xl:grid-cols-4">
+          <div className="grid grid-cols-4 gap-6 max-lg:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
             {billingPackage.map((item, index) => (
               <div key={index} className="rounded-lg border p-4 shadow">
                 <p className="mb-4 border-b pb-4">

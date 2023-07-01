@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const ThemeMode = () => {
+export const ThemeMode = () => {
   const { t } = useTranslation();
   const [theme, setTheme] = useAppStore((state) => [state.theme, state.setTheme]);
 
@@ -61,7 +61,7 @@ const ThemeMode = () => {
   );
 };
 
-const SystemLanguages = () => {
+export const SystemLanguages = () => {
   const { t, i18n } = useTranslation();
   const [language, setLanguage] = useAppStore((state) => [state.language, state.setLanguage]);
 

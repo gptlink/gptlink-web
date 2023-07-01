@@ -61,7 +61,7 @@ export default function User() {
 
   return (
     <div className="flex h-screen items-center justify-center">
-      <div className="w-[32rem] -translate-y-3 rounded-xl border p-10 shadow-xl">
+      <div className="w-[32rem] -translate-y-3 rounded-xl border p-10 shadow-xl max-sm:w-[22rem] max-sm:p-5">
         <div className="flex max-w-5xl items-center gap-4 text-secondary-foreground">
           <Avatar className="h-10 w-10">
             <AvatarImage src={avatar || appConfig.user_logo} alt={nickname} />

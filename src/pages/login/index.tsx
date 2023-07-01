@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 
 import { LoginType } from '@/constants';
 import { useUserStore, useAppStore } from '@/store';
@@ -11,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import useAuth from '@/hooks/use-auth';
 import useAppConfig from '@/hooks/use-app-config';
+import useWechat from '@/hooks/use-wechat';
 
 import { PrivacyProtocol } from './Protocol';
 import { QrCodeDialog } from './QrCodeDialog';
@@ -20,13 +22,19 @@ export default function Login() {
   const [protocolChecked, setProtocolChecked] = useState(false);
   const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);
   const [qrCode, setQrCode] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [loginType, setLoginType] = useAppStore((state) => [state.loginType, state.setLoginType]);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [setUserInfo, setAccessToken] = useUserStore((state) => [state.setUserInfo, state.setAccessToken]);
+  const { isWeixinBrowser, weChatLogin } = useWechat();
 
   const handleLogin = async () => {
+    if (isWeixinBrowser) {
+      weChatLogin();
+      return;
+    }
     const currentUrl = location.origin + location.pathname;
     const res = await userServices.getWxQrCode(LoginType.WEIXIN_WEB, currentUrl);
     setQrCodeDialogOpen(true);
@@ -37,9 +45,14 @@ export default function Login() {
     const code = searchParams.get('code');
     if (code) {
       try {
-        const res = await userServices.getUserInfoByCode(LoginType.WEIXIN_WEB, code);
+        setIsLoading(true);
+        const res = await userServices.getUserInfoByCode(
+          isWeixinBrowser ? LoginType.WEIXIN : LoginType.WEIXIN_WEB,
+          code,
+        );
         setUserInfo(res.user);
         setAccessToken(res.access_token);
+        setIsLoading(false);
         navigate('/chat');
       } catch {
         setSearchParams('');
@@ -58,7 +71,7 @@ export default function Login() {
     <div className="flex h-screen flex-col overflow-hidden">
       <Header isPlain />
       <div className="flex flex-1 items-center justify-center">
-        <div className="flex w-[32rem] -translate-y-10 rounded-xl border pb-24 pt-10 shadow">
+        <div className="flex w-[32rem] -translate-y-10 rounded-xl border pb-24 pt-10 shadow max-sm:w-[22rem]">
           <Tabs
             value={loginType}
             className="flex w-full flex-col items-center"
@@ -76,7 +89,8 @@ export default function Login() {
 
             <TabsContent value={LoginTypeEnum.WECHAT} className="flex w-full flex-col items-center">
               <Button className="mb-4 mt-12 w-[70%]" disabled={!protocolChecked} onClick={handleLogin}>
-                微信扫码登录
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isWeixinBrowser ? '微信登陆' : '微信扫码登录'}
               </Button>
             </TabsContent>
 
