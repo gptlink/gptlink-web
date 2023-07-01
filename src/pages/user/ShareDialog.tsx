@@ -84,7 +84,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
               </Button>
             </div>
             <ScrollArea>
-              <AlertDialogDescription className="h-[35rem] max-sm:h-[30rem]">
+              <AlertDialogDescription className="h-[35rem] max-sm:h-[25rem]">
                 <img src={dataUrl} className="w-full" alt="" />
               </AlertDialogDescription>
             </ScrollArea>

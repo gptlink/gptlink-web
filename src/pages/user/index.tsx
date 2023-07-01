@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Share2Icon, UserPlus2 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
 
 import TaskService, { TaskType, TaskTypeEnums } from '@/api/task';
 import { useUserStore, useBillingStore, useAppStore } from '@/store';
@@ -55,14 +54,7 @@ export default function User() {
     return TypeActionMap[type as Exclude<TaskTypeEnums, TaskTypeEnums.REGISTER>];
   };
 
-  const handleClick = async (item: TaskType) => {
-    try {
-      await TaskService.completionTask(item.type);
-      toast.success('任务完成');
-    } catch (e) {
-      toast.error(e as string);
-    }
-
+  const handleClick = async () => {
     setShareDialogShow(true);
   };
 
@@ -103,7 +95,7 @@ export default function User() {
                     <div className="flex-1 truncate text-base font-medium">{item.title}</div>
                     <p className="mt-1 truncate text-xs">{item.desc}</p>
                   </div>
-                  <Button variant={'secondary'} size={'sm'} onClick={() => handleClick(item)}>
+                  <Button variant={'secondary'} size={'sm'} onClick={() => handleClick()}>
                     {item.is_completed
                       ? getTypeActionButton(item.type).completed
                       : getTypeActionButton(item.type).button}
