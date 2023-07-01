@@ -44,7 +44,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
       setTimeout(() => {
         if (!posterRef.current) return;
         drawImage(posterRef.current);
-      }, 300);
+      }, 100);
     }
   }, [open]);
 
