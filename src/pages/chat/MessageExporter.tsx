@@ -30,40 +30,44 @@ const MessageExporter = ({ messages, shareUrl }: { messages: ChatItemType[]; sha
   const [currentConversation] = useChatStore((state) => [state.currentConversation]);
 
   const drawImage = async () => {
-    if (!messagesRef.current) return;
-    const res = await toJpeg(messagesRef.current, { style: { opacity: '1' } });
+    setTimeout(async () => {
+      if (!messagesRef.current) return;
+      const res = await toJpeg(messagesRef.current, { style: { opacity: '1' } });
+      setDataUrl(res);
+    }, 100);
+
     setOpen(true);
-    setDataUrl(res);
   };
 
   return (
     <>
-      {createPortal(
-        <div ref={messagesRef} className="bg-background p-8">
-          <div className="min-h-[10rem]">
-            {messages.map((item, index) => (
-              <ChatItem key={index} data={item} isDownload />
-            ))}
-          </div>
+      {open &&
+        createPortal(
+          <div ref={messagesRef} className="bg-background p-8">
+            <div className="min-h-[10rem]">
+              {messages.map((item, index) => (
+                <ChatItem key={index} data={item} isDownload />
+              ))}
+            </div>
 
-          <div className="m-auto mt-10 flex flex-col items-center gap-2">
-            <QRCodeCanvas
-              style={{
-                width: '8rem',
-                height: '8rem',
-              }}
-              value={shareUrl}
-            />
-            <div>扫一扫，马上体验</div>
-          </div>
-        </div>,
-        document.body,
-      )}
+            <div className="m-auto mt-10 flex flex-col items-center gap-2">
+              <QRCodeCanvas
+                style={{
+                  width: '8rem',
+                  height: '8rem',
+                }}
+                value={shareUrl}
+              />
+              <div>扫一扫，马上体验</div>
+            </div>
+          </div>,
+          document.body,
+        )}
 
       <AlertDialog open={open} onOpenChange={(val) => setOpen(val)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>分享海报</AlertDialogTitle>
+            <AlertDialogTitle>对话海报</AlertDialogTitle>
           </AlertDialogHeader>
           <ScrollArea>
             <AlertDialogDescription className="h-[30rem]">
@@ -71,13 +75,6 @@ const MessageExporter = ({ messages, shareUrl }: { messages: ChatItemType[]; sha
             </AlertDialogDescription>
           </ScrollArea>
           {isMobileScreen && <AlertDialogDescription className="text-center">长按图片保存</AlertDialogDescription>}
-          <QRCodeCanvas
-            style={{
-              width: '8rem',
-              height: '8rem',
-            }}
-            value={shareUrl}
-          />
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
             {!isMobileScreen && (
