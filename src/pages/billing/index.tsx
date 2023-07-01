@@ -8,6 +8,8 @@ import SvgIcon from '@/components/SvgIcon';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import useWechat from '@/hooks/use-wechat';
+import { useMobileScreen } from '@/hooks/use-mobile-screen';
 
 import { BillingRecordsDialog } from './BillingRecords';
 import { PayDialog } from './PayDialog';
@@ -21,6 +23,8 @@ export default function Billing() {
   const [redemptionCode, setRedemptionCode] = useState('');
   const [payInfo, setPayInfo] = useState<PayInfoType | null>(null);
   const [getCurrentBilling] = useBillingStore((state) => [state.getCurrentBilling]);
+  const { isWeixinBrowser, weChatPay } = useWechat();
+  const isMobileScreen = useMobileScreen();
 
   useEffect(() => {
     const getBillingPackage = async () => {
@@ -48,7 +52,7 @@ export default function Billing() {
     const res = await billingService.orderBilling({
       package_id: item.id,
       channel: Channel.WECHAT,
-      pay_type: PayType.NATIVE,
+      pay_type: isWeixinBrowser ? PayType.JSAPI : PayType.NATIVE,
       platform: 1,
     });
     setPayDialogShow(true);
@@ -56,15 +60,22 @@ export default function Billing() {
     const payInfoRes = await billingService.billingPayDetail(res.id);
     setPayInfo(payInfoRes);
 
-    payStatusInterval = setInterval(async () => {
-      const { status } = await billingService.billingDetail(payInfoRes.id);
-      if (status == 2) {
+    if (isWeixinBrowser && isMobileScreen) {
+      weChatPay(payInfoRes, () => {
         toast.success('支付成功');
-        setPayDialogShow(false);
         setPayInfo(null);
-        clearInterval(payStatusInterval);
-      }
-    }, 1500);
+      });
+    } else {
+      payStatusInterval = setInterval(async () => {
+        const { status } = await billingService.billingDetail(payInfoRes.id);
+        if (status == 2) {
+          toast.success('支付成功');
+          setPayDialogShow(false);
+          setPayInfo(null);
+          clearInterval(payStatusInterval);
+        }
+      }, 1500);
+    }
   };
 
   const handlePayDialogShow = (val: boolean) => {
