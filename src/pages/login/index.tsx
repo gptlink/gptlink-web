@@ -16,13 +16,14 @@ import useWechat from '@/hooks/use-wechat';
 
 import { PrivacyProtocol } from './Protocol';
 import { QrCodeDialog } from './QrCodeDialog';
-import { LoginForm, RegisterDialog, RetrievePasswordDialog } from './LoginForm';
+import { LoginForm, RegisterDialog, RetrievePasswordDialog, PhoneLoginForm } from './LoginForm';
 
 export default function Login() {
   const [protocolChecked, setProtocolChecked] = useState(false);
   const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false);
   const [qrCode, setQrCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [oauthId, setOauthId] = useState('');
   const [loginType, setLoginType] = useAppStore((state) => [state.loginType, state.setLoginType]);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -44,12 +45,17 @@ export default function Login() {
   const getUserInfo = async () => {
     const code = searchParams.get('code');
     if (code) {
+      setProtocolChecked(true);
       try {
         setIsLoading(true);
         const res = await userServices.getUserInfoByCode(
           isWeixinBrowser ? LoginType.WEIXIN : LoginType.WEIXIN_WEB,
           code,
         );
+        if (res.oauth_id) {
+          setOauthId(res.oauth_id);
+          return;
+        }
         setUserInfo(res.user);
         setAccessToken(res.access_token);
         setIsLoading(false);
@@ -78,7 +84,7 @@ export default function Login() {
             onValueChange={(val) => setLoginType(val as LoginTypeEnum)}
           >
             {Array.isArray(appConfig.login_type) && (
-              <TabsList>
+              <TabsList className="mb-10">
                 <TabsTrigger value={LoginTypeEnum.WECHAT}>微信扫码登陆</TabsTrigger>
                 <TabsTrigger value={LoginTypeEnum.PASSWORD}>账号密码登陆</TabsTrigger>
               </TabsList>
@@ -89,19 +95,23 @@ export default function Login() {
 
             <TabsContent value={LoginTypeEnum.WECHAT} className="flex w-full flex-col items-center">
               <Button className="mb-4 mt-12 w-[70%]" disabled={!protocolChecked} onClick={handleLogin}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isWeixinBrowser ? '微信登陆' : '微信扫码登录'}
-              </Button>
-            </TabsContent>
-
-            <TabsContent value={LoginTypeEnum.WECHAT_AND_PHONE} className="flex w-full flex-col items-center">
-              <Button className="mb-4 mt-12 w-[70%]" disabled={!protocolChecked} onClick={handleLogin}>
                 微信扫码登录
               </Button>
             </TabsContent>
 
             <TabsContent value={LoginTypeEnum.PASSWORD} className="flex w-full flex-col items-center">
               <LoginForm protocolChecked={protocolChecked}></LoginForm>
+            </TabsContent>
+
+            <TabsContent value={LoginTypeEnum.WECHAT_AND_PHONE} className="flex w-full flex-col items-center">
+              {oauthId ? (
+                <PhoneLoginForm oauthId={oauthId} protocolChecked={protocolChecked}></PhoneLoginForm>
+              ) : (
+                <Button className="mb-4 mt-12 w-[70%]" disabled={!protocolChecked} onClick={handleLogin}>
+                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isWeixinBrowser ? '微信登陆' : '微信扫码登录'}
+                </Button>
+              )}
             </TabsContent>
 
             <div className="flex items-center text-xs">

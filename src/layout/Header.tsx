@@ -33,10 +33,6 @@ export const ThemeMode = () => {
     return iconMap[item];
   };
 
-  useEffect(() => {
-    switchTheme(theme);
-  }, []);
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -124,7 +120,7 @@ const UserDropDown = () => {
 export default function Header({ isPlain = false }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [appConfig] = useAppStore((state) => [state.appConfig]);
+  const [appConfig, theme, setTheme] = useAppStore((state) => [state.appConfig, state.theme, state.setTheme]);
 
   const handleNavToChat = () => {
     navigate('/chat');
@@ -142,6 +138,10 @@ export default function Header({ isPlain = false }) {
       name: t('billing center'),
     },
   ];
+
+  useEffect(() => {
+    setTheme(theme);
+  }, []);
 
   return (
     <div className="flex items-center justify-between border-b px-4 py-3">
