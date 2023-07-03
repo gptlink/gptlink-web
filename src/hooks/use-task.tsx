@@ -6,8 +6,6 @@ const useTask = () => {
   // 分享成功
   async function shareCallback() {
     const type = TaskTypeEnums.SHARE;
-    const { result } = await taskService.checkTask(type);
-    if (!result) return;
     const unreadTaskList = await taskService.getUnreadTaskList(type);
     if (unreadTaskList && unreadTaskList.length) {
       const data = unreadTaskList[0];
