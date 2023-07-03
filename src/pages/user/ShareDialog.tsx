@@ -23,7 +23,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useMobileScreen } from '@/hooks/use-mobile-screen';
 import useTask from '@/hooks/use-task';
-import appService from '@/api/app';
 
 type ShareDialogProps = {
   open: boolean;
@@ -36,8 +35,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
   const [, copy] = useCopyToClipboard();
   const isMobileScreen = useMobileScreen();
   const [dataUrl, setDataUrl] = useState('');
-  const [posterUrl, setPosterUrl] = useState('');
-  const [loading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { shareCallback } = useTask();
 
   const drawImage = async (element: HTMLElement) => {
@@ -46,18 +44,13 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
   };
 
   useEffect(() => {
-    const handleDrewPoster = async () => {
-      setIsLoading(true);
-      const res = await appService.getShareConfig();
-      setPosterUrl(res.share_img);
+    if (open) {
+      setLoading(true);
       setTimeout(() => {
+        setLoading(false);
         if (!posterRef.current) return;
         drawImage(posterRef.current);
-        setIsLoading(false);
-      }, 16);
-    };
-    if (open) {
-      handleDrewPoster();
+      }, 200);
     }
   }, [open]);
 
@@ -66,7 +59,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
       {open &&
         createPortal(
           <div ref={posterRef} className="relative w-[25rem]">
-            <img src={posterUrl || poster} className="w-full" />
+            <img src={poster} className="w-full" />
             <QRCodeCanvas
               className="absolute bottom-2 left-[50%] m-auto -translate-x-1/2"
               style={{
