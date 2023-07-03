@@ -10,6 +10,7 @@ interface UserState {
   setUserInfo: (val: UserInfoType) => void;
   setAccessToken: (val: string) => void;
   signOut: () => void;
+  isLogin: () => boolean;
 }
 
 const initialState = {
@@ -34,6 +35,9 @@ export const useUserStore = create<UserState>()(
       signOut() {
         set({ ...initialState });
         localStorage.removeItem(StoreKey.AccessToken);
+      },
+      isLogin() {
+        return !!localStorage.getItem(StoreKey.AccessToken);
       },
     }),
     {

@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 import userService from '@/api/user';
 import { useUserStore } from '@/store';
+import { StoreKey } from '@/constants';
 import {
   Dialog,
   DialogContent,
@@ -122,7 +123,11 @@ export function PhoneLoginForm({ oauthId = '', protocolChecked = false }) {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { user, access_token } = await userService.phoneLogin({ ...values, oauth_id: oauthId });
+      const { user, access_token } = await userService.phoneLogin({
+        ...values,
+        oauth_id: oauthId,
+        shareOpenId: localStorage.getItem(StoreKey.ShareOpenId) || '',
+      });
       setUserInfo(user);
       setAccessToken(access_token);
       navigate('/chat');
@@ -225,7 +230,10 @@ export function RegisterDialog({ children }: { children: React.ReactNode }) {
       return;
     }
     try {
-      const { user, access_token } = await userService.register(omit(values, ['repassword']));
+      const { user, access_token } = await userService.register({
+        ...omit(values, ['repassword']),
+        shareOpenId: localStorage.getItem(StoreKey.ShareOpenId) || '',
+      });
       setUserInfo(user);
       setAccessToken(access_token);
       navigate('/chat');

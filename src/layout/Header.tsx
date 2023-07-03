@@ -88,7 +88,11 @@ export const SystemLanguages = () => {
 const UserDropDown = () => {
   const navigate = useNavigate();
   const [appConfig] = useAppStore((state) => [state.appConfig]);
-  const [{ nickname, avatar }, signOut] = useUserStore((state) => [state.userInfo, state.signOut]);
+  const [{ nickname, avatar }, signOut, isLogin] = useUserStore((state) => [
+    state.userInfo,
+    state.signOut,
+    state.isLogin(),
+  ]);
   const handleSignOut = () => {
     signOut();
     navigate('/login');
@@ -106,8 +110,17 @@ const UserDropDown = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={'end'}>
-        <DropdownMenuItem className="flex items-center gap-2" onClick={() => navigate('/user')}>
-          个人中心
+        <DropdownMenuItem
+          className="flex items-center gap-2"
+          onClick={() => {
+            if (!isLogin) {
+              navigate('/login');
+            } else {
+              navigate('/user');
+            }
+          }}
+        >
+          {!isLogin ? '请先登录' : '个人中心'}
         </DropdownMenuItem>
         <DropdownMenuItem className="flex items-center gap-2" onClick={() => handleSignOut()}>
           退出登录
@@ -170,7 +183,6 @@ export default function Header({ isPlain = false }) {
             <Github size={18} />
           </Button>
         </Link>
-        <SystemLanguages />
         <ThemeMode />
         {!isPlain && <UserDropDown />}
       </div>

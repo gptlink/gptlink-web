@@ -6,14 +6,25 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export async function copyToClipboard(text: string) {
-  try {
-    await navigator.clipboard.writeText(text.trim());
-  } catch (error) {
-    const textarea = document.createElement('textarea');
-    textarea.value = text.trim();
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
-  }
+  // try {
+  //   await navigator.clipboard.writeText(text.trim());
+  // } catch (err) {
+
+  // }
+  const textarea = document.createElement('textarea');
+  textarea.id = '111';
+  document.body.appendChild(textarea);
+  // 隐藏此输入框
+  textarea.style.position = 'fixed';
+  textarea.style.clip = 'rect(0 0 0 0)';
+  textarea.style.top = '10px';
+  // 赋值
+  textarea.value = text;
+  // 选中
+  textarea.select();
+  // 复制
+  const res = document.execCommand('copy', false);
+  console.log(res);
+  // 移除输入框
+  // document.body.removeChild(textarea);
 }

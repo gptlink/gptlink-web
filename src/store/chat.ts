@@ -43,6 +43,7 @@ interface ChatState {
   regenerateChat: (requestId: string) => void;
   currentChatData: () => ChatItemType[];
   stopStream: () => void;
+  setStream: (val: boolean) => void;
   chatProgress: (message: string, requestId: string, lastId: string, chatIndex: number, id: string) => void;
 }
 
@@ -241,6 +242,9 @@ export const useChatStore = create<ChatState>()(
       stopStream() {
         streamAPI.abort();
         set({ isStream: false });
+      },
+      setStream(val) {
+        set({ isStream: val });
       },
     }),
     {

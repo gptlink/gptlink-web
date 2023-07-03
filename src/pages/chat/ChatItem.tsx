@@ -92,7 +92,7 @@ export const ChatItem = ({
                       onClick={() => regenerateChat(data.requestId)}
                     />
                   )}
-                  <CopyIcon className="hover:cursor-pointer" size={12} onClick={handleCopy} />
+                  {!data.error && <CopyIcon className="hover:cursor-pointer" size={12} onClick={handleCopy} />}
                 </>
               )}
             </div>

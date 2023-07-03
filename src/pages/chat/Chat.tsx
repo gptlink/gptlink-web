@@ -3,7 +3,6 @@ import { Loader2, PauseOctagon, SendIcon, Trash2Icon, DownloadIcon, MoreHorizont
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-import { StoreKey } from '@/constants';
 import { useChatStore, useUserStore } from '@/store';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -35,14 +34,22 @@ const Footer = ({
   onSelectMessagesIds: (ids: string[]) => void;
 }) => {
   const [userInput, setUserInput] = useState('');
-  const [sendUserMessage, isStream, clearCurrentConversation, stopStream, currentChatData] = useChatStore((state) => [
-    state.sendUserMessage,
-    state.isStream,
-    state.clearCurrentConversation,
-    state.stopStream,
-    state.currentChatData(),
+  const [sendUserMessage, isStream, clearCurrentConversation, stopStream, currentChatData, setStream] = useChatStore(
+    (state) => [
+      state.sendUserMessage,
+      state.isStream,
+      state.clearCurrentConversation,
+      state.stopStream,
+      state.currentChatData(),
+      state.setStream,
+    ],
+  );
+  const [{ openid }, isLogin] = useUserStore((state) => [state.userInfo, state.isLogin]);
+  const [currentConversation, editConversation] = useChatStore((state) => [
+    state.currentConversation,
+    state.editConversation,
   ]);
-  const [{ openid }] = useUserStore((state) => [state.userInfo]);
+
   const isMobileScreen = useMobileScreen();
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.code === 'Enter' && !e.shiftKey && userInput.replace(/\n/g, '')) {
@@ -52,9 +59,12 @@ const Footer = ({
   const navigator = useNavigate();
 
   const handleSendUserMessage = async () => {
-    if (!localStorage.getItem(StoreKey.AccessToken)) {
+    if (!isLogin) {
       toast.error('请登录');
       return navigator('/login');
+    }
+    if (!currentChatData.length) {
+      editConversation(currentConversation.uuid, { title: userInput });
     }
     sendUserMessage(userInput);
     setUserInput('');
@@ -82,6 +92,10 @@ const Footer = ({
       textAreaRef.current.style.height = scrollHeight + 4 + 'px';
     }
   }, [textAreaRef, userInput]);
+
+  useEffect(() => {
+    setStream(false);
+  }, []);
 
   return (
     <footer

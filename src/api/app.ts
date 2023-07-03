@@ -4,10 +4,11 @@ import wx from 'weixin-js-sdk-ts';
 export interface ConfigAgreementType {
   title: string;
   agreement: string;
+  enable: boolean;
 }
 
 export enum LoginTypeEnum {
-  PASSWORD = '1',
+  PASSWORD = '',
   WECHAT = '2',
   PHONE = '3',
   WECHAT_AND_PHONE = '4',
@@ -34,6 +35,13 @@ export interface JsSDKType {
   signature: string;
 }
 
+export interface ShareConfigType {
+  desc: string;
+  title: string;
+  img_url: string;
+  share_img: string;
+}
+
 export default {
   getConfigAgreement(): Promise<ConfigAgreementType> {
     return request('config/agreement');
@@ -43,5 +51,8 @@ export default {
   },
   getJsSDK(url: string): Promise<JsSDKType> {
     return request(`wechat/jssdk?url=${encodeURIComponent(url)}`);
+  },
+  getShareConfig(): Promise<ShareConfigType> {
+    return request('config/share');
   },
 };

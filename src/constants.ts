@@ -3,6 +3,7 @@ export enum StoreKey {
   User = 'app-user',
   Chat = 'app-chat',
   AccessToken = 'app-access-token',
+  ShareOpenId = 'app-share-open-id',
 }
 
 export enum LoginType {
