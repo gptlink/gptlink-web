@@ -17,7 +17,7 @@ export function PreCode(props: { children: ReactNode }) {
   const ref = useRef<HTMLPreElement>(null);
 
   return (
-    <pre ref={ref} className="group relative mt-2 rounded bg-primary/90 p-2 text-primary-foreground">
+    <pre ref={ref} className="group relative mt-2 overflow-auto rounded bg-primary/90 p-2 text-primary-foreground">
       <Button
         title="复制"
         variant={'secondary'}

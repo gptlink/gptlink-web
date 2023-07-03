@@ -214,29 +214,31 @@ const ChatBody = ({
   }, [isStream]);
 
   return (
-    <main className="scroll-bar-none m-auto w-full max-w-screen-xl overflow-auto p-4 max-sm:p-0" ref={bottom}>
-      {currentChatData.length === 0 && (
-        <div className="m-auto mt-2 w-fit text-center text-secondary-foreground">
-          <IconSvg className="mr-1 inline-block w-10" />
-          开始提问吧～
-        </div>
-      )}
-      {currentChatData.map((item, index) => (
-        <ChatItem
-          key={index}
-          data={item}
-          isCheckedMode={isDownload}
-          isChecked={selectedMessagesIDs.includes(item.id || '')}
-          onCheckedChange={(val) => {
-            if (val) {
-              onSelectMessagesIds(selectedMessagesIDs.concat(item.id));
-            } else {
-              onSelectMessagesIds(selectedMessagesIDs.filter((id) => id !== item.id));
-            }
-          }}
-        />
-      ))}
-    </main>
+    <div className="scroll-bar-none flex-1 overflow-y-auto overflow-x-hidden">
+      <main className="m-auto w-full max-w-screen-xl overflow-auto p-4" ref={bottom}>
+        {currentChatData.length === 0 && (
+          <div className="m-auto mt-2 w-fit text-center text-secondary-foreground">
+            <IconSvg className="mr-1 inline-block w-10" />
+            开始提问吧～
+          </div>
+        )}
+        {currentChatData.map((item, index) => (
+          <ChatItem
+            key={index}
+            data={item}
+            isCheckedMode={isDownload}
+            isChecked={selectedMessagesIDs.includes(item.id || '')}
+            onCheckedChange={(val) => {
+              if (val) {
+                onSelectMessagesIds(selectedMessagesIDs.concat(item.id));
+              } else {
+                onSelectMessagesIds(selectedMessagesIDs.filter((id) => id !== item.id));
+              }
+            }}
+          />
+        ))}
+      </main>
+    </div>
   );
 };
 
