@@ -7,7 +7,6 @@ import { useUserStore, useBillingStore, useAppStore } from '@/store';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useMobileScreen } from '@/hooks/use-mobile-screen';
-import { copyToClipboard } from '@/utils';
 
 import { ShareDialog } from './ShareDialog';
 
@@ -80,7 +79,7 @@ export default function User() {
               <div className="mt-1">{`⏰ 有效期至：${currentBill.expired_at}`}</div>
             )}
           </div>
-          <Button size={'sm'} onClick={() => copyToClipboard('/billing')}>
+          <Button size={'sm'} onClick={() => navigate('/billing')}>
             去充值
           </Button>
         </div>

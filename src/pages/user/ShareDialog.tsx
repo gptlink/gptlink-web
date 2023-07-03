@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast';
 import { toJpeg } from 'html-to-image';
 import { saveAs } from 'file-saver';
 import { Loader2 } from 'lucide-react';
+import { useCopyToClipboard } from 'usehooks-ts';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import poster from '@/assets/poster.png';
@@ -20,7 +21,6 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useCopyToClipboard } from 'usehooks-ts';
 import { useMobileScreen } from '@/hooks/use-mobile-screen';
 import useTask from '@/hooks/use-task';
 import appService from '@/api/app';
