@@ -92,7 +92,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
             <AlertDialogTitle>分享海报</AlertDialogTitle>
           </AlertDialogHeader>
           <div className="w-full overflow-hidden">
-            <div className="mb-2 flex overflow-hidden">
+            <div className="mb-2 flex">
               <Input value={shareUrl} readOnly></Input>
               <Button
                 className="ml-2 shrink-0"
