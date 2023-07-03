@@ -56,11 +56,24 @@ export default {
       body: JSON.stringify(data),
     });
   },
-  login(data: { nickname: string; password: string }): Promise<{
-    user: UserInfoType;
-    access_token: string;
-  }> {
+  login(data: { nickname: string; password: string }): Promise<{ user: UserInfoType; access_token: string }> {
     return request('auth/login', {
+      method: 'post',
+      body: JSON.stringify(data),
+    });
+  },
+  getPhoneCode(mobile: string): Promise<{ data: string }> {
+    return request('sms/send-code', {
+      method: 'post',
+      body: JSON.stringify({ mobile }),
+    });
+  },
+  phoneLogin(data: {
+    mobile: string;
+    code: string;
+    oauth_id: string;
+  }): Promise<{ user: UserInfoType; access_token: string }> {
+    return request('sms/login', {
       method: 'post',
       body: JSON.stringify(data),
     });

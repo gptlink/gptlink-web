@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { MessageSquare, User, CreditCard, MoreHorizontal } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
-import { SystemLanguages, ThemeMode } from './Header';
+
+import { useAppStore } from '@/store';
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -9,6 +11,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+
+import { SystemLanguages, ThemeMode } from './Header';
 
 const TabBar = () => {
   const navList = [
@@ -26,6 +30,12 @@ const TabBar = () => {
     },
   ];
   const navigate = useNavigate();
+
+  const [theme, setTheme] = useAppStore((state) => [state.theme, state.setTheme]);
+
+  useEffect(() => {
+    setTheme(theme);
+  }, []);
 
   return (
     <div className="flex items-center justify-between border-t px-20 py-4 text-center">

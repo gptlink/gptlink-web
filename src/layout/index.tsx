@@ -4,7 +4,9 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import useAuth from '@/hooks/use-auth';
 import useAppConfig from '@/hooks/use-app-config';
 import { useMobileScreen } from '@/hooks/use-mobile-screen';
-import { useAppStore } from '@/store';
+import useWechat from '@/hooks/use-wechat';
+import useTask from '@/hooks/use-task';
+import { TaskTypeEnums } from '@/api/task';
 
 import Header from './Header';
 import { TitleHeader } from './TitleHeader';
@@ -13,13 +15,16 @@ import TabBar from './TabBar';
 const App = () => {
   const isMobileScreen = useMobileScreen();
   const navigate = useNavigate();
-  const [theme, setTheme] = useAppStore((state) => [state.theme, state.setTheme]);
+  const { setWeixinShare } = useWechat();
+  const { checkTask } = useTask();
 
   useEffect(() => {
     if (location.pathname === '/') {
       navigate('/chat');
     }
-    setTheme(theme);
+    setWeixinShare();
+    checkTask(TaskTypeEnums.REGISTER);
+    checkTask(TaskTypeEnums.INVITE);
   }, []);
 
   useAuth();

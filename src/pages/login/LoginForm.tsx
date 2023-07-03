@@ -98,6 +98,104 @@ export function LoginForm({ protocolChecked = false }) {
   );
 }
 
+let timer = 0;
+export function PhoneLoginForm({ oauthId = '', protocolChecked = false }) {
+  const CODE_SECONDS = 10;
+  const [setUserInfo, setAccessToken] = useUserStore((state) => [state.setUserInfo, state.setAccessToken]);
+  const navigate = useNavigate();
+  const formSchema = z.object({
+    mobile: z.string().refine((val) => /^(?:(?:\+|00)86)?1\d{10}$/.test(val), {
+      message: '错误的手机号码.',
+    }),
+    code: z.string().min(2, {
+      message: '请输入验证码.',
+    }),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      mobile: '',
+      code: '',
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const { user, access_token } = await userService.phoneLogin({ ...values, oauth_id: oauthId });
+      setUserInfo(user);
+      setAccessToken(access_token);
+      navigate('/chat');
+    } catch (e) {
+      toast.error(e as string);
+    }
+  };
+
+  const [time, setTime] = useState(0);
+
+  useEffect(() => {
+    if (time === CODE_SECONDS) timer = setInterval(() => setTime((time) => --time), 1000);
+    else if (time <= 0) timer && clearInterval(timer);
+  }, [time]);
+
+  const handleGetCode = async () => {
+    if (!/^(?:(?:\+|00)86)?1\d{10}$/.test(form.getValues('mobile'))) {
+      toast.error('错误的手机号码');
+      return;
+    }
+
+    try {
+      await userService.getPhoneCode(form.getValues('mobile'));
+      setTime(CODE_SECONDS);
+    } catch (e) {
+      toast.error(e as string);
+    }
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="mb-4 w-[70%] space-y-3">
+        <FormField
+          control={form.control}
+          name="mobile"
+          render={({ field }) => (
+            <FormItem>
+              <div className="flex items-center">
+                <FormLabel className="w-[3.5rem] shrink-0">手机号</FormLabel>
+                <FormControl>
+                  <Input placeholder="请输入手机号" {...field} />
+                </FormControl>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="code"
+          render={({ field }) => (
+            <FormItem>
+              <div className="flex items-center">
+                <FormLabel className="w-[3.5rem] shrink-0">验证码</FormLabel>
+                <FormControl>
+                  <Input placeholder="请输入密码" type="password" {...field} />
+                </FormControl>
+                <Button type="button" className="ml-2 shrink-0" onClick={() => handleGetCode()}>
+                  {time > 0 ? `${time}s` : '获取验证码'}
+                </Button>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" disabled={!protocolChecked} className="w-full">
+          登陆
+        </Button>
+      </form>
+    </Form>
+  );
+}
+
 export function RegisterDialog({ children }: { children: React.ReactNode }) {
   const [setUserInfo, setAccessToken] = useUserStore((state) => [state.setUserInfo, state.setAccessToken]);
   const navigate = useNavigate();

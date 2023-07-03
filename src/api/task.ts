@@ -7,6 +7,7 @@ export enum TaskTypeEnums {
 }
 
 export interface TaskType {
+  id: number;
   type: TaskTypeEnums;
   title: string;
   desc: string;
@@ -19,7 +20,30 @@ export default {
   getTaskList(platform: number): Promise<TaskType[]> {
     return request(`task?platform=${platform}`);
   },
-  completionTask(type: TaskTypeEnums): Promise<void> {
+  checkTask(type: TaskTypeEnums): Promise<{ result: boolean }> {
+    return request('task/check', { method: 'post', body: JSON.stringify({ type }) });
+  },
+  completionTask(type: TaskTypeEnums): Promise<{ result: boolean }> {
     return request('task/completion', { method: 'post', body: JSON.stringify({ type }) });
+  },
+  getUnreadTaskList(type: TaskTypeEnums): Promise<
+    {
+      type: TaskTypeEnums;
+      expired_day: number;
+      package_name: string;
+      num: number;
+      record_count: number;
+    }[]
+  > {
+    return request(`/task/record/unread?type=${type}`);
+  },
+  readTask(type: TaskTypeEnums): Promise<{
+    type: TaskTypeEnums;
+    expired_day: string;
+    package_name: string;
+    num: number;
+    record_count: number;
+  }> {
+    return request(`task/record/${type}/read`, { method: 'put' });
   },
 };
