@@ -4,8 +4,8 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { toast } from 'react-hot-toast';
 import { toJpeg } from 'html-to-image';
 import { saveAs } from 'file-saver';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
+import { ScrollArea } from '@/components/ui/scroll-area';
 import poster from '@/assets/poster.png';
 import {
   AlertDialog,
@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { copyToClipboard } from '@/utils';
 import { useMobileScreen } from '@/hooks/use-mobile-screen';
+import useTask from '@/hooks/use-task';
 
 type ShareDialogProps = {
   open: boolean;
@@ -32,9 +33,9 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
   const posterRef = useRef<HTMLDivElement>(null);
   const isMobileScreen = useMobileScreen();
   const [dataUrl, setDataUrl] = useState('');
+  const { shareCallback } = useTask();
 
   const drawImage = async (element: HTMLElement) => {
-    console.log(element);
     const res = await toJpeg(element, { style: { opacity: '1' } });
     setDataUrl(res);
   };
@@ -65,7 +66,15 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
           </div>,
           document.body,
         )}
-      <AlertDialog open={open} onOpenChange={handleOpenChange}>
+      <AlertDialog
+        open={open}
+        onOpenChange={(val) => {
+          if (!val) {
+            shareCallback();
+          }
+          handleOpenChange(val);
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>分享海报</AlertDialogTitle>

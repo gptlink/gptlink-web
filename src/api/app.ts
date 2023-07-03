@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import wx from 'weixin-js-sdk-ts';
 
 export interface ConfigAgreementType {
   title: string;
@@ -21,11 +22,26 @@ export interface AppConfigType {
   user_logo: string;
 }
 
+export interface JsSDKType {
+  debug: boolean;
+  beta: boolean;
+  jsApiList: wx.jsApiList;
+  openTagList: wx.openTagList;
+  appId: string;
+  nonceStr: string;
+  timestamp: number;
+  url: string;
+  signature: string;
+}
+
 export default {
   getConfigAgreement(): Promise<ConfigAgreementType> {
     return request('config/agreement');
   },
   getAppConfig(): Promise<AppConfigType> {
     return request('config/basic-info');
+  },
+  getJsSDK(url: string): Promise<JsSDKType> {
+    return request(`wechat/jssdk?url=${encodeURIComponent(url)}`);
   },
 };
