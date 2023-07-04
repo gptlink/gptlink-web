@@ -99,34 +99,36 @@ const UserDropDown = () => {
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="p-0 px-2">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={avatar || appConfig.user_logo} alt={nickname} />
-            <AvatarFallback>{nickname.slice(0, 1)}</AvatarFallback>
-          </Avatar>
-          <p className="ml-2">{nickname}</p>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align={'end'}>
-        <DropdownMenuItem
-          className="flex items-center gap-2"
-          onClick={() => {
-            if (!isLogin) {
-              navigate('/login');
-            } else {
-              navigate('/user');
-            }
-          }}
-        >
-          {!isLogin ? '请先登录' : '个人中心'}
-        </DropdownMenuItem>
-        <DropdownMenuItem className="flex items-center gap-2" onClick={() => handleSignOut()}>
-          退出登录
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      {isLogin ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="p-0 px-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={avatar || appConfig.user_logo} alt={nickname} />
+                <AvatarFallback>{nickname.slice(0, 1)}</AvatarFallback>
+              </Avatar>
+              <p className="ml-2">{nickname}</p>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align={'end'}>
+            <DropdownMenuItem
+              className="flex items-center gap-2"
+              onClick={() => {
+                navigate('/user');
+              }}
+            >
+              个人中心
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex items-center gap-2" onClick={() => handleSignOut()}>
+              退出登录
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <Button onClick={() => navigate('/login')}>去登陆</Button>
+      )}
+    </>
   );
 };
 

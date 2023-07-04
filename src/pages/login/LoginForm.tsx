@@ -126,7 +126,7 @@ export function PhoneLoginForm({ oauthId = '', protocolChecked = false }) {
       const { user, access_token } = await userService.phoneLogin({
         ...values,
         oauth_id: oauthId,
-        shareOpenId: localStorage.getItem(StoreKey.ShareOpenId) || '',
+        share_openid: localStorage.getItem(StoreKey.ShareOpenId) || '',
       });
       setUserInfo(user);
       setAccessToken(access_token);
@@ -232,7 +232,7 @@ export function RegisterDialog({ children }: { children: React.ReactNode }) {
     try {
       const { user, access_token } = await userService.register({
         ...omit(values, ['repassword']),
-        shareOpenId: localStorage.getItem(StoreKey.ShareOpenId) || '',
+        share_openid: localStorage.getItem(StoreKey.ShareOpenId) || '',
       });
       setUserInfo(user);
       setAccessToken(access_token);

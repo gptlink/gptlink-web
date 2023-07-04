@@ -44,7 +44,7 @@ const Footer = ({
       state.setStream,
     ],
   );
-  const [{ openid }, isLogin] = useUserStore((state) => [state.userInfo, state.isLogin]);
+  const [{ openid }, isLogin] = useUserStore((state) => [state.userInfo, state.isLogin()]);
   const [currentConversation, editConversation] = useChatStore((state) => [
     state.currentConversation,
     state.editConversation,
@@ -59,9 +59,11 @@ const Footer = ({
   const navigator = useNavigate();
 
   const handleSendUserMessage = async () => {
+    console.log(isLogin);
     if (!isLogin) {
       toast.error('请登录');
-      return navigator('/login');
+      navigator('/login');
+      return;
     }
     if (!currentChatData.length) {
       editConversation(currentConversation.uuid, { title: userInput });
