@@ -8,7 +8,7 @@ export interface ConfigAgreementType {
 }
 
 export enum LoginTypeEnum {
-  PASSWORD = '',
+  PASSWORD = '1',
   WECHAT = '2',
   PHONE = '3',
   WECHAT_AND_PHONE = '4',
