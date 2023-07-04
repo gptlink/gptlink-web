@@ -53,7 +53,7 @@ export function BillingRecordsDialog({ children }: { children: React.ReactNode }
               {userPackages.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell className="font-medium">{item.package_name}</TableCell>
-                  <TableCell>+{item.num}次</TableCell>
+                  <TableCell> {item.num === -1 ? `+${item.expired_day}天` : `${item.num}次`}</TableCell>
                   <TableCell className="text-right">{item.created_at}</TableCell>
                 </TableRow>
               ))}

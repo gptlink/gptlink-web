@@ -4,7 +4,7 @@ import taskService, { TaskTypeEnums } from '@/api/task';
 import { useUserStore } from '@/store';
 
 const useTask = () => {
-  const [isLogin] = useUserStore((state) => [state.isLogin]);
+  const [isLogin] = useUserStore((state) => [state.isLogin()]);
 
   // 分享成功
   async function shareCallback() {

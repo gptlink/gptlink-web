@@ -12,6 +12,7 @@ export interface UserPackageType {
   package_name: string;
   created_at: string;
   type: number;
+  expired_day: number;
 }
 
 export interface UserInfoType {
@@ -50,7 +51,7 @@ export default {
   getUserPackages(): Promise<UserPackageType[]> {
     return request('user/package/record');
   },
-  register(data: { nickname: string; mobile: string; password: string; shareOpenId: string }): Promise<{
+  register(data: { nickname: string; mobile: string; password: string; share_openid: string }): Promise<{
     user: UserInfoType;
     access_token: string;
   }> {
@@ -75,7 +76,7 @@ export default {
     mobile: string;
     code: string;
     oauth_id: string;
-    shareOpenId: string;
+    share_openid: string;
   }): Promise<{ user: UserInfoType; access_token: string }> {
     return request('sms/login', {
       method: 'post',
