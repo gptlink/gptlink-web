@@ -1,11 +1,13 @@
 import { API_DOMAIN } from './request';
 import { StoreKey } from '@/constants';
+import { isEmpty } from 'lodash-es';
 
 export enum StatusEnum {
   START = 'start',
   PENDING = 'pending',
   SUCCESS = 'success',
   ERROR = 'error',
+  ABORT = 'abort',
 }
 
 interface StreamResponseType {
@@ -38,7 +40,7 @@ export default class StreamAPI {
   }
 
   abort() {
-    this.status = StatusEnum.SUCCESS;
+    this.status = StatusEnum.ABORT;
   }
 
   async send({ message, modelId, requestId, lastId, onProgress, onFinish, onError }: SendMessageType) {
@@ -105,10 +107,19 @@ export default class StreamAPI {
         }
       }
     }
+    if (this.status === StatusEnum.ABORT) {
+      this.status = StatusEnum.SUCCESS;
+      resChunkValue.messages = resChunkValue.messages + '\n[您中断了回答，若继续请刷新重试！]';
+      onFinish(resChunkValue);
+    }
 
     if (done || this.status === StatusEnum.SUCCESS) {
       this.status = StatusEnum.SUCCESS;
-      onFinish(resChunkValue);
+      if (isEmpty(resChunkValue)) {
+        onError('无响应数据，请重试');
+      } else {
+        onFinish(resChunkValue);
+      }
     }
   }
 }

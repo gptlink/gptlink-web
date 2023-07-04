@@ -14,7 +14,7 @@ export const initWxConfig = (config: JsSDKType) => {
     timestamp: config.timestamp,
     nonceStr: config.nonceStr,
     signature: config.signature,
-    jsApiList: config.jsApiList,
+    jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'updateTimelineShareData', 'updateAppMessageShareData'],
     openTagList: config.openTagList,
   });
 };
@@ -72,13 +72,15 @@ const useWechat = () => {
   };
 
   const setWeixinShare = async () => {
-    if (!isWeixinBrowser) return;
-    const config = await appService.getJsSDK(window.location.href);
+    const [config, shareConfig] = await Promise.all([
+      appService.getJsSDK(window.location.href),
+      appService.getShareConfig(),
+    ]);
 
     const params = {
-      title: '你身边的好友邀请你加入「智能AI助手」',
+      title: shareConfig.title,
       link: `${window.location.origin}${openid ? `/?shareOpenId=${openid}` : ''}`,
-      imgUrl: '',
+      imgUrl: shareConfig.img_url,
       desc: '',
     };
 

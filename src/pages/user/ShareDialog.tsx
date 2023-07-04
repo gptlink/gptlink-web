@@ -4,6 +4,8 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { toast } from 'react-hot-toast';
 import { toJpeg } from 'html-to-image';
 import { saveAs } from 'file-saver';
+import { Loader2 } from 'lucide-react';
+import { useCopyToClipboard } from 'usehooks-ts';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import poster from '@/assets/poster.png';
@@ -19,7 +21,6 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { copyToClipboard } from '@/utils';
 import { useMobileScreen } from '@/hooks/use-mobile-screen';
 import useTask from '@/hooks/use-task';
 
@@ -31,8 +32,10 @@ type ShareDialogProps = {
 
 export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogProps) {
   const posterRef = useRef<HTMLDivElement>(null);
+  const [, copy] = useCopyToClipboard();
   const isMobileScreen = useMobileScreen();
   const [dataUrl, setDataUrl] = useState('');
+  const [loading, setLoading] = useState(false);
   const { shareCallback } = useTask();
 
   const drawImage = async (element: HTMLElement) => {
@@ -42,10 +45,12 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
 
   useEffect(() => {
     if (open) {
+      setLoading(true);
       setTimeout(() => {
+        setLoading(false);
         if (!posterRef.current) return;
         drawImage(posterRef.current);
-      }, 100);
+      }, 200);
     }
   }, [open]);
 
@@ -79,23 +84,33 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
           <AlertDialogHeader>
             <AlertDialogTitle>分享海报</AlertDialogTitle>
           </AlertDialogHeader>
-          <div>
+          <div className="w-full overflow-hidden">
             <div className="mb-2 flex">
               <Input value={shareUrl} readOnly></Input>
               <Button
                 className="ml-2 shrink-0"
                 onClick={() => {
-                  copyToClipboard(shareUrl);
-                  toast.success('复制成功');
+                  try {
+                    copy(shareUrl);
+                    toast.success('复制成功');
+                  } catch {
+                    toast.error('复制失败');
+                  }
                 }}
               >
                 复制链接
               </Button>
             </div>
             <ScrollArea>
-              <AlertDialogDescription className="h-[35rem] max-sm:h-[25rem]">
-                <img src={dataUrl} className="w-full" alt="" />
-              </AlertDialogDescription>
+              <div className="h-[35rem] max-sm:h-[25rem]">
+                {loading ? (
+                  <div className="p-48">
+                    <Loader2 className="m-auto animate-spin" />
+                  </div>
+                ) : (
+                  <img src={dataUrl} className="w-full" alt="" />
+                )}
+              </div>
             </ScrollArea>
 
             <AlertDialogDescription className="mt-2 text-center">

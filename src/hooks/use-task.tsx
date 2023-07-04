@@ -1,8 +1,11 @@
-import taskService, { TaskTypeEnums } from '@/api/task';
 import toast from 'react-hot-toast';
-import { StoreKey } from '@/constants';
+
+import taskService, { TaskTypeEnums } from '@/api/task';
+import { useUserStore } from '@/store';
 
 const useTask = () => {
+  const [isLogin] = useUserStore((state) => [state.isLogin]);
+
   // 分享成功
   async function shareCallback() {
     const type = TaskTypeEnums.SHARE;
@@ -24,7 +27,7 @@ const useTask = () => {
   }
 
   async function checkTask(type: TaskTypeEnums) {
-    if (!localStorage.getItem(StoreKey.AccessToken)) return;
+    if (!isLogin) return;
     const { result } = await taskService.checkTask(type);
     if (!result) return;
     //查询未完成的任务

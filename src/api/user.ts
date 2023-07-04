@@ -35,8 +35,11 @@ export default {
   getWxQrCode(type: string, redirectUrl: string): Promise<WxQrCodeType> {
     return request(`wechat/${type}/qrcode?type=${type}&redirect_url=${redirectUrl}`);
   },
-  getUserInfoByCode(type: string, code: string): Promise<UserInfoByCodeType> {
-    return request(`wechat/${type}/login`, { method: 'post', body: JSON.stringify({ code, type, share_openid: '' }) });
+  getUserInfoByCode(type: string, code: string, shareOpenid: string): Promise<UserInfoByCodeType> {
+    return request(`wechat/${type}/login`, {
+      method: 'post',
+      body: JSON.stringify({ code, type, share_openid: shareOpenid }),
+    });
   },
   getUserProfile(): Promise<UserInfoType> {
     return request('user/profile');
@@ -47,7 +50,7 @@ export default {
   getUserPackages(): Promise<UserPackageType[]> {
     return request('user/package/record');
   },
-  register(data: { nickname: string; mobile: string; password: string }): Promise<{
+  register(data: { nickname: string; mobile: string; password: string; shareOpenId: string }): Promise<{
     user: UserInfoType;
     access_token: string;
   }> {
@@ -72,6 +75,7 @@ export default {
     mobile: string;
     code: string;
     oauth_id: string;
+    shareOpenId: string;
   }): Promise<{ user: UserInfoType; access_token: string }> {
     return request('sms/login', {
       method: 'post',

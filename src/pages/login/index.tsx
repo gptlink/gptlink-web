@@ -2,17 +2,17 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
-import { LoginType } from '@/constants';
+import { LoginType, StoreKey } from '@/constants';
 import { useUserStore, useAppStore } from '@/store';
 import userServices from '@/api/user';
 import { LoginTypeEnum } from '@/api/app';
 import Header from '@/layout/Header';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import useAuth from '@/hooks/use-auth';
 import useAppConfig from '@/hooks/use-app-config';
 import useWechat from '@/hooks/use-wechat';
+import useShareOpenid from '@/hooks/use-share-openid';
 
 import { PrivacyProtocol } from './Protocol';
 import { QrCodeDialog } from './QrCodeDialog';
@@ -51,6 +51,7 @@ export default function Login() {
         const res = await userServices.getUserInfoByCode(
           isWeixinBrowser ? LoginType.WEIXIN : LoginType.WEIXIN_WEB,
           code,
+          localStorage.getItem(StoreKey.ShareOpenId) || '',
         );
         if (res.oauth_id) {
           setOauthId(res.oauth_id);
@@ -71,6 +72,7 @@ export default function Login() {
   }, []);
 
   useAuth();
+  useShareOpenid();
   const appConfig = useAppConfig();
 
   return (
@@ -79,7 +81,7 @@ export default function Login() {
       <div className="flex flex-1 items-center justify-center">
         <div className="flex w-[32rem] -translate-y-10 rounded-xl border pb-24 pt-10 shadow max-sm:w-[22rem]">
           <Tabs
-            value={loginType}
+            value={loginType + ''}
             className="flex w-full flex-col items-center"
             onValueChange={(val) => setLoginType(val as LoginTypeEnum)}
           >
@@ -89,20 +91,16 @@ export default function Login() {
                 <TabsTrigger value={LoginTypeEnum.PASSWORD}>账号密码登陆</TabsTrigger>
               </TabsList>
             )}
-
             <img src={appConfig.web_logo} className="mb-4 w-40 rounded-full" />
             <div className="text-3xl font-bold"> {appConfig.name} </div>
-
             <TabsContent value={LoginTypeEnum.WECHAT} className="flex w-full flex-col items-center">
               <Button className="mb-4 mt-12 w-[70%]" disabled={!protocolChecked} onClick={handleLogin}>
-                微信扫码登录
+                {isWeixinBrowser ? '微信登陆' : '微信扫码登录'}
               </Button>
             </TabsContent>
-
             <TabsContent value={LoginTypeEnum.PASSWORD} className="flex w-full flex-col items-center">
               <LoginForm protocolChecked={protocolChecked}></LoginForm>
             </TabsContent>
-
             <TabsContent value={LoginTypeEnum.WECHAT_AND_PHONE} className="flex w-full flex-col items-center">
               {oauthId ? (
                 <PhoneLoginForm oauthId={oauthId} protocolChecked={protocolChecked}></PhoneLoginForm>
@@ -113,16 +111,11 @@ export default function Login() {
                 </Button>
               )}
             </TabsContent>
-
             <div className="flex items-center text-xs">
-              <Checkbox
+              <PrivacyProtocol
                 checked={protocolChecked}
-                id="terms"
-                className="mr-2"
                 onCheckedChange={(val) => setProtocolChecked(val as boolean)}
               />
-              我已阅读并同意
-              <PrivacyProtocol />
             </div>
           </Tabs>
           {loginType === LoginTypeEnum.PASSWORD && (

@@ -6,6 +6,8 @@ import useAppConfig from '@/hooks/use-app-config';
 import { useMobileScreen } from '@/hooks/use-mobile-screen';
 import useWechat from '@/hooks/use-wechat';
 import useTask from '@/hooks/use-task';
+import useShareOpenid from '@/hooks/use-share-openid';
+
 import { TaskTypeEnums } from '@/api/task';
 
 import Header from './Header';
@@ -29,6 +31,7 @@ const App = () => {
 
   useAuth();
   useAppConfig();
+  useShareOpenid();
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">

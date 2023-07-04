@@ -8,13 +8,13 @@ import RemarkBreaks from 'remark-breaks';
 import RemarkGfm from 'remark-gfm';
 import RemarkMath from 'remark-math';
 import rehypeRaw from 'rehype-raw';
+import { useCopyToClipboard } from 'usehooks-ts';
 
 import { Button } from './ui/button';
 
-import { copyToClipboard } from '@/utils';
-
 export function PreCode(props: { children: ReactNode }) {
   const ref = useRef<HTMLPreElement>(null);
+  const [, copy] = useCopyToClipboard();
 
   return (
     <pre ref={ref} className="group relative mt-2 overflow-auto rounded bg-primary/90 p-2 text-primary-foreground">
@@ -24,9 +24,13 @@ export function PreCode(props: { children: ReactNode }) {
         className="absolute right-0 mr-2 hidden h-6 w-6 rounded p-0 group-hover:flex"
         onClick={() => {
           if (ref.current) {
-            const code = ref.current.innerText;
-            copyToClipboard(code);
-            toast.success('已复制到剪贴板');
+            try {
+              const code = ref.current.innerText;
+              copy(code);
+              toast.success('已复制到剪贴板');
+            } catch {
+              toast.error('复制失败');
+            }
           }
         }}
       >

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { MessageSquare, User, CreditCard, MoreHorizontal } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { MessageSquare, User, CreditCard, MoreHorizontal, Github } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+
 import classNames from 'classnames';
 
 import { useAppStore } from '@/store';
@@ -12,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 
-import { SystemLanguages, ThemeMode } from './Header';
+import { ThemeMode } from './Header';
 
 const TabBar = () => {
   const navList = [
@@ -57,9 +58,13 @@ const TabBar = () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="top" align={'start'}>
-          <DropdownMenuItem className="flex items-center gap-2">
-            <SystemLanguages />
+          <DropdownMenuItem className="flex items-center gap-2 pr-3">
             <ThemeMode />
+            <Link to="https://github.com/gptlink/gptlink-web" target="_blank">
+              <Button variant="ghost" className="p-0 px-2">
+                <Github size={18} />
+              </Button>
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
