@@ -59,7 +59,6 @@ const Footer = ({
   const navigator = useNavigate();
 
   const handleSendUserMessage = async () => {
-    console.log(isLogin);
     if (!isLogin) {
       toast.error('请登录');
       navigator('/login');
