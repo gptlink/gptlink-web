@@ -28,8 +28,16 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
   const [, copy] = useCopyToClipboard();
 
   const drawImage = async (element: HTMLElement) => {
-    const res = await toJpeg(element, { style: { opacity: '1' } });
-    setDataUrl(res);
+    try {
+      const res = await toJpeg(element, { style: { opacity: '1' } });
+      if (!res) {
+        alert('生成失败');
+        drawImage(element);
+      }
+      setDataUrl(res);
+    } catch {
+      alert('生成失败2');
+    }
   };
 
   useEffect(() => {
