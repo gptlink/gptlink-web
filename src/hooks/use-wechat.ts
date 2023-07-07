@@ -94,7 +94,7 @@ const useWechat = () => {
       },
     };
 
-    initWxConfig(config);
+    initWxConfig(config.data);
 
     wx.updateAppMessageShareData(opt);
     wx.updateTimelineShareData(opt);

@@ -26,15 +26,13 @@ export default {
   completionTask(type: TaskTypeEnums): Promise<{ result: boolean }> {
     return request('task/completion', { method: 'post', body: JSON.stringify({ type }) });
   },
-  getUnreadTaskList(type: TaskTypeEnums): Promise<
-    {
-      type: TaskTypeEnums;
-      expired_day: number;
-      package_name: string;
-      num: number;
-      record_count: number;
-    }[]
-  > {
+  getUnreadTaskList(type: TaskTypeEnums): Promise<{
+    type: TaskTypeEnums;
+    expired_day: number;
+    package_name: string;
+    num: number;
+    record_count: number;
+  }> {
     return request(`/task/record/unread?type=${type}`);
   },
   readTask(type: TaskTypeEnums): Promise<{
