@@ -1,17 +1,16 @@
 import { useRef, useEffect, useState } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
-
 import { toast } from 'react-hot-toast';
-import { toJpeg } from 'html-to-image';
+import { toSvg, toPng } from 'html-to-image';
+import { saveAs } from 'file-saver';
+import { useCopyToClipboard } from 'usehooks-ts';
 
 import poster from '@/assets/poster.png';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { saveAs } from 'file-saver';
-import { useCopyToClipboard } from 'usehooks-ts';
 import { useMobileScreen } from '@/hooks/use-mobile-screen';
+import useWechat from '@/hooks/use-wechat';
 import useTask from '@/hooks/use-task';
 
 type ShareDialogProps = {
@@ -26,25 +25,21 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
   const [dataUrl, setDataUrl] = useState('');
   const { shareCallback } = useTask();
   const [, copy] = useCopyToClipboard();
+  const { isWeixinBrowser } = useWechat();
 
-  const drawImage = async (element: HTMLElement) => {
-    try {
-      const res = await toJpeg(element, { style: { opacity: '1' } });
-      if (!res) {
-        alert('生成失败');
-        drawImage(element);
-      }
-      setDataUrl(res);
-    } catch {
-      alert('生成失败2');
-    }
+  const drawImage = async () => {
+    if (!posterRef.current) return;
+    // 微信浏览器中 toPng 方法，偶发生成失败，所以使用 toSvg 方法
+    const drawImageFn = isWeixinBrowser ? toSvg : toPng;
+    const res = await drawImageFn(posterRef.current, { style: { opacity: '1' } });
+
+    setDataUrl(res);
   };
 
   useEffect(() => {
     if (open) {
       setTimeout(() => {
-        if (!posterRef.current) return;
-        drawImage(posterRef.current);
+        drawImage();
       }, 500);
     }
   }, [open]);
@@ -74,7 +69,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
               复制链接
             </Button>
           </div>
-          <div className="relative overflow-auto max-sm:h-[25rem]">
+          <div className="relative overflow-auto max-sm:h-[30rem]">
             <img src={dataUrl} className="absolute left-0 top-0 z-10 w-full" alt="" />
             <div className="relative" ref={posterRef}>
               <img src={poster} className="w-full" />
