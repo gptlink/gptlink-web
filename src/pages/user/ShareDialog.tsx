@@ -37,7 +37,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
       setTimeout(() => {
         if (!posterRef.current) return;
         drawImage(posterRef.current);
-      }, 300);
+      }, 500);
     }
   }, [open]);
 
@@ -67,7 +67,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
             </Button>
           </div>
           <div className="relative overflow-auto max-sm:h-[25rem]">
-            <img src={dataUrl} className="absolute left-0 top-0 w-full" alt="" />
+            <img src={dataUrl} className="absolute left-0 top-0 z-10 w-full" alt="" />
             <div className="relative" ref={posterRef}>
               <img src={poster} className="w-full" />
               <QRCodeCanvas
