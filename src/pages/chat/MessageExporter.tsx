@@ -34,7 +34,7 @@ const MessageExporter = ({ messages, shareUrl }: { messages: ChatItemType[]; sha
       if (!messagesRef.current) return;
       const res = await toJpeg(messagesRef.current, { style: { opacity: '1' } });
       setDataUrl(res);
-    }, 100);
+    }, 300);
 
     setOpen(true);
   };
