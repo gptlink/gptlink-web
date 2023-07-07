@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { toJpeg } from 'html-to-image';
+import { toPng, toSvg } from 'html-to-image';
 import { DownloadIcon } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { saveAs } from 'file-saver';
@@ -9,6 +9,7 @@ import { ChatItemType, useChatStore } from '@/store';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useMobileScreen } from '@/hooks/use-mobile-screen';
+import useWechat from '@/hooks/use-wechat';
 
 import { ChatItem } from './ChatItem';
 import {
@@ -28,13 +29,16 @@ const MessageExporter = ({ messages, shareUrl }: { messages: ChatItemType[]; sha
   const [dataUrl, setDataUrl] = useState('');
   const isMobileScreen = useMobileScreen();
   const [currentConversation] = useChatStore((state) => [state.currentConversation]);
+  const { isWeixinBrowser } = useWechat();
 
   const drawImage = async () => {
     setTimeout(async () => {
       if (!messagesRef.current) return;
-      const res = await toJpeg(messagesRef.current, { style: { opacity: '1' } });
+      // 微信浏览器中 toPng 方法，偶发生成失败，所以使用 toSvg 方法
+      const drawImageFn = isWeixinBrowser ? toSvg : toPng;
+      const res = await drawImageFn(messagesRef.current, { style: { opacity: '1' } });
       setDataUrl(res);
-    }, 100);
+    }, 300);
 
     setOpen(true);
   };

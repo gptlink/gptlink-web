@@ -49,7 +49,9 @@ export default {
   getAppConfig(): Promise<AppConfigType> {
     return request('config/basic-info');
   },
-  getJsSDK(url: string): Promise<JsSDKType> {
+  getJsSDK(url: string): Promise<{
+    data: JsSDKType;
+  }> {
     return request(`wechat/jssdk?url=${encodeURIComponent(url)}`);
   },
   getShareConfig(): Promise<ShareConfigType> {
