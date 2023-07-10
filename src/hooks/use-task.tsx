@@ -3,17 +3,22 @@ import { isEmpty } from 'lodash-es';
 
 import taskService, { TaskTypeEnums } from '@/api/task';
 import { useUserStore } from '@/store';
+import { useBillingStore } from '@/store';
 
 const useTask = () => {
   const [isLogin] = useUserStore((state) => [state.isLogin()]);
+  const [getCurrentBilling] = useBillingStore((state) => [state.getCurrentBilling]);
 
   // 分享成功
   async function shareCallback() {
     const type = TaskTypeEnums.SHARE;
+    const { result } = await taskService.completionTask(type);
+    if (!result) return;
     const unreadTask = await taskService.getUnreadTaskList(type);
     if (!isEmpty(unreadTask)) {
       // 修改记录为已读
       await taskService.readTask(type);
+      getCurrentBilling();
       toast(() => (
         <div>
           <div className="bold text-lg">👏 今日分享已完成！</div>
@@ -23,7 +28,7 @@ const useTask = () => {
                 ? `您的对话使用时长将延长${unreadTask.expired_day}天`
                 : `您的对话次数将增加${unreadTask.num}次`
             }
-              ，请前往使用吧`}
+                ，请前往使用吧`}
           </div>
         </div>
       ));
@@ -38,6 +43,7 @@ const useTask = () => {
     const unreadTask = await taskService.getUnreadTaskList(type);
     if (!isEmpty(unreadTask)) {
       await taskService.readTask(type);
+      getCurrentBilling();
       toast(() => (
         <div>
           <div className="bold text-lg">
