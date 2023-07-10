@@ -53,7 +53,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
         handleOpenChange(val);
       }}
     >
-      <DialogContent className="w-[25rem]">
+      <DialogContent id="shareBody" className="w-[25rem]">
         <DialogTitle>分享</DialogTitle>
         <div>
           <div className="mb-2 flex">
@@ -61,7 +61,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
             <Button
               className="ml-2 shrink-0"
               onClick={() => {
-                copyToClipboard(shareUrl);
+                copyToClipboard(shareUrl, document.getElementById('shareBody'));
                 toast.success('复制成功');
               }}
             >
