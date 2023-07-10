@@ -3,7 +3,6 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { toast } from 'react-hot-toast';
 import { toSvg, toPng } from 'html-to-image';
 import { saveAs } from 'file-saver';
-import { useCopyToClipboard } from 'usehooks-ts';
 
 import poster from '@/assets/poster.png';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -12,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { useMobileScreen } from '@/hooks/use-mobile-screen';
 import useWechat from '@/hooks/use-wechat';
 import useTask from '@/hooks/use-task';
+import { copyToClipboard } from '@/utils';
 
 type ShareDialogProps = {
   open: boolean;
@@ -24,7 +24,6 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
   const isMobileScreen = useMobileScreen();
   const [dataUrl, setDataUrl] = useState('');
   const { shareCallback } = useTask();
-  const [, copy] = useCopyToClipboard();
   const { isWeixinBrowser } = useWechat();
 
   const drawImage = async () => {
@@ -54,7 +53,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
         handleOpenChange(val);
       }}
     >
-      <DialogContent className="w-[25rem]">
+      <DialogContent id="shareBody" className="w-[25rem]">
         <DialogTitle>分享</DialogTitle>
         <div>
           <div className="mb-2 flex">
@@ -62,7 +61,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
             <Button
               className="ml-2 shrink-0"
               onClick={() => {
-                copy(shareUrl);
+                copyToClipboard(shareUrl, document.getElementById('shareBody'));
                 toast.success('复制成功');
               }}
             >

@@ -2,9 +2,9 @@ import classNames from 'classnames';
 import { RefreshCcwIcon, CopyIcon, Loader2 } from 'lucide-react';
 import dayjs from 'dayjs';
 import toast from 'react-hot-toast';
-import { useCopyToClipboard } from 'usehooks-ts';
 
 import { useUserStore, useChatStore, RoleTypeEnum, ChatItemType, useAppStore } from '@/store';
+import { copyToClipboard } from '@/utils';
 import { StatusEnum } from '@/utils/stream-api';
 import { Markdown } from '@/components/Markdown';
 import IconSvg from '@/components/Icon';
@@ -27,15 +27,10 @@ export const ChatItem = ({
   const [{ nickname, avatar }] = useUserStore((state) => [state.userInfo]);
   const [regenerateChat] = useChatStore((state) => [state.regenerateChat]);
   const [appConfig] = useAppStore((state) => [state.appConfig]);
-  const [, copy] = useCopyToClipboard();
 
   const handleCopy = () => {
-    try {
-      copy(data.text);
-      toast.success('已复制到剪贴板');
-    } catch {
-      toast.error('复制失败');
-    }
+    copyToClipboard(data.text);
+    toast.success('已复制到剪贴板');
   };
 
   const renderContent = () => {
@@ -97,7 +92,7 @@ export const ChatItem = ({
                       onClick={() => regenerateChat(data.requestId)}
                     />
                   )}
-                  {!data.error && <CopyIcon className="hover:cursor-pointer" size={12} onClick={handleCopy} />}
+                  <CopyIcon className="hover:cursor-pointer" size={12} onClick={handleCopy} />
                 </>
               )}
             </div>
