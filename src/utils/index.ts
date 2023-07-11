@@ -19,6 +19,11 @@ export async function copyToClipboard(text: string, targetDom?: Element | null) 
     }
     textarea.select();
     document.execCommand('copy');
-    document.body.removeChild(textarea);
+
+    if (targetDom) {
+      targetDom.removeChild(textarea);
+    } else {
+      document.body.removeChild(textarea);
+    }
   }
 }
