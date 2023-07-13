@@ -11,6 +11,7 @@ const useTask = () => {
 
   // 分享成功
   async function shareCallback() {
+    if (!isLogin) return;
     const type = TaskTypeEnums.SHARE;
     const { result } = await taskService.completionTask(type);
     if (!result) return;
