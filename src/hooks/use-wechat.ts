@@ -82,6 +82,12 @@ const useWechat = () => {
       link: `${window.location.origin}${openid ? `/?shareOpenId=${openid}` : ''}`,
       imgUrl: shareConfig.img_url,
       desc: '',
+      success: () => {
+        console.log('设置成功');
+      },
+      cancel: () => {
+        toast.error('设置失败');
+      },
     };
 
     const opt = {
@@ -96,8 +102,8 @@ const useWechat = () => {
 
     initWxConfig(config.data);
 
-    wx.updateAppMessageShareData(opt);
-    wx.updateTimelineShareData(opt);
+    wx.updateAppMessageShareData(params);
+    wx.updateTimelineShareData(params);
     wx.onMenuShareTimeline(opt);
     wx.onMenuShareAppMessage(opt);
 
