@@ -164,7 +164,12 @@ export function PhoneLoginForm({ oauthId = '', protocolChecked = false }) {
                 <FormControl>
                   <Input placeholder="请输入密码" type="password" {...field} />
                 </FormControl>
-                <Button type="button" className="ml-2 shrink-0" onClick={() => handleGetCode(form.getValues('mobile'))}>
+                <Button
+                  type="button"
+                  className="ml-2 shrink-0"
+                  disabled={time > 0}
+                  onClick={() => handleGetCode(form.getValues('mobile'))}
+                >
                   {time > 0 ? `${time}s` : '获取验证码'}
                 </Button>
               </div>
@@ -283,6 +288,7 @@ export function RegisterDialog({ children }: { children: React.ReactNode }) {
                           <Button
                             type="button"
                             className="ml-2 shrink-0"
+                            disabled={time > 0}
                             onClick={() => handleGetCode(form.getValues('mobile'))}
                           >
                             {time > 0 ? `${time}s` : '获取验证码'}
@@ -470,9 +476,10 @@ export function RetrievePasswordDialog({ children }: { children: React.ReactNode
                       <Button
                         type="button"
                         className="ml-2 shrink-0"
+                        disabled={time > 0}
                         onClick={() => handleGetCode(form.getValues('verify'))}
                       >
-                        {time > 0 ? `${time}s` : '获取验证码'}
+                        {time > 0 ? `${time} s` : '获取验证码'}
                       </Button>
                     </div>
                     <FormMessage />

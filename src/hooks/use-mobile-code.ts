@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import userService from '@/api/user';
 import toast from 'react-hot-toast';
 
-const CODE_SECONDS = 10;
+const CODE_SECONDS = 60;
 
 const useMobileCode = () => {
   let timer = 0;
