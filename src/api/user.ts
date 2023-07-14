@@ -51,7 +51,7 @@ export default {
   getUserPackages(): Promise<UserPackageType[]> {
     return request('user/package/record');
   },
-  register(data: { nickname: string; mobile: string; password: string; share_openid: string }): Promise<{
+  register(data: { nickname: string; mobile: string; password: string; share_openid: string; code: string }): Promise<{
     user: UserInfoType;
     access_token: string;
   }> {
@@ -90,6 +90,7 @@ export default {
     reenteredPassword: string;
     verify: string;
     verify_type: number;
+    code: string;
   }): Promise<UserInfoType> {
     return request('auth/reset', {
       method: 'post',

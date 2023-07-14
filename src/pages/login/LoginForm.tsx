@@ -7,7 +7,8 @@ import { omit } from 'lodash-es';
 import { useNavigate } from 'react-router-dom';
 
 import userService from '@/api/user';
-import { useUserStore } from '@/store';
+import { useUserStore, useAppStore } from '@/store';
+import useMobileCode from '@/hooks/use-mobile-code';
 import { StoreKey } from '@/constants';
 import {
   Dialog,
@@ -99,9 +100,8 @@ export function LoginForm({ protocolChecked = false }) {
   );
 }
 
-let timer = 0;
 export function PhoneLoginForm({ oauthId = '', protocolChecked = false }) {
-  const CODE_SECONDS = 10;
+  const { time, handleGetCode } = useMobileCode();
   const [setUserInfo, setAccessToken] = useUserStore((state) => [state.setUserInfo, state.setAccessToken]);
   const navigate = useNavigate();
   const formSchema = z.object({
@@ -136,27 +136,6 @@ export function PhoneLoginForm({ oauthId = '', protocolChecked = false }) {
     }
   };
 
-  const [time, setTime] = useState(0);
-
-  useEffect(() => {
-    if (time === CODE_SECONDS) timer = setInterval(() => setTime((time) => --time), 1000);
-    else if (time <= 0) timer && clearInterval(timer);
-  }, [time]);
-
-  const handleGetCode = async () => {
-    if (!/^(?:(?:\+|00)86)?1\d{10}$/.test(form.getValues('mobile'))) {
-      toast.error('错误的手机号码');
-      return;
-    }
-
-    try {
-      await userService.getPhoneCode(form.getValues('mobile'));
-      setTime(CODE_SECONDS);
-    } catch (e) {
-      toast.error(e as string);
-    }
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="mb-4 w-[70%] space-y-3">
@@ -185,7 +164,12 @@ export function PhoneLoginForm({ oauthId = '', protocolChecked = false }) {
                 <FormControl>
                   <Input placeholder="请输入密码" type="password" {...field} />
                 </FormControl>
-                <Button type="button" className="ml-2 shrink-0" onClick={() => handleGetCode()}>
+                <Button
+                  type="button"
+                  className="ml-2 shrink-0"
+                  disabled={time > 0}
+                  onClick={() => handleGetCode(form.getValues('mobile'))}
+                >
                   {time > 0 ? `${time}s` : '获取验证码'}
                 </Button>
               </div>
@@ -204,6 +188,8 @@ export function PhoneLoginForm({ oauthId = '', protocolChecked = false }) {
 export function RegisterDialog({ children }: { children: React.ReactNode }) {
   const [setUserInfo, setAccessToken] = useUserStore((state) => [state.setUserInfo, state.setAccessToken]);
   const navigate = useNavigate();
+  const { time, handleGetCode } = useMobileCode();
+  const [appConfig] = useAppStore((state) => [state.appConfig]);
   const formSchema = z.object({
     mobile: z.string().refine((val) => /^(?:(?:\+|00)86)?1\d{10}$/.test(val), {
       message: '错误的手机号码.',
@@ -211,6 +197,11 @@ export function RegisterDialog({ children }: { children: React.ReactNode }) {
     repassword: z.string().min(2, {
       message: '请输入密码.',
     }),
+    code: appConfig.mobile_verify
+      ? z.string().min(2, {
+          message: '请输入验证码.',
+        })
+      : z.string(),
     ...baseForm,
   });
 
@@ -221,6 +212,7 @@ export function RegisterDialog({ children }: { children: React.ReactNode }) {
       password: '',
       mobile: '',
       repassword: '',
+      code: '',
     },
   });
 
@@ -233,6 +225,7 @@ export function RegisterDialog({ children }: { children: React.ReactNode }) {
       const { user, access_token } = await userService.register({
         ...omit(values, ['repassword']),
         share_openid: localStorage.getItem(StoreKey.ShareOpenId) || '',
+        code: appConfig.mobile_verify ? values.code : '',
       });
       setUserInfo(user);
       setAccessToken(access_token);
@@ -281,6 +274,31 @@ export function RegisterDialog({ children }: { children: React.ReactNode }) {
                     </FormItem>
                   )}
                 />
+                {appConfig.mobile_verify && (
+                  <FormField
+                    control={form.control}
+                    name="code"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center">
+                          <FormLabel className="w-[4rem] shrink-0">验证码</FormLabel>
+                          <FormControl>
+                            <Input placeholder="请输入密码" type="password" {...field} />
+                          </FormControl>
+                          <Button
+                            type="button"
+                            className="ml-2 shrink-0"
+                            disabled={time > 0}
+                            onClick={() => handleGetCode(form.getValues('mobile'))}
+                          >
+                            {time > 0 ? `${time}s` : '获取验证码'}
+                          </Button>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
                 <FormField
                   control={form.control}
                   name="password"
@@ -330,6 +348,8 @@ export function RetrievePasswordDialog({ children }: { children: React.ReactNode
   }
 
   const [verifyType, setVerifyType] = useState(VerifyTypeEnum.OldPassword);
+  const { time, handleGetCode } = useMobileCode();
+  const [appConfig] = useAppStore((state) => [state.appConfig]);
 
   const formSchema = useMemo(() => {
     return z.object({
@@ -342,6 +362,11 @@ export function RetrievePasswordDialog({ children }: { children: React.ReactNode
       repassword: z.string().min(2, {
         message: '请输入密码.',
       }),
+      code: appConfig.mobile_verify
+        ? z.string().min(2, {
+            message: '请输入验证码.',
+          })
+        : z.string(),
       verify:
         verifyType === VerifyTypeEnum.OldPassword
           ? z.string().min(2, { message: '请输入密码.' })
@@ -356,6 +381,7 @@ export function RetrievePasswordDialog({ children }: { children: React.ReactNode
       password: '',
       repassword: '',
       verify: '',
+      code: '',
     },
   });
 
@@ -370,6 +396,7 @@ export function RetrievePasswordDialog({ children }: { children: React.ReactNode
         mobile: verifyType === VerifyTypeEnum.Mobile ? values.verify : '',
         reenteredPassword: verifyType === VerifyTypeEnum.OldPassword ? values.verify : '',
         verify_type: Number(verifyType),
+        code: appConfig.mobile_verify ? values.code : '',
       });
       toast.success('密码修改成功');
     } catch (e) {
@@ -435,6 +462,31 @@ export function RetrievePasswordDialog({ children }: { children: React.ReactNode
                 );
               }}
             />
+            {verifyType === VerifyTypeEnum.Mobile && appConfig.mobile_verify && (
+              <FormField
+                control={form.control}
+                name="code"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center">
+                      <FormLabel className="w-[4rem] shrink-0">验证码</FormLabel>
+                      <FormControl>
+                        <Input placeholder="请输入密码" type="password" {...field} />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        className="ml-2 shrink-0"
+                        disabled={time > 0}
+                        onClick={() => handleGetCode(form.getValues('verify'))}
+                      >
+                        {time > 0 ? `${time} s` : '获取验证码'}
+                      </Button>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}
