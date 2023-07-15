@@ -12,6 +12,7 @@ import { useMobileScreen } from '@/hooks/use-mobile-screen';
 import useWechat from '@/hooks/use-wechat';
 import useTask from '@/hooks/use-task';
 import { copyToClipboard } from '@/utils';
+import appService, { ShareConfigType } from '@/api/app';
 
 type ShareDialogProps = {
   open: boolean;
@@ -23,6 +24,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
   const posterRef = useRef<HTMLDivElement>(null);
   const isMobileScreen = useMobileScreen();
   const [dataUrl, setDataUrl] = useState('');
+  const [shareConfig, setShareConfig] = useState<ShareConfigType>(Object.create(null));
   const { shareCallback } = useTask();
   const { isWeixinBrowser } = useWechat();
 
@@ -42,6 +44,14 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
       }, 500);
     }
   }, [open]);
+
+  useEffect(() => {
+    const handleGetShareConfig = async () => {
+      const res = await appService.getShareConfig();
+      setShareConfig(res);
+    };
+    handleGetShareConfig();
+  }, []);
 
   return (
     <Dialog
@@ -71,7 +81,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
           <div className="relative overflow-auto max-sm:h-[30rem]">
             <img src={dataUrl} className="absolute left-0 top-0 z-10 w-full" alt="" />
             <div className="relative" ref={posterRef}>
-              <img src={poster} className="w-full" />
+              <img src={shareConfig.share_img || poster} className="w-full" />
               <QRCodeCanvas
                 className="absolute bottom-1 left-[50%] m-auto -translate-x-1/2"
                 style={{

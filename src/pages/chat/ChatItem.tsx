@@ -7,7 +7,6 @@ import { useUserStore, useChatStore, RoleTypeEnum, ChatItemType, useAppStore } f
 import { copyToClipboard } from '@/utils';
 import { StatusEnum } from '@/utils/stream-api';
 import { Markdown } from '@/components/Markdown';
-import IconSvg from '@/components/Icon';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -59,14 +58,16 @@ export const ChatItem = ({
             <AvatarFallback>{nickname.slice(0, 1)?.toUpperCase()}</AvatarFallback>
           </Avatar>
         ) : (
-          <IconSvg className="h-10 w-10 rounded-full border p-1.5" />
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={avatar || appConfig.web_logo} alt={nickname} />
+          </Avatar>
         )}
         <div
           className={classNames('flex-1 items-start flex flex-col overflow-hidden', {
             'items-end': data.role === RoleTypeEnum.USER,
           })}
         >
-          <p className="text-xs text-neutral-400">{dayjs(data.dateTime).format('YYYY-MM-DD HH:MM:ss')}</p>
+          <p className="text-xs text-neutral-400">{dayjs(data.dateTime).format('YYYY-MM-DD HH:mm:ss')}</p>
           <div
             className={classNames('max-w-full flex mt-2 items-end gap-2', {
               'flex-row-reverse': data.role === RoleTypeEnum.USER,
