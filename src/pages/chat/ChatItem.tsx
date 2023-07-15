@@ -59,7 +59,7 @@ export const ChatItem = ({
           </Avatar>
         ) : (
           <Avatar className="h-10 w-10">
-            <AvatarImage src={avatar || appConfig.web_logo} alt={nickname} />
+            <AvatarImage src={appConfig.web_logo} />
           </Avatar>
         )}
         <div
