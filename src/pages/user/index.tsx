@@ -26,6 +26,7 @@ const TypeActionMap = {
 export default function User() {
   const [taskList, setTaskList] = useState<TaskType[]>([]);
   const [shareDialogShow, setShareDialogShow] = useState(false);
+  const [activeType, setActiveType] = useState<TaskTypeEnums>();
   const [{ avatar, nickname, openid }, signOut] = useUserStore((state) => [state.userInfo, state.signOut]);
   const [currentBill, remaining, getCurrentBilling] = useBillingStore((state) => [
     state.currentBill,
@@ -54,8 +55,9 @@ export default function User() {
     return TypeActionMap[type as Exclude<TaskTypeEnums, TaskTypeEnums.REGISTER>];
   };
 
-  const handleClick = async () => {
+  const handleDialogClick = async (type: TaskTypeEnums) => {
     setShareDialogShow(true);
+    setActiveType(type);
   };
 
   return (
@@ -95,7 +97,7 @@ export default function User() {
                     <div className="flex-1 truncate text-base font-medium">{item.title}</div>
                     <p className="mt-1 truncate text-xs">{item.desc}</p>
                   </div>
-                  <Button variant={'secondary'} size={'sm'} onClick={() => handleClick()}>
+                  <Button variant={'secondary'} size={'sm'} onClick={() => handleDialogClick(item.type)}>
                     {item.is_completed
                       ? getTypeActionButton(item.type).completed
                       : getTypeActionButton(item.type).button}
@@ -113,6 +115,7 @@ export default function User() {
       </div>
       <ShareDialog
         open={shareDialogShow}
+        type={activeType}
         shareUrl={location.origin + `/chat?shareOpenId=${openid}`}
         handleOpenChange={(val) => setShareDialogShow(val)}
       />

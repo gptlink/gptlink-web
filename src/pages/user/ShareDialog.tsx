@@ -13,14 +13,16 @@ import useWechat from '@/hooks/use-wechat';
 import useTask from '@/hooks/use-task';
 import { copyToClipboard } from '@/utils';
 import appService, { ShareConfigType } from '@/api/app';
+import { TaskTypeEnums } from '@/api/task';
 
 type ShareDialogProps = {
   open: boolean;
   shareUrl: string;
+  type: TaskTypeEnums | undefined;
   handleOpenChange: (val: boolean) => void;
 };
 
-export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogProps) {
+export function ShareDialog({ open, shareUrl, handleOpenChange, type }: ShareDialogProps) {
   const posterRef = useRef<HTMLDivElement>(null);
   const isMobileScreen = useMobileScreen();
   const [dataUrl, setDataUrl] = useState('');
@@ -57,7 +59,7 @@ export function ShareDialog({ open, shareUrl, handleOpenChange }: ShareDialogPro
     <Dialog
       open={open}
       onOpenChange={(val) => {
-        if (!val) {
+        if (!val && type === TaskTypeEnums.SHARE) {
           shareCallback();
         }
         handleOpenChange(val);
