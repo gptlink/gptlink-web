@@ -93,9 +93,10 @@ export default class StreamAPI {
 
       try {
         const res = JSON.parse(`[${chunkValue.substring(0, chunkValue.length - 1)}]`);
-        if (res[0]) {
-          onProgress(res[0]);
-          resChunkValue = res[0];
+        if (res && res.length) {
+          const chunk = res[res.length - 1];
+          onProgress(chunk);
+          resChunkValue = chunk;
         } else {
           console.log(chunkValue);
         }
