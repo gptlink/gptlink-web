@@ -8,9 +8,13 @@ const useAppConfig = () => {
 
   useEffect(() => {
     const getAppConfig = async () => {
-      const [res, loginType] = await Promise.all([appService.getAppConfig(), appService.getLoginType()]);
-      setAppConfig({ ...res, ...loginType });
-      document.title = res.name;
+      const [appConfig, loginType, paymentConfig] = await Promise.all([
+        appService.getAppConfig(),
+        appService.getLoginType(),
+        appService.getPaymentConfig(),
+      ]);
+      setAppConfig({ ...appConfig, ...loginType, ...paymentConfig });
+      document.title = appConfig.name;
     };
 
     getAppConfig();
