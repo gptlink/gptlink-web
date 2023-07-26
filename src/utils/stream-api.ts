@@ -93,9 +93,13 @@ export default class StreamAPI {
 
       try {
         const dataList = chunkValue.split('\n\ndata :');
-        const chunk = dataList[dataList.length - 2];
+        const chunk = dataList[dataList.length - 2] || dataList[dataList.length - 1];
         if (chunk) {
           resChunkValue = JSON.parse(chunk);
+          if (resChunkValue.err_code > 0) {
+            onError(resChunkValue.err_msg);
+            return;
+          }
           onProgress(resChunkValue);
         }
       } catch (e) {
