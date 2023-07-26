@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Loader2, CheckCircle2Icon } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-import { useBillingStore } from '@/store';
+import { useBillingStore, useAppStore } from '@/store';
 import billingService, { PackageType, PayInfoType, Channel, PayType } from '@/api/billing';
+import { PaymentChannelEnum } from '@/api/app';
 import SvgIcon from '@/components/SvgIcon';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,16 +14,20 @@ import { useMobileScreen } from '@/hooks/use-mobile-screen';
 
 import { BillingRecordsDialog } from './BillingRecords';
 import { PayDialog } from './PayDialog';
+import { OfflinePayDialog } from './OfflinePayDialog';
 
 let payStatusInterval = 0;
 
 export default function Billing() {
   const [billingPackage, setBillingPackage] = useState<PackageType[]>([]);
   const [payDialogShow, setPayDialogShow] = useState(false);
+  const [offlinePayDialogShow, setOfflinePayDialogShow] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [redemptionCode, setRedemptionCode] = useState('');
   const [payInfo, setPayInfo] = useState<PayInfoType | null>(null);
   const [getCurrentBilling] = useBillingStore((state) => [state.getCurrentBilling]);
+  const [appConfig] = useAppStore((state) => [state.appConfig]);
+
   const { isWeixinBrowser, weChatPay } = useWechat();
   const isMobileScreen = useMobileScreen();
 
@@ -49,6 +54,10 @@ export default function Billing() {
   };
 
   const handlePay = async (item: PackageType) => {
+    if (appConfig.channel === PaymentChannelEnum.OFFLINE) {
+      setOfflinePayDialogShow(true);
+      return;
+    }
     const res = await billingService.orderBilling({
       package_id: item.id,
       channel: Channel.WECHAT,
@@ -144,6 +153,13 @@ export default function Billing() {
       </div>
 
       <PayDialog open={payDialogShow} payInfo={payInfo} handleOpenChange={handlePayDialogShow} />
+      <OfflinePayDialog
+        open={offlinePayDialogShow}
+        payInfo={appConfig.offline}
+        handleOpenChange={(val) => {
+          setOfflinePayDialogShow(val);
+        }}
+      />
     </ScrollArea>
   );
 }

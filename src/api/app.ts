@@ -27,7 +27,17 @@ export interface LoginTypeInterface {
   mobile_verify: boolean;
 }
 
-export interface AppConfigType extends LoginTypeInterface, AppConfigInterface {}
+export enum PaymentChannelEnum {
+  OFFLINE = 'offline',
+  WECHAT = 'wechat',
+}
+
+export interface PaymentConfigType {
+  channel: PaymentChannelEnum;
+  offline: string;
+}
+
+export interface AppConfigType extends LoginTypeInterface, AppConfigInterface, PaymentConfigType {}
 
 export interface JsSDKType {
   debug: boolean;
@@ -65,5 +75,8 @@ export default {
   },
   getShareConfig(): Promise<ShareConfigType> {
     return request('config/share');
+  },
+  getPaymentConfig(): Promise<PaymentConfigType> {
+    return request('config/payment');
   },
 };
