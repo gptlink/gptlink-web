@@ -103,11 +103,7 @@ export default class StreamAPI {
           onProgress(resChunkValue);
         }
       } catch (e) {
-        const res = JSON.parse(chunkValue);
-        if (res.err_code > 0) {
-          onError(res.err_msg);
-          return;
-        }
+        console.log(e);
       }
     }
     if (this.status === StatusEnum.ABORT) {
