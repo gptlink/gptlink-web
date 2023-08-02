@@ -76,7 +76,7 @@ export const ChatItem = ({
             <div
               className={classNames('flex-1 p-3 rounded-md break-words overflow-hidden border', {
                 'bg-primary text-primary-foreground hover:bg-primary/90': data.role === RoleTypeEnum.USER,
-                'bg-secondary text-secondary-foreground hover:bg-secondary/80 prose dark:prose-invert prose-th:border prose-td:border':
+                'bg-secondary text-secondary-foreground hover:bg-secondary/80 markdown-table':
                   [RoleTypeEnum.ASSISTANT, RoleTypeEnum.SYSTEM].includes(data.role) && data.status !== StatusEnum.ERROR,
                 'bg-destructive text-destructive-foreground': data.status === StatusEnum.ERROR,
               })}
