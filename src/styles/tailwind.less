@@ -80,6 +80,12 @@
   }
 }
 
+@layer components {
+  .markdown-table {
+    @apply prose dark:prose-invert prose-th:border prose-th:text-center prose-th:border-gray-300 prose-td:border prose-td:text-center prose-td:border-gray-300;
+  }
+}
+
 .scroll-bar-none {
   &::-webkit-scrollbar {
     display: none;
