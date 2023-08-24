@@ -5,6 +5,7 @@ import Login from '@/pages/login';
 import Chat from '@/pages/chat';
 import User from '@/pages/user';
 import Billing from '@/pages/billing';
+import Salesman from '@/pages/salesman';
 import Layout from '@/layout/index';
 import ErrorPage from '@/pages/error-page';
 import toast from 'react-hot-toast';
@@ -36,6 +37,11 @@ const router = createBrowserRouter([
       {
         path: 'billing',
         element: <Billing />,
+        loader: authRedirect,
+      },
+      {
+        path: 'salesman',
+        element: <Salesman />,
         loader: authRedirect,
       },
     ],
