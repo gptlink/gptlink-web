@@ -23,6 +23,13 @@ export interface SalesmanStatisticsType {
   ratio: number;
 }
 
+export interface SalesmanWithdrawalLastType {
+  config: {
+    name: string;
+    account: string;
+  };
+}
+
 export default {
   getSalesmanChildList(per_page?: number, page?: number): Promise<SalesmanChildType[]> {
     return request(`/salesman/child?per_page=${per_page}&page=${page}`);
@@ -32,5 +39,14 @@ export default {
   },
   getSalesmanStatistics(): Promise<SalesmanStatisticsType> {
     return request(`/salesman/statistics`);
+  },
+  withdrawal(data: { price: string; channel: string; config: { account: string; name: string } }): Promise<void> {
+    return request(`/salesman/withdrawal/apply`, {
+      method: 'post',
+      body: JSON.stringify(data),
+    });
+  },
+  getSalesmanWithdrawalLast(): Promise<SalesmanWithdrawalLastType> {
+    return request(`/salesman/withdrawal/last`);
   },
 };
