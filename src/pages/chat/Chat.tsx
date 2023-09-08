@@ -3,6 +3,7 @@ import { Loader2, PauseOctagon, SendIcon, Trash2Icon, DownloadIcon, MoreHorizont
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
+import useAppConfig from '@/hooks/use-app-config';
 import { useChatStore, useUserStore } from '@/store';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -57,6 +58,7 @@ const Footer = ({
     }
   };
   const navigator = useNavigate();
+  const appConfig = useAppConfig();
 
   const handleSendUserMessage = async () => {
     if (!isLogin) {
@@ -99,97 +101,108 @@ const Footer = ({
   }, []);
 
   return (
-    <footer
-      className={classNames('flex items-end gap-4 p-4', {
-        'border-t items-center justify-between': isDownload,
-      })}
-    >
-      {!isDownload ? (
-        <>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-9 w-9 p-0">
-                <MoreHorizontal size={18} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="top" align={'end'}>
-              <DropdownMenuItem
-                className="flex items-center gap-2"
-                onClick={() => {
-                  if (confirm('你确定要清除所有的消息吗？')) {
-                    clearCurrentConversation();
-                    setUserInput('');
+    <footer>
+      <div
+        className={classNames('flex items-end gap-4 p-4', {
+          'border-t items-center justify-between': isDownload,
+        })}
+      >
+        {!isDownload ? (
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-9 w-9 p-0">
+                  <MoreHorizontal size={18} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align={'end'}>
+                <DropdownMenuItem
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    if (confirm('你确定要清除所有的消息吗？')) {
+                      clearCurrentConversation();
+                      setUserInput('');
+                    }
+                  }}
+                >
+                  <Trash2Icon size={16} /> 清空消息
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    onIsDownloadChange(true);
+                  }}
+                >
+                  <DownloadIcon size={16} />
+                  对话海报
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <div className="relative flex-1">
+              {isStream && (
+                <div className="absolute left-0 z-10 flex w-full justify-center">
+                  <Button variant="destructive" onClick={() => stopStream()}>
+                    <PauseOctagon />
+                  </Button>
+                </div>
+              )}
+              <Textarea
+                ref={textAreaRef}
+                className={classNames('h-10 max-h-[7rem] min-h-[20px] w-full flex-1 resize-none scroll-bar-none', {
+                  'blur-sm': isStream,
+                })}
+                onKeyDown={handleKeyDown}
+                disabled={isStream}
+                value={userInput}
+                placeholder={isMobileScreen ? '来说点什么...' : '来说点什么...（Shift + Enter = 换行）'}
+                onChange={(val) => setUserInput(val.target.value)}
+              />
+            </div>
+            <Button
+              disabled={isStream || !userInput.replace(/\n/g, '')}
+              onClick={() => {
+                handleSendUserMessage();
+              }}
+            >
+              {!isStream ? <SendIcon /> : <Loader2 className="m-auto my-32 animate-spin" />}
+            </Button>
+          </>
+        ) : (
+          <>
+            <div className="flex items-center">
+              <Checkbox
+                checked={selectedMessagesIDs.length === allMessagesIds.length}
+                className="mr-2"
+                onCheckedChange={(val) => {
+                  if (val) {
+                    onSelectMessagesIds(allMessagesIds);
+                  } else {
+                    onSelectMessagesIds([]);
                   }
                 }}
-              >
-                <Trash2Icon size={16} /> 清空消息
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="flex items-center gap-2"
-                onClick={() => {
-                  onIsDownloadChange(true);
-                }}
-              >
-                <DownloadIcon size={16} />
-                对话海报
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div className="relative flex-1">
-            {isStream && (
-              <div className="absolute left-0 z-10 flex w-full justify-center">
-                <Button variant="destructive" onClick={() => stopStream()}>
-                  <PauseOctagon />
-                </Button>
-              </div>
-            )}
-            <Textarea
-              ref={textAreaRef}
-              className={classNames('h-10 max-h-[7rem] min-h-[20px] w-full flex-1 resize-none scroll-bar-none', {
-                'blur-sm': isStream,
-              })}
-              onKeyDown={handleKeyDown}
-              disabled={isStream}
-              value={userInput}
-              placeholder={isMobileScreen ? '来说点什么...' : '来说点什么...（Shift + Enter = 换行）'}
-              onChange={(val) => setUserInput(val.target.value)}
-            />
-          </div>
-          <Button
-            disabled={isStream || !userInput.replace(/\n/g, '')}
-            onClick={() => {
-              handleSendUserMessage();
-            }}
-          >
-            {!isStream ? <SendIcon /> : <Loader2 className="m-auto my-32 animate-spin" />}
-          </Button>
-        </>
-      ) : (
-        <>
-          <div className="flex items-center">
-            <Checkbox
-              checked={selectedMessagesIDs.length === allMessagesIds.length}
-              className="mr-2"
-              onCheckedChange={(val) => {
-                if (val) {
-                  onSelectMessagesIds(allMessagesIds);
-                } else {
-                  onSelectMessagesIds([]);
-                }
+              />
+              全选
+            </div>
+            <MessageExporter messages={exportMessages} shareUrl={location.origin + `/chat?shareOpenId=${openid}`} />
+            <Button
+              variant={'destructive'}
+              onClick={() => {
+                onIsDownloadChange(false);
               }}
-            />
-            全选
-          </div>
-          <MessageExporter messages={exportMessages} shareUrl={location.origin + `/chat?shareOpenId=${openid}`} />
-          <Button
-            variant={'destructive'}
-            onClick={() => {
-              onIsDownloadChange(false);
-            }}
-          >
-            取消
-          </Button>
-        </>
+            >
+              取消
+            </Button>
+          </>
+        )}
+      </div>
+      {appConfig.icp ? (
+        <div className="mb-1 mt-[-0.5rem] flex justify-center">
+          <a href="https://beian.miit.gov.cn/" target="_blank" className="text-xs text-slate-500">
+            {appConfig.icp}
+          </a>
+        </div>
+      ) : (
+        <></>
       )}
     </footer>
   );

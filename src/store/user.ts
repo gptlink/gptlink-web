@@ -18,7 +18,7 @@ const initialState = {
   userInfo: {
     nickname: '',
     avatar: '',
-    identity: [],
+    identity: 1,
     openid: '',
   },
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Share2Icon, UserPlus2 } from 'lucide-react';
+import { Share2Icon, UserPlus2, JapaneseYenIcon } from 'lucide-react';
 
 import TaskService, { TaskType, TaskTypeEnums } from '@/api/task';
 import { useUserStore, useBillingStore, useAppStore } from '@/store';
@@ -21,13 +21,18 @@ const TypeActionMap = {
     icon: <Share2Icon />,
     completed: '立即分享',
   },
+  [TaskTypeEnums.SALESMAN]: {
+    button: '成为分销员',
+    icon: <JapaneseYenIcon />,
+    completed: '立即前往',
+  },
 };
 
 export default function User() {
   const [taskList, setTaskList] = useState<TaskType[]>([]);
   const [shareDialogShow, setShareDialogShow] = useState(false);
   const [activeType, setActiveType] = useState<TaskTypeEnums>();
-  const [{ avatar, nickname, openid }, signOut] = useUserStore((state) => [state.userInfo, state.signOut]);
+  const [{ avatar, nickname, openid, identity }, signOut] = useUserStore((state) => [state.userInfo, state.signOut]);
   const [currentBill, remaining, getCurrentBilling] = useBillingStore((state) => [
     state.currentBill,
     state.remaining(),
@@ -44,8 +49,27 @@ export default function User() {
 
   useEffect(() => {
     const getTaskList = async () => {
+      const salesman = await getSalesmanConfig();
       const res = await TaskService.getTaskList(1);
-      setTaskList(res.filter((val) => val.type !== TaskTypeEnums.REGISTER));
+      const list: TaskType[] = [...(salesman || []), ...res];
+      setTaskList(list.filter((val) => val.type !== TaskTypeEnums.REGISTER));
+    };
+    // 获取分销配置
+    const getSalesmanConfig = async (): Promise<TaskType[] | null> => {
+      const { open, enable } = await TaskService.getSalesmanConfig();
+      return (enable && open) || (!open && identity === 2)
+        ? [
+            {
+              id: 0,
+              type: TaskTypeEnums.SALESMAN,
+              title: '分销赚钱',
+              desc: '邀请好友，赚取佣金',
+              is_completed: identity === 2,
+              is_subscribe: true,
+              model_count: 0,
+            },
+          ]
+        : null;
     };
     getTaskList();
     getCurrentBilling();
@@ -97,7 +121,13 @@ export default function User() {
                     <div className="flex-1 truncate text-base font-medium">{item.title}</div>
                     <p className="mt-1 truncate text-xs">{item.desc}</p>
                   </div>
-                  <Button variant={'secondary'} size={'sm'} onClick={() => handleDialogClick(item.type)}>
+                  <Button
+                    variant={'secondary'}
+                    size={'sm'}
+                    onClick={() =>
+                      item.type === TaskTypeEnums.SALESMAN ? navigate('/salesman') : handleDialogClick(item.type)
+                    }
+                  >
                     {item.is_completed
                       ? getTypeActionButton(item.type).completed
                       : getTypeActionButton(item.type).button}
