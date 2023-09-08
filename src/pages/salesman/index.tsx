@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import classNames from 'classnames';
+import { ClipboardList } from 'lucide-react';
 
 import TaskService, { SalesmanConfigType } from '@/api/task';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import userService from '@/api/user';
 
 import { ListScroll, TypeEnums } from './ListScroll';
 import { WithdrawalDialog } from './WithDrawalDialog';
+import { WithdrawalListDialog } from './WithdrawalListDialog';
 
 export default function Salesman() {
   const [salesmanConfig, setSalesmanConfig] = useState<SalesmanConfigType | null>(null);
@@ -61,7 +63,10 @@ export default function Salesman() {
           </div>
         ) : (
           <div className="mx-auto flex w-[32rem] -translate-y-3 flex-col rounded-xl border p-10 max-sm:w-[22rem] max-sm:p-5">
-            <div className="flex flex-col items-center rounded-lg border-2 p-6">
+            <div className="relative flex flex-col items-center rounded-lg border-2 p-6">
+              <WithdrawalListDialog>
+                <ClipboardList className="absolute right-6 top-6 cursor-pointer text-base " />
+              </WithdrawalListDialog>
               <div className="mb-4 flex-1 items-center text-base">
                 剩余可提现：<span className="font-bold">{statistics.balance}</span>
               </div>

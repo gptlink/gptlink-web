@@ -30,6 +30,16 @@ export interface SalesmanWithdrawalLastType {
   };
 }
 
+export interface SalesmanWithdrawalType {
+  id: number;
+  serial_no: string;
+  price: string;
+  status: number;
+  paid_no: string;
+  user_id: number;
+  created_at: string;
+}
+
 export default {
   getSalesmanChildList(per_page?: number, page?: number): Promise<SalesmanChildType[]> {
     return request(`/salesman/child?per_page=${per_page}&page=${page}`);
@@ -48,5 +58,8 @@ export default {
   },
   getSalesmanWithdrawalLast(): Promise<SalesmanWithdrawalLastType> {
     return request(`/salesman/withdrawal/last`);
+  },
+  getSalesmanWithdrawalList(per_page?: number, page?: number): Promise<SalesmanWithdrawalType[]> {
+    return request(`/salesman/withdrawal?per_page=${per_page}&page=${page}`);
   },
 };
