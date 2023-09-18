@@ -37,7 +37,7 @@ const App = () => {
     <div className="flex h-screen flex-col overflow-hidden">
       {!isMobileScreen ? <Header /> : <TitleHeader />}
       <Outlet />
-      {isMobileScreen && <TabBar />}
+      {isMobileScreen && !location.pathname.includes('salesman') && <TabBar />}
     </div>
   );
 };

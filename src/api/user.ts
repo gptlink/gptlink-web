@@ -18,7 +18,7 @@ export interface UserPackageType {
 export interface UserInfoType {
   nickname: string;
   avatar: string;
-  identity: number[];
+  identity: number;
   openid: string;
 }
 
@@ -95,6 +95,11 @@ export default {
     return request('auth/reset', {
       method: 'post',
       body: JSON.stringify(data),
+    });
+  },
+  becomeSalesman(): Promise<void> {
+    return request('/user/salesman', {
+      method: 'post',
     });
   },
 };

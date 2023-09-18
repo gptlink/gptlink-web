@@ -4,6 +4,7 @@ export enum TaskTypeEnums {
   REGISTER = 'register',
   INVITE = 'invite',
   SHARE = 'share',
+  SALESMAN = 'salesman',
 }
 
 export interface TaskType {
@@ -14,6 +15,12 @@ export interface TaskType {
   is_completed: boolean;
   is_subscribe: boolean;
   model_count: 0;
+}
+
+export interface SalesmanConfigType {
+  enable: boolean;
+  open: boolean;
+  rules: string;
 }
 
 export default {
@@ -43,5 +50,8 @@ export default {
     record_count: number;
   }> {
     return request(`task/record/${type}/read`, { method: 'put' });
+  },
+  getSalesmanConfig(): Promise<SalesmanConfigType> {
+    return request(`config/salesman`);
   },
 };

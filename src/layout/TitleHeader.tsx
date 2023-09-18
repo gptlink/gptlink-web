@@ -17,6 +17,9 @@ export const TitleHeader = () => {
     if (location.pathname.includes('billing')) {
       return t('billing center');
     }
+    if (location.pathname.includes('salesman')) {
+      return t('salesman center');
+    }
     return currentConversation.title;
   }, [currentConversation, location.pathname]);
 
