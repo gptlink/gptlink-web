@@ -10,7 +10,7 @@ import { useUserStore, useSalesmanStore } from '@/store';
 import userService from '@/api/user';
 
 import { ListScroll, TypeEnums } from './ListScroll';
-import { WithdrawalDialog } from './WithDrawalDialog';
+import { WithdrawalDialog } from './WithdrawalDialog';
 import { WithdrawalListDialog } from './WithdrawalListDialog';
 
 export default function Salesman() {
