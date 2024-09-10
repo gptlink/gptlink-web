@@ -52,7 +52,7 @@ const Footer = ({
   ]);
 
   const isMobileScreen = useMobileScreen();
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.code === 'Enter' && !e.shiftKey && userInput.replace(/\n/g, '')) {
       handleSendUserMessage();
     }
@@ -151,7 +151,7 @@ const Footer = ({
                 className={classNames('h-10 max-h-[7rem] min-h-[20px] w-full flex-1 resize-none scroll-bar-none', {
                   'blur-sm': isStream,
                 })}
-                onKeyDown={handleKeyDown}
+                onKeyPress={handleKeyPress}
                 disabled={isStream}
                 value={userInput}
                 placeholder={isMobileScreen ? '来说点什么...' : '来说点什么...（Shift + Enter = 换行）'}
